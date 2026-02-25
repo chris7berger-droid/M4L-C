@@ -9,728 +9,432 @@
 <meta property="og:title" content="M4L-C · Money For Life, College Edition">
 <meta property="og:description" content="You can't manage what you don't measure. Build the financial habits now that everyone wishes they'd started sooner.">
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='85' y='85' width='854' height='854' rx='213' stroke='%2300D09C' stroke-width='22' fill='none'/%3E%3Crect x='170' y='170' width='684' height='684' rx='149' fill='%230D2219' stroke='%2300D09C' stroke-width='16'/%3E%3Cpath d='M384 554L512 406L640 554' stroke='%2300D09C' stroke-width='38' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Michroma&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#071E1C;--bg2:#060F0E;--bg3:#040C0B;--card:#0C2624;--card2:#0A211E;--teal:#00D09C;--ac:#D4E84A;--sand:#E4F4F3;--body:rgba(228,244,243,0.55);--muted:rgba(228,244,243,0.3);--div:rgba(228,244,243,0.06);--ease:cubic-bezier(0.4,0,0.2,1)}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.section-id{scroll-margin-top:72px}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.visible{opacity:1;transform:translateY(0)}
 
-:root {
-  --bg:       #071E1C;
-  --bg2:      #060F0E;
-  --bg3:      #040C0B;
-  --card:     #0C2624;
-  --card2:    #0A211E;
-  --ac:       #D4E84A;
-  --sand:     #E4F4F3;
-  --body:     rgba(228,244,243,0.5);
-  --muted:    rgba(228,244,243,0.25);
-  --div:      rgba(228,244,243,0.06);
-  --div2:     rgba(212,232,74,0.1);
-  --ease:     cubic-bezier(0.4,0,0.2,1);
-}
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 52px;background:rgba(7,30,28,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--div);animation:fadeDown .6s var(--ease) both}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+.nav-logo{display:flex;align-items:center;gap:12px;cursor:pointer}
+.nav-icon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 8px rgba(0,208,156,0.3))}
+.nav-icon svg{width:100%;height:100%}
+.nav-wordmark{font-family:'Michroma',sans-serif;font-size:18px;font-weight:800;letter-spacing:.07em;color:var(--teal);text-shadow:0 0 16px rgba(0,208,156,0.5),0 0 40px rgba(0,208,156,0.2)}
+.nav-wordmark span{color:var(--ac);text-shadow:0 0 16px rgba(212,232,74,0.5),0 0 40px rgba(212,232,74,0.2)}
+.nav-wordmark .wm4{position:relative;top:3px;color:var(--teal)!important;text-shadow:0 0 16px rgba(0,208,156,0.5),0 0 40px rgba(0,208,156,0.2)!important}
+.nav-wordmark .wmd{display:inline-block;transform:scaleY(0.5);color:var(--ac);opacity:.7;margin:0 1px}
+.nav-mid{display:flex;align-items:center;gap:32px;list-style:none}
+.nav-mid a{font-size:13px;color:var(--muted);letter-spacing:.03em;transition:color .22s}
+.nav-mid a:hover{color:var(--sand)}
+.nav-cta{padding:9px 24px;background:var(--ac);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .25s;display:inline-block}
+.nav-cta:hover{opacity:.88}
 
-html { scroll-behavior: smooth; }
+/* HERO */
+.hero{min-height:100vh;display:grid;grid-template-columns:52% 48%;padding-top:60px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(7,112,107,0.22) 0%,transparent 70%);top:-100px;right:-100px;pointer-events:none}
+.hero::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(212,232,74,0.055) 0%,transparent 70%);bottom:60px;left:80px;pointer-events:none}
+.hero-left{display:flex;flex-direction:column;justify-content:center;padding:80px 64px 80px 52px;position:relative;z-index:2;animation:fadeUp .7s .15s var(--ease) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:44px}
+.eyebrow-line{width:28px;height:1px;background:var(--ac);opacity:.5}
+.eyebrow-text{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ac);opacity:.8;font-weight:500}
+.logo-row{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+.logo-icon{width:52px;height:52px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 10px rgba(0,208,156,0.35));flex-shrink:0}
+.logo-icon svg{width:100%;height:100%}
+.wordmark{font-family:'Michroma',sans-serif;font-size:34px;font-weight:800;letter-spacing:.07em;color:var(--teal);text-shadow:0 0 16px rgba(0,208,156,0.5),0 0 40px rgba(0,208,156,0.2)}
+.wordmark span{color:var(--ac);text-shadow:0 0 16px rgba(212,232,74,0.5),0 0 40px rgba(212,232,74,0.2)}
+.wm4h{position:relative;top:5px;color:var(--teal)!important;text-shadow:0 0 16px rgba(0,208,156,0.5),0 0 40px rgba(0,208,156,0.2)!important}
+.wmdh{display:inline-block;transform:scaleY(0.5);color:var(--ac);opacity:.7;margin:0 2px}
+.descriptor{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);padding-left:64px;margin-bottom:44px}
+.hl1{font-family:'Syne',sans-serif;font-size:54px;font-weight:800;color:var(--sand);letter-spacing:-.02em;line-height:1.04}
+.hl2{font-family:'Fraunces',serif;font-size:54px;font-weight:300;font-style:italic;color:var(--ac);line-height:1.12;margin-bottom:24px}
+.hero-body{font-size:16px;line-height:1.85;color:var(--body);max-width:420px;margin-bottom:40px}
+.hero-body em{color:var(--sand);font-style:normal}
+.cta-row{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.btn-primary{display:inline-block;padding:16px 44px;background:var(--ac);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .28s}
+.btn-primary:hover{opacity:.86;transform:translateY(-2px);box-shadow:0 12px 32px rgba(212,232,74,0.2)}
+.btn-secondary{display:inline-block;padding:14px 36px;background:transparent;color:var(--ac);border:1px solid rgba(212,232,74,0.3);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .28s}
+.btn-secondary:hover{background:rgba(212,232,74,0.08);border-color:rgba(212,232,74,0.5)}
+.pds-pill{display:flex;align-items:center;gap:9px;font-size:12px;color:rgba(212,232,74,0.65);padding:9px 16px;border:1px solid rgba(212,232,74,0.15);background:rgba(212,232,74,0.04)}
+.hero-right{display:flex;align-items:center;justify-content:center;padding:60px 52px 60px 16px;position:relative;z-index:2;animation:fadeUp .7s .3s var(--ease) both}
+.hero-right::before{content:'';position:absolute;left:0;top:10%;bottom:10%;width:1px;background:linear-gradient(to bottom,transparent,var(--div) 30%,var(--div) 70%,transparent)}
+.dash{width:308px;background:var(--card);border:1px solid rgba(255,255,255,0.07);box-shadow:0 40px 80px rgba(0,0,0,0.45),0 0 0 1px rgba(212,232,74,0.05),inset 0 1px 0 rgba(255,255,255,0.04);position:relative}
+.dash::before{content:'';position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.35}
+.dash-hdr{padding:18px 22px 15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--div)}
+.dash-title{font-family:'Michroma',sans-serif;font-size:10px;letter-spacing:.12em;color:var(--teal);text-shadow:0 0 10px rgba(0,208,156,0.3)}
+.dash-period{font-size:11px;color:var(--muted);letter-spacing:.05em}
+.dash-bal{padding:22px;border-bottom:1px solid var(--div)}
+.dash-bal-lbl{font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.dash-bal-amt{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--sand);letter-spacing:-.02em}
+.dash-bal-trend{font-size:12px;color:var(--teal);margin-top:6px}
+.dash-three{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--div)}
+.dash-stat{padding:16px;text-align:center}
+.dash-stat:not(:last-child){border-right:1px solid var(--div)}
+.dash-stat-lbl{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.dash-stat-val{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--sand)}
+.dash-stat-val.ac{color:var(--ac)}
+.dash-insight{padding:16px 18px;display:flex;gap:10px;align-items:flex-start}
+.dash-ins-mark{color:var(--ac);font-size:14px;margin-top:1px}
+.dash-ins-text{font-size:12px;color:var(--body);line-height:1.65}
+.dash-ins-text strong{color:var(--ac);font-weight:600}
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--sand);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+/* SECTIONS */
+.sec{padding:100px 52px;position:relative}
+.sec-alt{background:var(--bg2)}
+.sec-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.sec-eyebrow-line{width:28px;height:1px;background:var(--teal);opacity:.5}
+.sec-eyebrow-text{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);opacity:.8;font-weight:500}
+.sec-title{font-family:'Syne',sans-serif;font-size:40px;font-weight:800;color:var(--sand);letter-spacing:-.02em;line-height:1.1;margin-bottom:8px}
+.sec-title-accent{font-family:'Fraunces',serif;font-size:40px;font-weight:300;font-style:italic;color:var(--ac);line-height:1.15;margin-bottom:28px}
+.sec-body{font-size:16px;line-height:1.85;color:var(--body);max-width:580px}
+.sec-body em{color:var(--sand);font-style:normal}
 
-/* ── NAV ── */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 200;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 52px;
-  background: rgba(7,30,28,0.88);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--div);
-  animation: fadeDown 0.6s var(--ease) both;
-}
-@keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.nav-icon {
-  width: 36px; height: 36px;
-  display: flex; align-items: center; justify-content: center;
-  filter: drop-shadow(0 0 8px rgba(0,208,156,0.3));
-}
-.nav-icon svg { width: 100%; height: 100%; }
-.nav-wordmark {
-  font-family: 'Michroma', sans-serif;
-  font-size: 18px; font-weight: 800;
-  letter-spacing: 0.07em;
-  color: #00D09C;
-  text-shadow: 0 0 16px rgba(0,208,156,0.5), 0 0 40px rgba(0,208,156,0.2);
-}
-.nav-wordmark span { color: var(--ac); text-shadow: 0 0 16px rgba(212,232,74,0.5), 0 0 40px rgba(212,232,74,0.2); }
-.nav-wordmark .wm4 { position: relative; top: 3px; color: #00D09C !important; text-shadow: 0 0 16px rgba(0,208,156,0.5), 0 0 40px rgba(0,208,156,0.2) !important; }
-.nav-wordmark .wmd { display: inline-block; transform: scaleY(0.5); color: var(--ac); opacity: 0.7; margin: 0 1px; }
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  list-style: none;
-}
-.nav-links a {
-  font-size: 13px; color: var(--muted);
-  text-decoration: none; letter-spacing: 0.03em;
-  transition: color 0.22s;
-}
-.nav-links a:hover { color: var(--sand); }
-.nav-cta {
-  padding: 9px 24px;
-  background: var(--ac);
-  color: var(--bg);
-  border: none;
-  font-family: 'Syne', sans-serif;
-  font-size: 12px; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  cursor: pointer; transition: all 0.25s;
-}
-.nav-cta:hover { opacity: 0.88; }
+/* PDS BANNER */
+.pds-banner{display:flex;align-items:flex-start;gap:24px;padding:36px 40px;margin:0 52px;background:linear-gradient(135deg,rgba(0,208,156,0.06) 0%,rgba(212,232,74,0.04) 100%);border:1px solid rgba(0,208,156,0.12);position:relative}
+.pds-banner::before{content:'';position:absolute;top:0;left:20px;right:20px;height:1px;background:linear-gradient(90deg,transparent,var(--teal),transparent);opacity:.25}
+.pds-shield{font-size:28px;flex-shrink:0}
+.pds-text h4{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px}
+.pds-text p{font-size:14px;line-height:1.8;color:var(--body)}
+.pds-text span{color:var(--sand)}
 
-/* ── HERO ── */
-.hero {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 52% 48%;
-  padding-top: 60px;
-  position: relative;
-  overflow: hidden;
-}
+/* PHILOSOPHY */
+.phil-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:48px;align-items:start}
+.phil-quote{font-family:'Fraunces',serif;font-size:26px;font-weight:300;font-style:italic;line-height:1.55;color:var(--ac);margin-bottom:28px;max-width:480px}
+.phil-quote em{font-style:normal;color:var(--sand)}
+.phil-points{display:flex;flex-direction:column;gap:24px}
+.phil-point{display:flex;gap:16px;align-items:flex-start}
+.phil-point-num{font-family:'Michroma',sans-serif;font-size:11px;color:var(--teal);letter-spacing:.1em;padding-top:3px;flex-shrink:0;opacity:.7}
+.phil-point h4{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px}
+.phil-point p{font-size:14px;line-height:1.75;color:var(--body)}
 
-/* Ambient glow */
-.hero::before {
-  content: '';
-  position: absolute;
-  width: 700px; height: 700px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(7,112,107,0.22) 0%, transparent 70%);
-  top: -100px; right: -100px;
-  pointer-events: none;
-}
-.hero::after {
-  content: '';
-  position: absolute;
-  width: 400px; height: 400px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(212,232,74,0.055) 0%, transparent 70%);
-  bottom: 60px; left: 80px;
-  pointer-events: none;
-}
+/* HOW IT WORKS */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:52px}
+.step{background:var(--card);padding:36px 28px;position:relative;transition:background .3s}
+.step:hover{background:var(--card2)}
+.step::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal);opacity:0;transition:opacity .3s}
+.step:hover::before{opacity:1}
+.step-num{font-family:'Michroma',sans-serif;font-size:10px;color:var(--teal);letter-spacing:.15em;margin-bottom:20px;opacity:.6}
+.step-icon{font-size:32px;margin-bottom:18px}
+.step h4{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:10px;line-height:1.3}
+.step p{font-size:13px;line-height:1.75;color:var(--body)}
 
-.hero-left {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 80px 64px 80px 52px;
-  position: relative;
-  z-index: 2;
-  animation: fadeUp 0.7s 0.15s var(--ease) both;
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+/* PRIVACY */
+.priv-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-top:48px}
+.priv-card{background:var(--card);padding:36px 28px;border-top:2px solid transparent;transition:border-color .3s}
+.priv-card:hover{border-top-color:var(--teal)}
+.priv-icon{font-size:28px;margin-bottom:18px}
+.priv-card h4{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:10px}
+.priv-card p{font-size:13px;line-height:1.75;color:var(--body)}
+.priv-compare{margin-top:48px;display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.priv-col{padding:36px 32px}
+.priv-col-them{background:rgba(255,60,60,0.04);border:1px solid rgba(255,60,60,0.1)}
+.priv-col-us{background:rgba(0,208,156,0.04);border:1px solid rgba(0,208,156,0.12)}
+.priv-col h4{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:18px;letter-spacing:.05em}
+.priv-col-them h4{color:rgba(255,120,120,0.8)}
+.priv-col-us h4{color:var(--teal)}
+.priv-list{list-style:none;display:flex;flex-direction:column;gap:12px}
+.priv-list li{font-size:13px;color:var(--body);line-height:1.6;padding-left:22px;position:relative}
+.priv-list li::before{position:absolute;left:0;top:2px;font-size:12px}
+.priv-col-them .priv-list li::before{content:'✗';color:rgba(255,100,100,0.6)}
+.priv-col-us .priv-list li::before{content:'✓';color:var(--teal)}
 
-.eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 44px;
-}
-.eyebrow-line { width: 28px; height: 1px; background: var(--ac); opacity: 0.5; }
-.eyebrow-text {
-  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--ac); opacity: 0.8; font-weight: 500;
-}
+/* CARD STRIP */
+.strip{padding:80px 0 80px 52px;background:var(--bg2);position:relative}
+.strip-hdr{display:flex;justify-content:space-between;align-items:flex-end;padding-right:52px;margin-bottom:36px}
+.strip-left{display:flex;flex-direction:column;gap:4px}
+.strip-lbl{font-family:'Syne',sans-serif;font-size:22px;font-weight:700}
+.strip-count{font-size:11px;color:var(--muted);letter-spacing:.1em}
+.scroll-btns{display:flex;gap:6px}
+.scroll-btn{width:40px;height:40px;background:var(--card);border:1px solid var(--div);color:var(--sand);font-size:16px;cursor:pointer;transition:all .22s;display:flex;align-items:center;justify-content:center}
+.scroll-btn:hover{background:var(--card2);border-color:var(--teal)}
+.track-wrap{overflow:hidden}
+.track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;cursor:grab;scrollbar-width:none;padding-bottom:4px}
+.track::-webkit-scrollbar{display:none}
+.card{flex:0 0 272px;min-height:280px;background:var(--card);border:1px solid var(--div);padding:32px 26px;scroll-snap-align:start;transition:border-color .3s}
+.card:hover{border-color:rgba(0,208,156,0.2)}
+.card-tag{font-size:9px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:4px 10px;display:inline-block;margin-bottom:20px}
+.card-tag.core{background:rgba(212,232,74,0.1);color:var(--ac)}
+.card-tag.priv{background:rgba(0,208,156,0.1);color:var(--teal)}
+.card-tag.fut{background:rgba(228,244,243,0.06);color:var(--muted)}
+.card-icon{font-size:28px;margin-bottom:16px}
+.card h3{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:12px;line-height:1.35}
+.card p{font-size:13px;line-height:1.75;color:var(--body)}
+.pds-card{border-color:rgba(0,208,156,0.12)}
+.fut-card{border-color:rgba(228,244,243,0.08)}
+.dots{display:flex;justify-content:center;gap:8px;margin-top:28px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--div);cursor:pointer;transition:all .3s}
+.dot.on{background:var(--teal);box-shadow:0 0 8px rgba(0,208,156,0.5)}
 
-.logo-row {
-  display: flex; align-items: center; gap: 16px;
-  margin-bottom: 8px;
-}
-.logo-icon {
-  width: 52px; height: 52px;
-  display: flex; align-items: center; justify-content: center;
-  filter: drop-shadow(0 0 10px rgba(0,208,156,0.35));
-  flex-shrink: 0;
-}
-.logo-icon svg { width: 100%; height: 100%; }
-.wordmark {
-  font-family: 'Michroma', sans-serif;
-  font-size: 34px; font-weight: 800;
-  letter-spacing: 0.07em;
-  color: #00D09C;
-  text-shadow: 0 0 16px rgba(0,208,156,0.5), 0 0 40px rgba(0,208,156,0.2);
-}
-.wordmark span { color: var(--ac); text-shadow: 0 0 16px rgba(212,232,74,0.5), 0 0 40px rgba(212,232,74,0.2); }
-.wm4h { position: relative; top: 5px; color: #00D09C !important; text-shadow: 0 0 16px rgba(0,208,156,0.5), 0 0 40px rgba(0,208,156,0.2) !important; }
-.wmdh { display: inline-block; transform: scaleY(0.5); color: var(--ac); opacity: 0.7; margin: 0 2px; }
-.descriptor {
-  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--muted); padding-left: 64px;
-  margin-bottom: 44px;
-}
+/* SETUP */
+.setup-flow{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:48px}
+.setup-step{background:var(--card);padding:40px 32px;text-align:center;position:relative}
+.setup-step::after{content:'→';position:absolute;right:-14px;top:50%;transform:translateY(-50%);font-size:20px;color:var(--teal);opacity:.4;z-index:2}
+.setup-step:last-child::after{display:none}
+.setup-num{font-family:'Michroma',sans-serif;font-size:10px;color:var(--teal);letter-spacing:.15em;margin-bottom:16px;opacity:.6}
+.setup-icon{font-size:40px;margin-bottom:16px}
+.setup-step h4{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:10px}
+.setup-step p{font-size:13px;line-height:1.7;color:var(--body)}
+.setup-time{margin-top:32px;text-align:center}
+.setup-time-badge{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;background:rgba(0,208,156,0.06);border:1px solid rgba(0,208,156,0.15);font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--teal)}
+.setup-cta-row{margin-top:36px;display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.guide-card{background:var(--card);padding:28px 32px;margin-bottom:2px}
+.guide-card h4{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--teal);margin-bottom:12px}
+.guide-card p{font-size:14px;line-height:1.75;color:var(--body)}
+.guide-card em{color:var(--sand);font-style:normal}
 
-.hl1 {
-  font-family: 'Syne', sans-serif;
-  font-size: 54px; font-weight: 800;
-  color: var(--sand); letter-spacing: -0.02em;
-  line-height: 1.04;
-}
-.hl2 {
-  font-family: 'Fraunces', serif;
-  font-size: 54px; font-weight: 300; font-style: italic;
-  color: var(--ac); line-height: 1.12;
-  margin-bottom: 24px;
-}
-.hero-body {
-  font-size: 16px; line-height: 1.85;
-  color: var(--body); max-width: 420px;
-  margin-bottom: 40px;
-}
-.hero-body em { color: var(--sand); font-style: normal; }
+/* ROADMAP */
+.roadmap-track{display:flex;gap:0;margin-top:48px;position:relative}
+.roadmap-track::before{content:'';position:absolute;top:36px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal),var(--ac) 40%,var(--div) 70%);opacity:.3}
+.rm-item{flex:1;padding:0 20px;position:relative}
+.rm-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--teal);background:var(--bg);margin:30px auto 20px;position:relative;z-index:2}
+.rm-item.active .rm-dot{background:var(--teal);box-shadow:0 0 12px rgba(0,208,156,0.5)}
+.rm-item.future .rm-dot{border-color:var(--muted)}
+.rm-label{font-family:'Michroma',sans-serif;font-size:9px;letter-spacing:.12em;color:var(--teal);text-align:center;margin-bottom:8px}
+.rm-item.future .rm-label{color:var(--muted)}
+.rm-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;text-align:center;margin-bottom:8px}
+.rm-desc{font-size:12px;color:var(--body);text-align:center;line-height:1.65}
 
-.cta-row {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 14px;
-}
-.btn-primary {
-  padding: 16px 44px;
-  background: var(--ac); color: var(--bg);
-  border: none;
-  font-family: 'Syne', sans-serif;
-  font-size: 13px; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  cursor: pointer; transition: all 0.28s;
-}
-.btn-primary:hover { opacity: 0.86; transform: translateY(-2px); box-shadow: 0 12px 32px rgba(212,232,74,0.2); }
+/* FINAL CTA */
+.final-cta{padding:100px 52px;text-align:center;background:var(--bg);position:relative;overflow:hidden}
+.final-cta::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,208,156,0.08) 0%,transparent 70%);top:-200px;left:50%;transform:translateX(-50%);pointer-events:none}
+.final-cta .sec-title,.final-cta .sec-title-accent{text-align:center}
+.final-cta .sec-body{margin:0 auto 40px;text-align:center;max-width:520px}
+.final-cta-row{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
 
-.pds-pill {
-  display: flex; align-items: center; gap: 9px;
-  font-size: 12px; color: rgba(212,232,74,0.65);
-  padding: 9px 16px;
-  border: 1px solid rgba(212,232,74,0.15);
-  background: rgba(212,232,74,0.04);
-}
+/* FOOTER */
+footer{background:var(--bg3);border-top:1px solid var(--div);padding:40px 52px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-logo{font-family:'Michroma',sans-serif;font-size:16px;font-weight:800;color:rgba(0,208,156,0.4);letter-spacing:.07em}
+.footer-logo span{color:var(--ac);opacity:.4}
+.footer-logo .f4{position:relative;top:2px;color:rgba(0,208,156,0.4)!important}
+.footer-copy{font-size:12px;color:var(--muted);letter-spacing:.03em}
+.footer-pds{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(212,232,74,0.35);letter-spacing:.05em}
+.footer-pds-dot{width:6px;height:6px;border-radius:50%;background:var(--ac);opacity:.4}
 
-/* Hero right — dashboard */
-.hero-right {
-  display: flex; align-items: center; justify-content: center;
-  padding: 60px 52px 60px 16px;
-  position: relative; z-index: 2;
-  animation: fadeUp 0.7s 0.3s var(--ease) both;
+/* MOBILE */
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:8px}
+.hamburger span{display:block;width:22px;height:2px;background:var(--sand);margin:5px 0;transition:all .3s}
+@media(max-width:768px){
+nav{padding:0 20px;height:56px}
+.hamburger{display:block;z-index:201}
+.nav-mid{display:none;position:absolute;top:56px;left:0;right:0;flex-direction:column;gap:0;background:rgba(7,30,28,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--div);padding:12px 0}
+.nav-mid.open{display:flex}
+.nav-mid a{padding:14px 24px;display:block;font-size:14px}
+.nav-cta{display:none}
+.hero{grid-template-columns:1fr;min-height:auto}
+.hero-left{padding:100px 24px 40px}
+.hero-right{padding:0 24px 48px;justify-content:center}
+.hero-right::before{display:none}
+.hl1,.hl2{font-size:36px}
+.hero-body{font-size:15px}
+.descriptor{padding-left:0}
+.wordmark{font-size:28px!important}
+.sec{padding:64px 24px}
+.sec-title{font-size:30px}
+.sec-title-accent{font-size:30px}
+.phil-grid{grid-template-columns:1fr;gap:36px}
+.phil-quote{font-size:22px}
+.steps{grid-template-columns:1fr 1fr}
+.priv-grid{grid-template-columns:1fr}
+.priv-compare{grid-template-columns:1fr}
+.setup-flow{grid-template-columns:1fr}
+.setup-step::after{display:none}
+.pds-banner{margin:0 16px;padding:28px 24px;flex-direction:column;text-align:center;gap:16px}
+.strip{padding:48px 0 48px 24px}
+.strip-hdr{padding-right:24px}
+.roadmap-track{flex-direction:column;gap:0}
+.roadmap-track::before{display:none}
+.rm-item{padding:0 0 28px;border-left:2px solid var(--div);padding-left:24px}
+.rm-dot{position:absolute;left:-7px;top:0;margin:0}
+.rm-label,.rm-title,.rm-desc{text-align:left}
+.final-cta{padding:64px 24px}
+footer{padding:32px 24px;flex-direction:column;text-align:center}
 }
-.hero-right::before {
-  content: '';
-  position: absolute; left: 0; top: 10%; bottom: 10%; width: 1px;
-  background: linear-gradient(to bottom, transparent, var(--div) 30%, var(--div) 70%, transparent);
-}
+@media(max-width:480px){.steps{grid-template-columns:1fr}}
 
-/* Dashboard card */
-.dash {
-  width: 308px;
-  background: var(--card);
-  border: 1px solid rgba(255,255,255,0.07);
-  box-shadow:
-    0 40px 80px rgba(0,0,0,0.45),
-    0 0 0 1px rgba(212,232,74,0.05),
-    inset 0 1px 0 rgba(255,255,255,0.04);
-  position: relative;
-}
-.dash::before {
-  content: '';
-  position: absolute; top: 0; left: 16px; right: 16px; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--ac), transparent);
-  opacity: 0.35;
-}
-.dash-hdr {
-  padding: 18px 22px 15px;
-  border-bottom: 1px solid var(--div);
-  display: flex; justify-content: space-between; align-items: center;
-}
-.dash-title {
-  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
-  letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
-}
-.dash-period { font-size: 11px; color: var(--ac); opacity: 0.6; }
-.dash-bal { padding: 22px 22px 18px; border-bottom: 1px solid var(--div); }
-.dash-bal-lbl {
-  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 6px;
-}
-.dash-bal-amt {
-  font-family: 'Fraunces', serif;
-  font-size: 42px; font-weight: 400;
-  color: var(--sand); letter-spacing: -0.02em; margin-bottom: 4px;
-}
-.dash-bal-trend { font-size: 12px; color: var(--ac); }
-.dash-three {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
-  border-bottom: 1px solid var(--div);
-}
-.dash-stat { padding: 14px 12px; text-align: center; }
-.dash-stat + .dash-stat { border-left: 1px solid var(--div); }
-.dash-stat-lbl {
-  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 5px;
-}
-.dash-stat-val {
-  font-family: 'Fraunces', serif; font-size: 19px; color: var(--sand);
-}
-.dash-stat-val.ac { color: var(--ac); }
-.dash-insight {
-  padding: 14px 22px;
-  display: flex; gap: 10px; align-items: flex-start;
-}
-.dash-ins-mark { color: var(--ac); opacity: 0.4; font-size: 10px; margin-top: 3px; flex-shrink: 0; }
-.dash-ins-text { font-size: 12px; color: var(--body); line-height: 1.65; }
-.dash-ins-text strong { color: var(--ac); opacity: 0.85; font-weight: 500; }
-
-/* ── PDS BANNER ── */
-.pds-banner {
-  background: var(--card2);
-  border-top: 1px solid var(--div);
-  border-bottom: 1px solid var(--div);
-  padding: 28px 52px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-.pds-shield {
-  font-size: 28px; flex-shrink: 0;
-  filter: grayscale(0.3);
-}
-.pds-text h4 {
-  font-family: 'Syne', sans-serif;
-  font-size: 15px; font-weight: 700;
-  color: var(--sand); margin-bottom: 4px; letter-spacing: -0.01em;
-}
-.pds-text p {
-  font-size: 13px; color: var(--body); line-height: 1.7; max-width: 680px;
-}
-.pds-text p span {
-  color: var(--ac); opacity: 0.8;
-}
-
-/* ── CARD STRIP ── */
-.strip {
-  background: var(--bg2);
-  padding: 60px 0 68px;
-  overflow: hidden;
-}
-.strip-hdr {
-  padding: 0 52px 28px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.strip-left { display: flex; align-items: center; gap: 12px; }
-.strip-lbl {
-  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--muted);
-}
-.strip-count {
-  font-size: 11px; color: rgba(212,232,74,0.25);
-}
-.scroll-btns { display: flex; gap: 6px; }
-.scroll-btn {
-  width: 32px; height: 32px; border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: transparent; color: var(--muted);
-  font-size: 14px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.25s;
-}
-.scroll-btn:hover { border-color: var(--ac); color: var(--ac); }
-
-.track-wrap { position: relative; }
-.track-wrap::after {
-  content: '';
-  position: absolute; right: 0; top: 0; bottom: 0; width: 100px;
-  background: linear-gradient(to left, var(--bg2), transparent);
-  pointer-events: none; z-index: 2;
-}
-.track {
-  display: flex; gap: 16px;
-  padding: 4px 52px 16px;
-  overflow-x: auto; scroll-snap-type: x mandatory;
-  scroll-behavior: smooth; scrollbar-width: none; cursor: grab;
-}
-.track:active { cursor: grabbing; }
-.track::-webkit-scrollbar { display: none; }
-
-/* Cards */
-.card {
-  flex: 0 0 272px;
-  padding: 32px 28px;
-  background: var(--card);
-  border: 1px solid rgba(255,255,255,0.06);
-  scroll-snap-align: start;
-  transition: all 0.3s var(--ease);
-  position: relative; overflow: hidden;
-}
-.card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--ac);
-  transform: scaleX(0); transform-origin: left;
-  transition: transform 0.4s var(--ease);
-}
-.card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(212,232,74,0.14);
-  background: #0E2A27;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.3);
-}
-.card:hover::before { transform: scaleX(1); }
-
-/* PDS card */
-.card.pds-card {
-  border-color: rgba(212,232,74,0.1);
-  background: rgba(212,232,74,0.025);
-}
-.card.pds-card:hover {
-  border-color: rgba(212,232,74,0.22);
-  background: rgba(212,232,74,0.04);
-}
-
-/* Future card */
-.card.fut-card {
-  border-color: rgba(255,255,255,0.05);
-  background: rgba(255,255,255,0.02);
-}
-.card.fut-card:hover {
-  border-color: rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.04);
-}
-
-.card-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
-  padding: 4px 10px; margin-bottom: 18px;
-  border: 1px solid;
-}
-.card-tag.core { color: var(--ac); border-color: rgba(212,232,74,0.3); background: rgba(212,232,74,0.05); }
-.card-tag.priv { color: var(--ac); border-color: rgba(212,232,74,0.3); background: rgba(212,232,74,0.05); }
-.card-tag.fut  { color: var(--muted); border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); }
-
-.card-icon { font-size: 24px; margin-bottom: 16px; }
-.card h3 {
-  font-family: 'Fraunces', serif;
-  font-size: 21px; font-weight: 300;
-  color: var(--sand); margin-bottom: 10px; line-height: 1.25;
-}
-.card p {
-  font-size: 13px; color: var(--body); line-height: 1.8;
-}
-
-/* Dots */
-.dots {
-  display: flex; justify-content: center; gap: 6px;
-  padding-top: 24px;
-}
-.dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: rgba(228,244,243,0.12);
-  cursor: pointer; transition: all 0.25s;
-}
-.dot.on { background: var(--ac); width: 18px; border-radius: 100px; opacity: 0.75; }
-
-/* ── FOOTER ── */
-footer {
-  background: var(--bg3);
-  border-top: 1px solid var(--div);
-  padding: 40px 52px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-.footer-logo {
-  font-family: 'Michroma', sans-serif;
-  font-size: 16px; font-weight: 800;
-  color: rgba(0,208,156,0.4); letter-spacing: 0.07em;
-}
-.footer-logo span { color: var(--ac); opacity: 0.4; }
-.footer-logo .f4 { position: relative; top: 2px; color: rgba(0,208,156,0.4) !important; }
-.footer-copy {
-  font-size: 12px; color: var(--muted);
-  letter-spacing: 0.03em;
-}
-.footer-pds {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 11px; color: rgba(212,232,74,0.35);
-  letter-spacing: 0.05em;
-}
-.footer-pds-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--ac); opacity: 0.4;
-}
-
-/* ── MOBILE ── */
-.hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
-.hamburger span { display: block; width: 22px; height: 2px; background: var(--sand); margin: 5px 0; transition: all 0.3s; }
-
-@media (max-width: 768px) {
-  nav { padding: 0 20px; height: 56px; }
-  .hamburger { display: block; }
-  .nav-links {
-    display: none;
-    position: absolute; top: 56px; left: 0; right: 0;
-    flex-direction: column; gap: 0;
-    background: rgba(7,30,28,0.96);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--div);
-    padding: 12px 0;
-  }
-  .nav-links.open { display: flex; }
-  .nav-links a { padding: 14px 24px; display: block; font-size: 14px; }
-  .nav-cta { margin: 8px 20px 12px; width: calc(100% - 40px); text-align: center; }
-  
-  .hero { grid-template-columns: 1fr; min-height: auto; }
-  .hero-left { padding: 100px 24px 40px; }
-  .hero-right { padding: 0 24px 48px; justify-content: center; }
-  .hero-right::before { display: none; }
-  .hl1, .hl2 { font-size: 36px; }
-  .hero-body { font-size: 15px; }
-  .descriptor { padding-left: 0; }
-  .wordmark { font-size: 28px !important; }
-  
-  .pds-banner { margin: 0 16px; padding: 28px 24px; flex-direction: column; text-align: center; gap: 16px; }
-  .strip { padding: 48px 0 48px 24px; }
-  .strip-hdr { padding-right: 24px; }
-  footer { padding: 32px 24px; flex-direction: column; text-align: center; }
-}
-
-/* ── GRAIN OVERLAY ── */
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.018;
-  pointer-events: none; z-index: 9999;
-}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");opacity:.018;pointer-events:none;z-index:9999}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
-  <div class="nav-logo">
+  <a href="#top" class="nav-logo">
     <div class="nav-icon"><svg width="28" height="28" viewBox="0 0 1024 1024" fill="none"><rect x="85" y="85" width="854" height="854" rx="213" stroke="#00D09C" stroke-width="22" fill="none"/><rect x="170" y="170" width="684" height="684" rx="149" fill="#0D2219" stroke="#00D09C" stroke-width="16"/><path d="M384 554L512 406L640 554" stroke="#00D09C" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div class="nav-wordmark">M<span class="wm4">4</span>L<span class="wmd">–</span><span>C</span></div>
-  </div>
-  <ul class="nav-links">
-    <li><a href="#">Philosophy</a></li>
-    <li><a href="#">How It Works</a></li>
-    <li><a href="#">Privacy</a></li>
-    <li><a href="#">Roadmap</a></li>
+  </a>
+  <ul class="nav-mid" id="navMid">
+    <li><a href="#philosophy" onclick="closeNav()">Philosophy</a></li>
+    <li><a href="#how-it-works" onclick="closeNav()">How It Works</a></li>
+    <li><a href="#privacy" onclick="closeNav()">Privacy</a></li>
+    <li><a href="#roadmap" onclick="closeNav()">Roadmap</a></li>
   </ul>
-  <button class="nav-cta">Get Started</button>
-  <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+  <a href="#get-started" class="nav-cta">Get Started</a>
+  <button class="hamburger" onclick="document.getElementById('navMid').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
+<section class="hero" id="top">
   <div class="hero-left">
-    <div class="eyebrow">
-      <div class="eyebrow-line"></div>
-      <span class="eyebrow-text">College Edition · Est. Your First Day</span>
-    </div>
+    <div class="eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">College Edition · Est. Your First Day</span></div>
     <div class="logo-row">
       <div class="logo-icon"><svg width="48" height="48" viewBox="0 0 1024 1024" fill="none"><rect x="85" y="85" width="854" height="854" rx="213" stroke="#00D09C" stroke-width="22" fill="none"/><rect x="170" y="170" width="684" height="684" rx="149" fill="#0D2219" stroke="#00D09C" stroke-width="16"/><path d="M384 554L512 406L640 554" stroke="#00D09C" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="wordmark">M<span class="wm4h">4</span>L<span class="wmdh">–</span><span>C</span></div>
     </div>
     <div class="descriptor">Money For Life</div>
-
     <div class="hl1">You're smarter</div>
     <div class="hl2">than they think.</div>
-
-    <p class="hero-body">
-      Every financial institution is betting you won't start until your 30s. M4L-C is built for the rare few who understand that <em>wealth is made in the years everyone else is waiting.</em>
-    </p>
-
+    <p class="hero-body">Every financial institution is betting you won't start until your 30s. M4L-C is built for the rare few who understand that <em>wealth is made in the years everyone else is waiting.</em></p>
     <div class="cta-row">
-      <button class="btn-primary">Begin Building Wealth</button>
-      <div class="pds-pill">
-        <span>🔒</span>
-        <span>Private Data System — your Google Drive, your rules</span>
-      </div>
+      <a href="#get-started" class="btn-primary">Begin Building Wealth</a>
+      <div class="pds-pill"><span>🔒</span><span>Private Data System — your Google Drive, your rules</span></div>
     </div>
   </div>
-
   <div class="hero-right">
     <div class="dash">
-      <div class="dash-hdr">
-        <span class="dash-title">M4L-C Dashboard</span>
-        <span class="dash-period">Feb 2026</span>
-      </div>
-      <div class="dash-bal">
-        <div class="dash-bal-lbl">Net Worth</div>
-        <div class="dash-bal-amt">$4,850</div>
-        <div class="dash-bal-trend">↑ +$312 this month · Growing.</div>
-      </div>
+      <div class="dash-hdr"><span class="dash-title">M4L-C Dashboard</span><span class="dash-period">Feb 2026</span></div>
+      <div class="dash-bal"><div class="dash-bal-lbl">Net Worth</div><div class="dash-bal-amt">$4,850</div><div class="dash-bal-trend">↑ +$312 this month · Growing.</div></div>
       <div class="dash-three">
-        <div class="dash-stat">
-          <div class="dash-stat-lbl">Saved</div>
-          <div class="dash-stat-val ac">$640</div>
-        </div>
-        <div class="dash-stat">
-          <div class="dash-stat-lbl">Income</div>
-          <div class="dash-stat-val">$1,800</div>
-        </div>
-        <div class="dash-stat">
-          <div class="dash-stat-lbl">Spent</div>
-          <div class="dash-stat-val">$1,160</div>
-        </div>
+        <div class="dash-stat"><div class="dash-stat-lbl">Saved</div><div class="dash-stat-val ac">$640</div></div>
+        <div class="dash-stat"><div class="dash-stat-lbl">Income</div><div class="dash-stat-val">$1,800</div></div>
+        <div class="dash-stat"><div class="dash-stat-lbl">Spent</div><div class="dash-stat-val">$1,160</div></div>
       </div>
-      <div class="dash-insight">
-        <span class="dash-ins-mark">✦</span>
-        <div class="dash-ins-text">
-          At this rate you'll have <strong>$180k by 30</strong> — before any raises or career growth.
-        </div>
-      </div>
+      <div class="dash-insight"><span class="dash-ins-mark">✦</span><div class="dash-ins-text">At this rate you'll have <strong>$180k by 30</strong> — before any raises or career growth.</div></div>
     </div>
   </div>
 </section>
 
-<!-- PDS BANNER -->
-<div class="pds-banner">
+<div class="pds-banner reveal">
   <div class="pds-shield">🛡️</div>
-  <div class="pds-text">
-    <h4>Your data never leaves your hands.</h4>
-    <p>Unlike every other finance app, M4L-C runs on your own Google Drive. <span>No servers. No data brokers. No ads built from your spending habits.</span> This is what financial privacy actually looks like.</p>
-  </div>
+  <div class="pds-text"><h4>Your data never leaves your hands.</h4><p>Unlike every other finance app, M4L-C runs on your own Google Drive. <span>No servers. No data brokers. No ads built from your spending habits.</span> This is what financial privacy actually looks like.</p></div>
 </div>
 
-<!-- CARD STRIP -->
+<section class="sec section-id" id="philosophy">
+  <div class="reveal"><div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span class="sec-eyebrow-text">Our Philosophy</span></div>
+  <div class="sec-title">Financial discipline is</div><div class="sec-title-accent">step one in financial fitness.</div></div>
+  <div class="phil-grid">
+    <div class="phil-left reveal">
+      <div class="phil-quote">"It doesn't matter how much you make if you don't know how to manage it — and <em>you can't manage what you don't measure.</em>"</div>
+      <p class="sec-body">College is a critical time to learn this discipline. For most, it's the first time you've left home and are <em>responsible for yourself</em>. Ironically, you're in college learning about the path you'll use to make money — and yet you're not learning about your own money habits and behaviors.</p>
+    </div>
+    <div class="phil-points reveal">
+      <div class="phil-point"><div class="phil-point-num">01</div><div><h4>Pay Yourself First</h4><p>Saving is your first allocation, not your last. If you're not saving, you're moving backwards. Every paycheck, every time, no exceptions.</p></div></div>
+      <div class="phil-point"><div class="phil-point-num">02</div><div><h4>Budgeting Is Measuring</h4><p>Nobody in the world who makes and manages money responsibly does it without a budget. Not a business. Not a person. No one.</p></div></div>
+      <div class="phil-point"><div class="phil-point-num">03</div><div><h4>Habits Before Investing</h4><p>Once you master this, you can learn about investing and increasing your income — but those won't do you any good without this core discipline.</p></div></div>
+      <div class="phil-point"><div class="phil-point-num">04</div><div><h4>Worth It?</h4><p>Every purchase gets a moment of reflection. Not guilt — awareness. Understanding where your money goes is the foundation of controlling where it grows.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-alt section-id" id="how-it-works">
+  <div class="reveal"><div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span class="sec-eyebrow-text">How It Works</span></div>
+  <div class="sec-title">Four habits.</div><div class="sec-title-accent">One system for life.</div>
+  <p class="sec-body">M4L-C is built around four core actions that, done consistently, change your financial trajectory forever.</p></div>
+  <div class="steps reveal">
+    <div class="step"><div class="step-num">01</div><div class="step-icon">💰</div><h4>Save First</h4><p>Set savings goals and move money into them before you spend a dollar. Pay yourself first — every single time.</p></div>
+    <div class="step"><div class="step-num">02</div><div class="step-icon">📊</div><h4>Track Everything</h4><p>Log every transaction — income, spending, and saving. Takes 10 seconds. Builds the awareness muscle that changes everything.</p></div>
+    <div class="step"><div class="step-num">03</div><div class="step-icon">📋</div><h4>Budget Monthly</h4><p>Set category budgets so you know where money should go before it's gone. See exactly where you stand in real time.</p></div>
+    <div class="step"><div class="step-num">04</div><div class="step-icon">🤔</div><h4>Reflect: Worth It?</h4><p>Every purchase gets a moment. Not guilt — just awareness. Over time, this single habit saves more than any app feature ever could.</p></div>
+  </div>
+</section>
+
+<section class="sec section-id" id="privacy">
+  <div class="reveal"><div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span class="sec-eyebrow-text">Private Data System</span></div>
+  <div class="sec-title">Your financial data is</div><div class="sec-title-accent">not a product to be sold.</div>
+  <p class="sec-body">M4L-C doesn't store your data on our servers. Your financial life lives entirely in your own Google Drive — encrypted, private, and under your complete control.</p></div>
+  <div class="priv-grid reveal">
+    <div class="priv-card"><div class="priv-icon">🔐</div><h4>Self-Hosted</h4><p>Your data lives in your Google Drive. Not our servers. Not a third-party cloud. Yours. Period.</p></div>
+    <div class="priv-card"><div class="priv-icon">🚫</div><h4>Zero Data Collection</h4><p>We don't collect, store, analyze, or sell your financial information. We literally can't see it.</p></div>
+    <div class="priv-card"><div class="priv-icon">🛡️</div><h4>No Ad Model</h4><p>No ads. No data brokers. No "personalized offers" based on your spending. Your habits are not our revenue.</p></div>
+  </div>
+  <div class="priv-compare reveal">
+    <div class="priv-col priv-col-them"><h4>Every Other Finance App</h4><ul class="priv-list"><li>Stores your data on their servers</li><li>Shares data with third-party partners</li><li>Builds ad profiles from your spending</li><li>Sells "anonymized" data to brokers</li><li>Requires bank account connection</li></ul></div>
+    <div class="priv-col priv-col-us"><h4>M4L-C Private Data System</h4><ul class="priv-list"><li>Data lives in YOUR Google Drive</li><li>Zero third-party data sharing</li><li>No ads, no profiles, no tracking</li><li>Nothing to sell — we can't see it</li><li>No bank connections needed</li></ul></div>
+  </div>
+</section>
+
 <div class="strip">
-  <div class="strip-hdr">
-    <div class="strip-left">
-      <span class="strip-lbl">Why M4L-C</span>
-      <span class="strip-count">01 — 05</span>
-    </div>
-    <div class="scroll-btns">
-      <button class="scroll-btn" id="prev">←</button>
-      <button class="scroll-btn" id="next">→</button>
-    </div>
-  </div>
-
-  <div class="track-wrap">
-    <div class="track" id="track">
-
-      <div class="card">
-        <div class="card-tag core">Philosophy</div>
-        <div class="card-icon">🌱</div>
-        <h3>Pay yourself first, always.</h3>
-        <p>Savings isn't what's left over — it's the first thing you move. Every paycheck, every time, no exceptions. That's the whole philosophy.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-tag core">Outcomes</div>
-        <div class="card-icon">📈</div>
-        <h3>Small habits, massive outcomes.</h3>
-        <p>$50 saved at 19 is worth more than $500 saved at 30. We show you the math — and make the habit effortless.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-tag core">College</div>
-        <div class="card-icon">🎓</div>
-        <h3>Built for the college chapter.</h3>
-        <p>M4L-C is just the beginning. The habits you build here follow you through every life stage. This is version one of your financial story.</p>
-      </div>
-
-      <div class="card pds-card">
-        <div class="card-tag priv">Privacy</div>
-        <div class="card-icon">🔒</div>
-        <h3>Own your data. Always.</h3>
-        <p>Your financial life is not a product to be sold. M4L-C's Private Data System ensures your information stays exactly where it belongs — with you.</p>
-      </div>
-
-      <div class="card fut-card">
-        <div class="card-tag fut">What's Next</div>
-        <div class="card-icon">🚀</div>
-        <h3>M4L-P is next.</h3>
-        <p>M4L-C is the beginning of a lifelong system. Professional, Family, Retirement — the habits you build here scale with you through every stage.</p>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="dots" id="dots">
-    <div class="dot on"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
-  </div>
+  <div class="strip-hdr"><div class="strip-left"><span class="strip-lbl">Why M4L-C</span><span class="strip-count">01 — 05</span></div><div class="scroll-btns"><button class="scroll-btn" id="prev">←</button><button class="scroll-btn" id="next">→</button></div></div>
+  <div class="track-wrap"><div class="track" id="track">
+    <div class="card"><div class="card-tag core">Philosophy</div><div class="card-icon">🌱</div><h3>Pay yourself first, always.</h3><p>Savings isn't what's left over — it's the first thing you move. Every paycheck, every time, no exceptions.</p></div>
+    <div class="card"><div class="card-tag core">Outcomes</div><div class="card-icon">📈</div><h3>Small habits, massive outcomes.</h3><p>$50 saved at 19 is worth more than $500 saved at 30. We show you the math — and make the habit effortless.</p></div>
+    <div class="card"><div class="card-tag core">College</div><div class="card-icon">🎓</div><h3>Built for the college chapter.</h3><p>M4L-C is just the beginning. The habits you build here follow you through every life stage.</p></div>
+    <div class="card pds-card"><div class="card-tag priv">Privacy</div><div class="card-icon">🔒</div><h3>Own your data. Always.</h3><p>Your financial life is not a product to be sold. M4L-C's Private Data System keeps your information with you.</p></div>
+    <div class="card fut-card"><div class="card-tag fut">What's Next</div><div class="card-icon">🚀</div><h3>M4L-P is next.</h3><p>Professional, Family, Retirement — the habits you build here scale with you through every stage.</p></div>
+  </div></div>
+  <div class="dots" id="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
 </div>
 
-<!-- FOOTER -->
+<section class="sec sec-alt section-id" id="get-started">
+  <div class="reveal"><div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span class="sec-eyebrow-text">Get Started</span></div>
+  <div class="sec-title">Set up in under</div><div class="sec-title-accent">five minutes.</div>
+  <p class="sec-body">No downloads. No accounts on our servers. Just a Google Sheet, a simple setup, and a lifetime of financial discipline ahead of you.</p></div>
+  <div class="setup-flow reveal">
+    <div class="setup-step"><div class="setup-num">01</div><div class="setup-icon">📋</div><h4>Copy the Template</h4><p>Click "Get M4L-C" below to copy the Google Sheet template to your own Drive. Takes 3 seconds.</p></div>
+    <div class="setup-step"><div class="setup-num">02</div><div class="setup-icon">⚡</div><h4>Run Setup</h4><p>Open the sheet, go to Extensions → Apps Script, and deploy the web app. Follow the one-click prompts.</p></div>
+    <div class="setup-step"><div class="setup-num">03</div><div class="setup-icon">🚀</div><h4>Start Tracking</h4><p>Open your M4L-C dashboard, complete the quick onboarding, and log your first transaction.</p></div>
+  </div>
+  <div class="setup-time reveal"><div class="setup-time-badge">⏱ Total setup time: under 5 minutes</div></div>
+  <div class="setup-cta-row reveal">
+    <a href="https://docs.google.com/spreadsheets/d/YOUR_TEMPLATE_ID/copy" target="_blank" class="btn-primary">Get M4L-C Free</a>
+    <a href="javascript:void(0)" class="btn-secondary" onclick="document.getElementById('setupGuide').style.display=this.style.display='block';this.style.display='none'">View Setup Guide</a>
+  </div>
+  <div id="setupGuide" style="display:none;margin-top:48px;max-width:680px;margin-left:auto;margin-right:auto;">
+    <div class="guide-card"><h4>Step 1 — Copy the Google Sheet</h4><p>Click "Get M4L-C Free" above. This creates a personal copy of the M4L-C spreadsheet in your Google Drive. You'll see tabs for Transactions, Budget, Goals, and Lists.</p></div>
+    <div class="guide-card"><h4>Step 2 — Open Apps Script</h4><p>In your copied Sheet, go to <em>Extensions → Apps Script</em>. You'll see the Code.gs and Index.html files already there. No coding needed.</p></div>
+    <div class="guide-card"><h4>Step 3 — Deploy as Web App</h4><p>Click <em>Deploy → New Deployment</em>. Set type to "Web App", execute as "Me", and access to "Anyone". Click Deploy. Google will ask you to authorize — this is just giving YOUR script access to YOUR sheet.</p></div>
+    <div class="guide-card"><h4>Step 4 — Bookmark Your Dashboard</h4><p>Copy the deployment URL and bookmark it on your phone. Add it to your home screen for instant access. That's it — you're building wealth.</p></div>
+  </div>
+</section>
+
+<section class="sec section-id" id="roadmap">
+  <div class="reveal"><div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span class="sec-eyebrow-text">Roadmap</span></div>
+  <div class="sec-title">This is just</div><div class="sec-title-accent">the beginning.</div>
+  <p class="sec-body">M4L-C is the college chapter. The system grows with you through every stage of your financial life.</p></div>
+  <div class="roadmap-track reveal">
+    <div class="rm-item active"><div class="rm-dot"></div><div class="rm-label">NOW</div><div class="rm-title">M4L-C</div><div class="rm-desc">College Edition — budgeting, saving, and habit building for students</div></div>
+    <div class="rm-item"><div class="rm-dot"></div><div class="rm-label">2026</div><div class="rm-title">Social Features</div><div class="rm-desc">Accountability partners, savings challenges, and anonymous benchmarks</div></div>
+    <div class="rm-item"><div class="rm-dot"></div><div class="rm-label">2027</div><div class="rm-title">M4L-P</div><div class="rm-desc">Professional Edition — salary management, 401k tracking, career-stage planning</div></div>
+    <div class="rm-item future"><div class="rm-dot"></div><div class="rm-label">FUTURE</div><div class="rm-title">M4L-F / M4L-R</div><div class="rm-desc">Family and Retirement editions — the full lifecycle of financial discipline</div></div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="reveal">
+    <div class="sec-eyebrow" style="justify-content:center"><div class="sec-eyebrow-line"></div><span class="sec-eyebrow-text">Your Move</span><div class="sec-eyebrow-line"></div></div>
+    <div class="sec-title">You can't manage</div><div class="sec-title-accent">what you don't measure.</div>
+    <p class="sec-body">Every day you wait is a day of compound growth you'll never get back. The best time to start was yesterday. The second best time is right now.</p>
+    <div class="final-cta-row">
+      <a href="https://docs.google.com/spreadsheets/d/YOUR_TEMPLATE_ID/copy" target="_blank" class="btn-primary">Get M4L-C Free</a>
+      <a href="#philosophy" class="btn-secondary">Read the Philosophy</a>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="footer-logo">M<span class="f4">4</span>L<span>-C</span></div>
   <div class="footer-copy">© 2026 M4L-C · Money For Life, College Edition</div>
-  <div class="footer-pds">
-    <div class="footer-pds-dot"></div>
-    Private Data System · Zero servers · Your Drive
-  </div>
+  <div class="footer-pds"><div class="footer-pds-dot"></div>Private Data System · Zero servers · Your Drive</div>
 </footer>
 
 <script>
-const track = document.getElementById('track');
-const dots  = document.querySelectorAll('.dot');
-const W = 288; // card + gap
-
-document.getElementById('next').onclick = () => track.scrollBy({ left:  W, behavior: 'smooth' });
-document.getElementById('prev').onclick = () => track.scrollBy({ left: -W, behavior: 'smooth' });
-
-dots.forEach((d, i) => d.addEventListener('click', () => {
-  track.scrollTo({ left: i * W, behavior: 'smooth' });
-}));
-
-track.addEventListener('scroll', () => {
-  const idx = Math.round(track.scrollLeft / W);
-  dots.forEach((d, i) => d.classList.toggle('on', i === idx));
-});
-
-// Drag to scroll
-let down = false, startX, scrollLeft;
-track.addEventListener('mousedown', e => {
-  down = true;
-  startX = e.pageX - track.offsetLeft;
-  scrollLeft = track.scrollLeft;
-  track.style.cursor = 'grabbing';
-});
-document.addEventListener('mouseup', () => {
-  down = false;
-  track.style.cursor = 'grab';
-});
-track.addEventListener('mousemove', e => {
-  if (!down) return;
-  e.preventDefault();
-  track.scrollLeft = scrollLeft - (e.pageX - track.offsetLeft - startX);
-});
+function closeNav(){document.getElementById('navMid').classList.remove('open')}
+const track=document.getElementById('track'),dots=document.querySelectorAll('.dot'),W=288;
+document.getElementById('next').onclick=()=>track.scrollBy({left:W,behavior:'smooth'});
+document.getElementById('prev').onclick=()=>track.scrollBy({left:-W,behavior:'smooth'});
+dots.forEach((d,i)=>d.addEventListener('click',()=>track.scrollTo({left:i*W,behavior:'smooth'})));
+track.addEventListener('scroll',()=>{const idx=Math.round(track.scrollLeft/W);dots.forEach((d,i)=>d.classList.toggle('on',i===idx))});
+let down=false,startX,sl;
+track.addEventListener('mousedown',e=>{down=true;startX=e.pageX-track.offsetLeft;sl=track.scrollLeft;track.style.cursor='grabbing'});
+document.addEventListener('mouseup',()=>{down=false;track.style.cursor='grab'});
+track.addEventListener('mousemove',e=>{if(!down)return;e.preventDefault();track.scrollLeft=sl-(e.pageX-track.offsetLeft-startX)});
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 </script>
 </body>
 </html>
