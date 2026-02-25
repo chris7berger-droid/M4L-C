@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M4L-C · Money For Life, College Edition</title>
+<meta name="description" content="M4L-C teaches college students budgeting and saving habits that last a lifetime. Private, self-hosted, and built for your financial future.">
+<meta name="theme-color" content="#071E1C">
+<meta property="og:title" content="M4L-C · Money For Life, College Edition">
+<meta property="og:description" content="You can't manage what you don't measure. Build the financial habits now that everyone wishes they'd started sooner.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='85' y='85' width='854' height='854' rx='213' stroke='%2300D09C' stroke-width='22' fill='none'/%3E%3Crect x='170' y='170' width='684' height='684' rx='149' fill='%230D2219' stroke='%2300D09C' stroke-width='16'/%3E%3Cpath d='M384 554L512 406L640 554' stroke='%2300D09C' stroke-width='38' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Michroma&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #071E1C;
+  --bg2:      #060F0E;
+  --bg3:      #040C0B;
+  --card:     #0C2624;
+  --card2:    #0A211E;
+  --ac:       #D4E84A;
+  --sand:     #E4F4F3;
+  --body:     rgba(228,244,243,0.5);
+  --muted:    rgba(228,244,243,0.25);
+  --div:      rgba(228,244,243,0.06);
+  --div2:     rgba(212,232,74,0.1);
+  --ease:     cubic-bezier(0.4,0,0.2,1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--sand);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 52px;
+  background: rgba(7,30,28,0.88);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--div);
+  animation: fadeDown 0.6s var(--ease) both;
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav-icon {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  filter: drop-shadow(0 0 8px rgba(0,208,156,0.3));
+}
+.nav-icon svg { width: 100%; height: 100%; }
+.nav-wordmark {
+  font-family: 'Michroma', sans-serif;
+  font-size: 18px; font-weight: 800;
+  letter-spacing: 0.07em;
+  color: #00D09C;
+  text-shadow: 0 0 16px rgba(0,208,156,0.5), 0 0 40px rgba(0,208,156,0.2);
+}
+.nav-wordmark span { color: var(--ac); text-shadow: 0 0 16px rgba(212,232,74,0.5), 0 0 40px rgba(212,232,74,0.2); }
+.nav-wordmark .wm4 { position: relative; top: 3px; color: #00D09C !important; text-shadow: 0 0 16px rgba(0,208,156,0.5), 0 0 40px rgba(0,208,156,0.2) !important; }
+.nav-wordmark .wmd { display: inline-block; transform: scaleY(0.5); color: var(--ac); opacity: 0.7; margin: 0 1px; }
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 13px; color: var(--muted);
+  text-decoration: none; letter-spacing: 0.03em;
+  transition: color 0.22s;
+}
+.nav-links a:hover { color: var(--sand); }
+.nav-cta {
+  padding: 9px 24px;
+  background: var(--ac);
+  color: var(--bg);
+  border: none;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.25s;
+}
+.nav-cta:hover { opacity: 0.88; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 52% 48%;
+  padding-top: 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient glow */
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 700px; height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(7,112,107,0.22) 0%, transparent 70%);
+  top: -100px; right: -100px;
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,232,74,0.055) 0%, transparent 70%);
+  bottom: 60px; left: 80px;
+  pointer-events: none;
+}
+
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 64px 80px 52px;
+  position: relative;
+  z-index: 2;
+  animation: fadeUp 0.7s 0.15s var(--ease) both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 44px;
+}
+.eyebrow-line { width: 28px; height: 1px; background: var(--ac); opacity: 0.5; }
+.eyebrow-text {
+  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--ac); opacity: 0.8; font-weight: 500;
+}
+
+.logo-row {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 8px;
+}
+.logo-icon {
+  width: 52px; height: 52px;
+  display: flex; align-items: center; justify-content: center;
+  filter: drop-shadow(0 0 10px rgba(0,208,156,0.35));
+  flex-shrink: 0;
+}
+.logo-icon svg { width: 100%; height: 100%; }
+.wordmark {
+  font-family: 'Michroma', sans-serif;
+  font-size: 34px; font-weight: 800;
+  letter-spacing: 0.07em;
+  color: #00D09C;
+  text-shadow: 0 0 16px rgba(0,208,156,0.5), 0 0 40px rgba(0,208,156,0.2);
+}
+.wordmark span { color: var(--ac); text-shadow: 0 0 16px rgba(212,232,74,0.5), 0 0 40px rgba(212,232,74,0.2); }
+.wm4h { position: relative; top: 5px; color: #00D09C !important; text-shadow: 0 0 16px rgba(0,208,156,0.5), 0 0 40px rgba(0,208,156,0.2) !important; }
+.wmdh { display: inline-block; transform: scaleY(0.5); color: var(--ac); opacity: 0.7; margin: 0 2px; }
+.descriptor {
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted); padding-left: 64px;
+  margin-bottom: 44px;
+}
+
+.hl1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 54px; font-weight: 800;
+  color: var(--sand); letter-spacing: -0.02em;
+  line-height: 1.04;
+}
+.hl2 {
+  font-family: 'Fraunces', serif;
+  font-size: 54px; font-weight: 300; font-style: italic;
+  color: var(--ac); line-height: 1.12;
+  margin-bottom: 24px;
+}
+.hero-body {
+  font-size: 16px; line-height: 1.85;
+  color: var(--body); max-width: 420px;
+  margin-bottom: 40px;
+}
+.hero-body em { color: var(--sand); font-style: normal; }
+
+.cta-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.btn-primary {
+  padding: 16px 44px;
+  background: var(--ac); color: var(--bg);
+  border: none;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.28s;
+}
+.btn-primary:hover { opacity: 0.86; transform: translateY(-2px); box-shadow: 0 12px 32px rgba(212,232,74,0.2); }
+
+.pds-pill {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 12px; color: rgba(212,232,74,0.65);
+  padding: 9px 16px;
+  border: 1px solid rgba(212,232,74,0.15);
+  background: rgba(212,232,74,0.04);
+}
+
+/* Hero right — dashboard */
+.hero-right {
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 52px 60px 16px;
+  position: relative; z-index: 2;
+  animation: fadeUp 0.7s 0.3s var(--ease) both;
+}
+.hero-right::before {
+  content: '';
+  position: absolute; left: 0; top: 10%; bottom: 10%; width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--div) 30%, var(--div) 70%, transparent);
+}
+
+/* Dashboard card */
+.dash {
+  width: 308px;
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow:
+    0 40px 80px rgba(0,0,0,0.45),
+    0 0 0 1px rgba(212,232,74,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  position: relative;
+}
+.dash::before {
+  content: '';
+  position: absolute; top: 0; left: 16px; right: 16px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ac), transparent);
+  opacity: 0.35;
+}
+.dash-hdr {
+  padding: 18px 22px 15px;
+  border-bottom: 1px solid var(--div);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.dash-title {
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+}
+.dash-period { font-size: 11px; color: var(--ac); opacity: 0.6; }
+.dash-bal { padding: 22px 22px 18px; border-bottom: 1px solid var(--div); }
+.dash-bal-lbl {
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 6px;
+}
+.dash-bal-amt {
+  font-family: 'Fraunces', serif;
+  font-size: 42px; font-weight: 400;
+  color: var(--sand); letter-spacing: -0.02em; margin-bottom: 4px;
+}
+.dash-bal-trend { font-size: 12px; color: var(--ac); }
+.dash-three {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--div);
+}
+.dash-stat { padding: 14px 12px; text-align: center; }
+.dash-stat + .dash-stat { border-left: 1px solid var(--div); }
+.dash-stat-lbl {
+  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 5px;
+}
+.dash-stat-val {
+  font-family: 'Fraunces', serif; font-size: 19px; color: var(--sand);
+}
+.dash-stat-val.ac { color: var(--ac); }
+.dash-insight {
+  padding: 14px 22px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.dash-ins-mark { color: var(--ac); opacity: 0.4; font-size: 10px; margin-top: 3px; flex-shrink: 0; }
+.dash-ins-text { font-size: 12px; color: var(--body); line-height: 1.65; }
+.dash-ins-text strong { color: var(--ac); opacity: 0.85; font-weight: 500; }
+
+/* ── PDS BANNER ── */
+.pds-banner {
+  background: var(--card2);
+  border-top: 1px solid var(--div);
+  border-bottom: 1px solid var(--div);
+  padding: 28px 52px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.pds-shield {
+  font-size: 28px; flex-shrink: 0;
+  filter: grayscale(0.3);
+}
+.pds-text h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px; font-weight: 700;
+  color: var(--sand); margin-bottom: 4px; letter-spacing: -0.01em;
+}
+.pds-text p {
+  font-size: 13px; color: var(--body); line-height: 1.7; max-width: 680px;
+}
+.pds-text p span {
+  color: var(--ac); opacity: 0.8;
+}
+
+/* ── CARD STRIP ── */
+.strip {
+  background: var(--bg2);
+  padding: 60px 0 68px;
+  overflow: hidden;
+}
+.strip-hdr {
+  padding: 0 52px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.strip-left { display: flex; align-items: center; gap: 12px; }
+.strip-lbl {
+  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted);
+}
+.strip-count {
+  font-size: 11px; color: rgba(212,232,74,0.25);
+}
+.scroll-btns { display: flex; gap: 6px; }
+.scroll-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: transparent; color: var(--muted);
+  font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s;
+}
+.scroll-btn:hover { border-color: var(--ac); color: var(--ac); }
+
+.track-wrap { position: relative; }
+.track-wrap::after {
+  content: '';
+  position: absolute; right: 0; top: 0; bottom: 0; width: 100px;
+  background: linear-gradient(to left, var(--bg2), transparent);
+  pointer-events: none; z-index: 2;
+}
+.track {
+  display: flex; gap: 16px;
+  padding: 4px 52px 16px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  scroll-behavior: smooth; scrollbar-width: none; cursor: grab;
+}
+.track:active { cursor: grabbing; }
+.track::-webkit-scrollbar { display: none; }
+
+/* Cards */
+.card {
+  flex: 0 0 272px;
+  padding: 32px 28px;
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.06);
+  scroll-snap-align: start;
+  transition: all 0.3s var(--ease);
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--ac);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.4s var(--ease);
+}
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(212,232,74,0.14);
+  background: #0E2A27;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+}
+.card:hover::before { transform: scaleX(1); }
+
+/* PDS card */
+.card.pds-card {
+  border-color: rgba(212,232,74,0.1);
+  background: rgba(212,232,74,0.025);
+}
+.card.pds-card:hover {
+  border-color: rgba(212,232,74,0.22);
+  background: rgba(212,232,74,0.04);
+}
+
+/* Future card */
+.card.fut-card {
+  border-color: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+}
+.card.fut-card:hover {
+  border-color: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+}
+
+.card-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 4px 10px; margin-bottom: 18px;
+  border: 1px solid;
+}
+.card-tag.core { color: var(--ac); border-color: rgba(212,232,74,0.3); background: rgba(212,232,74,0.05); }
+.card-tag.priv { color: var(--ac); border-color: rgba(212,232,74,0.3); background: rgba(212,232,74,0.05); }
+.card-tag.fut  { color: var(--muted); border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); }
+
+.card-icon { font-size: 24px; margin-bottom: 16px; }
+.card h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 21px; font-weight: 300;
+  color: var(--sand); margin-bottom: 10px; line-height: 1.25;
+}
+.card p {
+  font-size: 13px; color: var(--body); line-height: 1.8;
+}
+
+/* Dots */
+.dots {
+  display: flex; justify-content: center; gap: 6px;
+  padding-top: 24px;
+}
+.dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: rgba(228,244,243,0.12);
+  cursor: pointer; transition: all 0.25s;
+}
+.dot.on { background: var(--ac); width: 18px; border-radius: 100px; opacity: 0.75; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--bg3);
+  border-top: 1px solid var(--div);
+  padding: 40px 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-logo {
+  font-family: 'Michroma', sans-serif;
+  font-size: 16px; font-weight: 800;
+  color: rgba(0,208,156,0.4); letter-spacing: 0.07em;
+}
+.footer-logo span { color: var(--ac); opacity: 0.4; }
+.footer-logo .f4 { position: relative; top: 2px; color: rgba(0,208,156,0.4) !important; }
+.footer-copy {
+  font-size: 12px; color: var(--muted);
+  letter-spacing: 0.03em;
+}
+.footer-pds {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; color: rgba(212,232,74,0.35);
+  letter-spacing: 0.05em;
+}
+.footer-pds-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ac); opacity: 0.4;
+}
+
+/* ── MOBILE ── */
+.hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+.hamburger span { display: block; width: 22px; height: 2px; background: var(--sand); margin: 5px 0; transition: all 0.3s; }
+
+@media (max-width: 768px) {
+  nav { padding: 0 20px; height: 56px; }
+  .hamburger { display: block; }
+  .nav-links {
+    display: none;
+    position: absolute; top: 56px; left: 0; right: 0;
+    flex-direction: column; gap: 0;
+    background: rgba(7,30,28,0.96);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--div);
+    padding: 12px 0;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { padding: 14px 24px; display: block; font-size: 14px; }
+  .nav-cta { margin: 8px 20px 12px; width: calc(100% - 40px); text-align: center; }
+  
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-left { padding: 100px 24px 40px; }
+  .hero-right { padding: 0 24px 48px; justify-content: center; }
+  .hero-right::before { display: none; }
+  .hl1, .hl2 { font-size: 36px; }
+  .hero-body { font-size: 15px; }
+  .descriptor { padding-left: 0; }
+  .wordmark { font-size: 28px !important; }
+  
+  .pds-banner { margin: 0 16px; padding: 28px 24px; flex-direction: column; text-align: center; gap: 16px; }
+  .strip { padding: 48px 0 48px 24px; }
+  .strip-hdr { padding-right: 24px; }
+  footer { padding: 32px 24px; flex-direction: column; text-align: center; }
+}
+
+/* ── GRAIN OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.018;
+  pointer-events: none; z-index: 9999;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-icon"><svg width="28" height="28" viewBox="0 0 1024 1024" fill="none"><rect x="85" y="85" width="854" height="854" rx="213" stroke="#00D09C" stroke-width="22" fill="none"/><rect x="170" y="170" width="684" height="684" rx="149" fill="#0D2219" stroke="#00D09C" stroke-width="16"/><path d="M384 554L512 406L640 554" stroke="#00D09C" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="nav-wordmark">M<span class="wm4">4</span>L<span class="wmd">–</span><span>C</span></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#">Philosophy</a></li>
+    <li><a href="#">How It Works</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Roadmap</a></li>
+  </ul>
+  <button class="nav-cta">Get Started</button>
+  <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="eyebrow">
+      <div class="eyebrow-line"></div>
+      <span class="eyebrow-text">College Edition · Est. Your First Day</span>
+    </div>
+    <div class="logo-row">
+      <div class="logo-icon"><svg width="48" height="48" viewBox="0 0 1024 1024" fill="none"><rect x="85" y="85" width="854" height="854" rx="213" stroke="#00D09C" stroke-width="22" fill="none"/><rect x="170" y="170" width="684" height="684" rx="149" fill="#0D2219" stroke="#00D09C" stroke-width="16"/><path d="M384 554L512 406L640 554" stroke="#00D09C" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="wordmark">M<span class="wm4h">4</span>L<span class="wmdh">–</span><span>C</span></div>
+    </div>
+    <div class="descriptor">Money For Life</div>
+
+    <div class="hl1">You're smarter</div>
+    <div class="hl2">than they think.</div>
+
+    <p class="hero-body">
+      Every financial institution is betting you won't start until your 30s. M4L-C is built for the rare few who understand that <em>wealth is made in the years everyone else is waiting.</em>
+    </p>
+
+    <div class="cta-row">
+      <button class="btn-primary">Begin Building Wealth</button>
+      <div class="pds-pill">
+        <span>🔒</span>
+        <span>Private Data System — your Google Drive, your rules</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="dash">
+      <div class="dash-hdr">
+        <span class="dash-title">M4L-C Dashboard</span>
+        <span class="dash-period">Feb 2026</span>
+      </div>
+      <div class="dash-bal">
+        <div class="dash-bal-lbl">Net Worth</div>
+        <div class="dash-bal-amt">$4,850</div>
+        <div class="dash-bal-trend">↑ +$312 this month · Growing.</div>
+      </div>
+      <div class="dash-three">
+        <div class="dash-stat">
+          <div class="dash-stat-lbl">Saved</div>
+          <div class="dash-stat-val ac">$640</div>
+        </div>
+        <div class="dash-stat">
+          <div class="dash-stat-lbl">Income</div>
+          <div class="dash-stat-val">$1,800</div>
+        </div>
+        <div class="dash-stat">
+          <div class="dash-stat-lbl">Spent</div>
+          <div class="dash-stat-val">$1,160</div>
+        </div>
+      </div>
+      <div class="dash-insight">
+        <span class="dash-ins-mark">✦</span>
+        <div class="dash-ins-text">
+          At this rate you'll have <strong>$180k by 30</strong> — before any raises or career growth.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PDS BANNER -->
+<div class="pds-banner">
+  <div class="pds-shield">🛡️</div>
+  <div class="pds-text">
+    <h4>Your data never leaves your hands.</h4>
+    <p>Unlike every other finance app, M4L-C runs on your own Google Drive. <span>No servers. No data brokers. No ads built from your spending habits.</span> This is what financial privacy actually looks like.</p>
+  </div>
+</div>
+
+<!-- CARD STRIP -->
+<div class="strip">
+  <div class="strip-hdr">
+    <div class="strip-left">
+      <span class="strip-lbl">Why M4L-C</span>
+      <span class="strip-count">01 — 05</span>
+    </div>
+    <div class="scroll-btns">
+      <button class="scroll-btn" id="prev">←</button>
+      <button class="scroll-btn" id="next">→</button>
+    </div>
+  </div>
+
+  <div class="track-wrap">
+    <div class="track" id="track">
+
+      <div class="card">
+        <div class="card-tag core">Philosophy</div>
+        <div class="card-icon">🌱</div>
+        <h3>Pay yourself first, always.</h3>
+        <p>Savings isn't what's left over — it's the first thing you move. Every paycheck, every time, no exceptions. That's the whole philosophy.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-tag core">Outcomes</div>
+        <div class="card-icon">📈</div>
+        <h3>Small habits, massive outcomes.</h3>
+        <p>$50 saved at 19 is worth more than $500 saved at 30. We show you the math — and make the habit effortless.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-tag core">College</div>
+        <div class="card-icon">🎓</div>
+        <h3>Built for the college chapter.</h3>
+        <p>M4L-C is just the beginning. The habits you build here follow you through every life stage. This is version one of your financial story.</p>
+      </div>
+
+      <div class="card pds-card">
+        <div class="card-tag priv">Privacy</div>
+        <div class="card-icon">🔒</div>
+        <h3>Own your data. Always.</h3>
+        <p>Your financial life is not a product to be sold. M4L-C's Private Data System ensures your information stays exactly where it belongs — with you.</p>
+      </div>
+
+      <div class="card fut-card">
+        <div class="card-tag fut">What's Next</div>
+        <div class="card-icon">🚀</div>
+        <h3>M4L-P is next.</h3>
+        <p>M4L-C is the beginning of a lifelong system. Professional, Family, Retirement — the habits you build here scale with you through every stage.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="dots" id="dots">
+    <div class="dot on"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">M<span class="f4">4</span>L<span>-C</span></div>
+  <div class="footer-copy">© 2026 M4L-C · Money For Life, College Edition</div>
+  <div class="footer-pds">
+    <div class="footer-pds-dot"></div>
+    Private Data System · Zero servers · Your Drive
+  </div>
+</footer>
+
+<script>
+const track = document.getElementById('track');
+const dots  = document.querySelectorAll('.dot');
+const W = 288; // card + gap
+
+document.getElementById('next').onclick = () => track.scrollBy({ left:  W, behavior: 'smooth' });
+document.getElementById('prev').onclick = () => track.scrollBy({ left: -W, behavior: 'smooth' });
+
+dots.forEach((d, i) => d.addEventListener('click', () => {
+  track.scrollTo({ left: i * W, behavior: 'smooth' });
+}));
+
+track.addEventListener('scroll', () => {
+  const idx = Math.round(track.scrollLeft / W);
+  dots.forEach((d, i) => d.classList.toggle('on', i === idx));
+});
+
+// Drag to scroll
+let down = false, startX, scrollLeft;
+track.addEventListener('mousedown', e => {
+  down = true;
+  startX = e.pageX - track.offsetLeft;
+  scrollLeft = track.scrollLeft;
+  track.style.cursor = 'grabbing';
+});
+document.addEventListener('mouseup', () => {
+  down = false;
+  track.style.cursor = 'grab';
+});
+track.addEventListener('mousemove', e => {
+  if (!down) return;
+  e.preventDefault();
+  track.scrollLeft = scrollLeft - (e.pageX - track.offsetLeft - startX);
+});
+</script>
+</body>
+</html>
