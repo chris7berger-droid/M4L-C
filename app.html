@@ -47,19 +47,36 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .main{padding:64px 16px 80px;max-width:600px;margin:0 auto}
 @media(min-width:768px){.main{max-width:900px;padding:72px 32px 80px}}
 
-/* PAY YOURSELF FIRST HERO */
+/* SAVINGS CAROUSEL */
 .pyf-tag{font-family:'Syne',sans-serif;font-size:9px;color:var(--ac);text-transform:uppercase;letter-spacing:0.2em;font-weight:700;margin-bottom:10px;opacity:0.8}
-.shero{background:var(--card);border:1px solid var(--div);padding:20px;margin-bottom:14px;position:relative;overflow:hidden}
-.shero::before{content:'';position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:0.25}
-.shero-top{display:flex;align-items:center;gap:16px}
-.shero-gauge{width:120px;height:66px;flex-shrink:0}
-.shero-gauge svg{width:100%;height:100%}
-.shero-info{flex:1;min-width:0}
-.shero-pct{font-family:'Fraunces',serif;font-size:36px;font-weight:400;color:var(--ac);line-height:1}
-.shero-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:-0.01em;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.shero-amt{font-family:'Fraunces',serif;font-size:11px;color:var(--muted);margin-top:2px}
-.shero-msg{margin-top:14px;padding-top:14px;border-top:1px solid var(--div);font-size:12px;font-weight:500;line-height:1.65;color:var(--body)}
-.shero-empty{background:var(--card);border:1px solid var(--div);padding:28px;margin-bottom:14px;text-align:center}
+.scar-wrap{margin-bottom:14px}
+.scar-track{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+.scar-track::-webkit-scrollbar{display:none}
+.scar-card{flex:0 0 calc(100% - 16px);scroll-snap-align:start;background:var(--card);border:1px solid var(--div);padding:20px;position:relative;overflow:hidden;min-height:140px}
+.scar-card::before{content:'';position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:0.25}
+.scar-card.total-card{border-color:rgba(212,232,74,0.15);background:linear-gradient(135deg,var(--card) 0%,rgba(212,232,74,0.04) 100%)}
+.scar-card.total-card::before{background:linear-gradient(90deg,transparent,var(--teal),transparent)}
+.scar-total-top{display:flex;align-items:center;gap:16px}
+.scar-total-icon{font-size:36px;flex-shrink:0}
+.scar-total-info{flex:1}
+.scar-total-label{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.scar-total-amt{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--ac)}
+.scar-total-sub{font-size:12px;color:var(--body);margin-top:4px}
+.scar-total-breakdown{display:flex;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--div)}
+.scar-total-breakdown div{font-size:11px;color:var(--muted)}
+.scar-total-breakdown span{color:var(--sand);font-weight:600}
+.scar-goal-top{display:flex;align-items:center;gap:16px}
+.scar-gauge{width:100px;height:56px;flex-shrink:0}
+.scar-gauge svg{width:100%;height:100%}
+.scar-goal-info{flex:1;min-width:0}
+.scar-goal-pct{font-family:'Fraunces',serif;font-size:32px;font-weight:400;color:var(--ac);line-height:1}
+.scar-goal-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scar-goal-amt{font-family:'Fraunces',serif;font-size:11px;color:var(--muted);margin-top:2px}
+.scar-goal-msg{margin-top:14px;padding-top:14px;border-top:1px solid var(--div);font-size:12px;font-weight:500;line-height:1.65;color:var(--body)}
+.scar-dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.scar-dot{width:6px;height:6px;border-radius:50%;background:var(--div);transition:all .3s}
+.scar-dot.on{background:var(--teal);box-shadow:0 0 6px rgba(0,208,156,0.4)}
+.scar-empty{background:var(--card);border:1px solid var(--div);padding:28px;margin-bottom:14px;text-align:center}
 
 /* SUMMARY GRID */
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
@@ -213,24 +230,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     <div class="page active" id="page-home">
       <div class="greeting" id="greeting"><h2>Loading...</h2></div>
 
-      <!-- PAY YOURSELF FIRST HERO -->
-      <div class="shero" id="shero" style="display:none">
+      <!-- SAVINGS CAROUSEL -->
+      <div class="scar-wrap" id="scarWrap" style="display:none">
         <div class="pyf-tag">Pay Yourself First</div>
-        <div class="shero-top">
-          <div class="shero-gauge"><svg viewBox="0 0 200 110"><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#0C2624" stroke-width="12" stroke-linecap="round"/><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gg)" stroke-width="12" stroke-linecap="round" id="gfill" stroke-dasharray="0 251.2"/><defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="#00D09C"/><stop offset="100%" stop-color="#D4E84A"/></linearGradient></defs></svg></div>
-          <div class="shero-info">
-            <div class="shero-pct" id="gpct">0%</div>
-            <div class="shero-name" id="gnm"></div>
-            <div class="shero-amt" id="gdt"></div>
-          </div>
-        </div>
-        <div class="shero-msg" id="gmsg"></div>
+        <div class="scar-track" id="scarTrack"></div>
+        <div class="scar-dots" id="scarDots"></div>
       </div>
-      <div class="shero-empty" id="shero-empty" style="display:none">
+      <div class="scar-empty" id="scarEmpty" style="display:none">
         <div class="pyf-tag">Pay Yourself First</div>
         <div style="font-size:28px;margin-bottom:8px">🎯</div>
-        <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">No savings goal set</div>
-        <div style="font-size:12px;color:var(--body);line-height:1.7">Before you spend a dollar, decide what you're saving for.<br>Set a primary goal to start tracking.</div>
+        <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">No savings goals yet</div>
+        <div style="font-size:12px;color:var(--body);line-height:1.7">Before you spend a dollar, decide what you're saving for.<br>Set a goal to start tracking.</div>
       </div>
 
       <!-- 4-CARD SUMMARY GRID -->
@@ -471,35 +481,82 @@ function renderHome(mk){
 }
 
 function renderSavingsHero(mk){
-  const shero = document.getElementById('shero');
-  const sheroEmpty = document.getElementById('shero-empty');
-  const primary = S.goals.find(g => g.is_primary);
+  const wrap = document.getElementById('scarWrap');
+  const empty = document.getElementById('scarEmpty');
+  const track = document.getElementById('scarTrack');
+  const dotsEl = document.getElementById('scarDots');
 
-  if(!primary){
-    shero.style.display = 'none';
-    sheroEmpty.style.display = 'block';
+  if(!S.goals.length){
+    wrap.style.display = 'none';
+    empty.style.display = 'block';
     return;
   }
 
-  shero.style.display = 'block';
-  sheroEmpty.style.display = 'none';
+  wrap.style.display = 'block';
+  empty.style.display = 'none';
 
-  // Calculate total saved toward this goal (all time)
-  const goalSaved = S.tx.filter(t => t.type === 'Save' && t.goal_ref === primary.id).reduce((s,t) => s + Number(t.amount), 0);
-  const target = Number(primary.target_amount) || 1;
-  const pct = Math.min(Math.round((goalSaved / target) * 100), 100);
+  // Calculate saved amounts for all goals
+  const goalData = S.goals.map(g => {
+    const saved = S.tx.filter(t => t.type === 'Save' && t.goal_ref === g.id).reduce((s,t) => s + Number(t.amount), 0);
+    const target = Number(g.target_amount) || 1;
+    const pct = Math.min(Math.round((saved / target) * 100), 100);
+    return { ...g, saved, pct };
+  });
 
-  document.getElementById('gpct').textContent = pct + '%';
-  document.getElementById('gnm').textContent = primary.goal_name;
-  document.getElementById('gdt').textContent = fmtMoney(goalSaved) + ' of ' + fmtMoney(target);
+  const totalSaved = goalData.reduce((s,g) => s + g.saved, 0);
+  const totalTarget = goalData.reduce((s,g) => s + Number(g.target_amount), 0);
+  const goalCount = goalData.length;
+  const monthSaved = S.tx.filter(t => t.type === 'Save' && ((t.month_key === mk) || (t.date && t.date.startsWith(mk)))).reduce((s,t) => s + Number(t.amount), 0);
 
-  // Animate gauge arc (half circle = 251.2 total dash)
-  const arcLen = (pct / 100) * 251.2;
-  document.getElementById('gfill').setAttribute('stroke-dasharray', arcLen + ' 251.2');
+  // Build cards HTML
+  let cards = '';
 
-  // Motivational message
+  // CARD 1: Total Savings Summary
+  cards += `<div class="scar-card total-card">
+    <div class="scar-total-top">
+      <div class="scar-total-icon">🏦</div>
+      <div class="scar-total-info">
+        <div class="scar-total-label">Total Saved</div>
+        <div class="scar-total-amt">${fmtMoney(totalSaved)}</div>
+        <div class="scar-total-sub">across ${goalCount} goal${goalCount !== 1 ? 's' : ''} · ${fmtMoney(totalTarget)} target</div>
+      </div>
+    </div>
+    <div class="scar-total-breakdown">
+      <div>This month: <span>${fmtMoney(monthSaved)}</span></div>
+      <div>Overall: <span>${totalTarget > 0 ? Math.round((totalSaved/totalTarget)*100) : 0}%</span></div>
+    </div>
+  </div>`;
+
+  // CARDS 2+: Individual goal cards with gauges
   const day = Math.floor(Date.now() / 86400000);
-  document.getElementById('gmsg').textContent = PYF_MSGS[day % PYF_MSGS.length];
+  goalData.forEach((g, i) => {
+    const msg = PYF_MSGS[(day + i) % PYF_MSGS.length];
+    const arcLen = (g.pct / 100) * 251.2;
+    cards += `<div class="scar-card">
+      <div class="scar-goal-top">
+        <div class="scar-gauge"><svg viewBox="0 0 200 110"><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#0C2624" stroke-width="12" stroke-linecap="round"/><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gg${i})" stroke-width="12" stroke-linecap="round" stroke-dasharray="${arcLen} 251.2"/><defs><linearGradient id="gg${i}" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="#00D09C"/><stop offset="100%" stop-color="#D4E84A"/></linearGradient></defs></svg></div>
+        <div class="scar-goal-info">
+          <div class="scar-goal-pct">${g.pct}%</div>
+          <div class="scar-goal-name">${g.goal_name}${g.is_primary ? ' ⭐' : ''}</div>
+          <div class="scar-goal-amt">${fmtMoney(g.saved)} of ${fmtMoney(g.target_amount)}</div>
+        </div>
+      </div>
+      <div class="scar-goal-msg">${msg}</div>
+    </div>`;
+  });
+
+  track.innerHTML = cards;
+
+  // Dots
+  const totalCards = 1 + goalData.length;
+  dotsEl.innerHTML = Array.from({length: totalCards}, (_,i) => `<div class="scar-dot${i===0?' on':''}"></div>`).join('');
+
+  // Scroll handler for dots
+  track.onscroll = function(){
+    const cardW = track.querySelector('.scar-card').offsetWidth + 10;
+    const idx = Math.round(track.scrollLeft / cardW);
+    dotsEl.querySelectorAll('.scar-dot').forEach((d,i) => d.classList.toggle('on', i === idx));
+  };
 }
 
 function renderBudgetList(elId, mk, limit){
@@ -656,3 +713,4 @@ checkAuth();
 </script>
 </body>
 </html>
+
