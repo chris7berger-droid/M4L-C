@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>M4L-C · Dashboard</title>
+<meta name="theme-color" content="#071E1C">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='85' y='85' width='854' height='854' rx='213' stroke='%2300D09C' stroke-width='22' fill='none'/%3E%3Crect x='170' y='170' width='684' height='684' rx='149' fill='%230D2219' stroke='%2300D09C' stroke-width='16'/%3E%3Cpath d='M384 554L512 406L640 554' stroke='%2300D09C' stroke-width='38' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Michroma&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#071E1C;--bg2:#060F0E;--card:#0C2624;--card2:#0A211E;--teal:#00D09C;--ac:#D4E84A;--sand:#E4F4F3;--body:rgba(228,244,243,0.55);--muted:rgba(228,244,243,0.3);--div:rgba(228,244,243,0.06);--ease:cubic-bezier(0.4,0,0.2,1);--red:#FF6B6B}
+html{-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min-height:100vh;min-height:100dvh;overflow-x:hidden}
+
+/* AUTH SCREEN */
+#auth-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center}
+.auth-logo{width:64px;height:64px;filter:drop-shadow(0 0 12px rgba(0,208,156,0.4));margin-bottom:16px}
+.auth-logo svg{width:100%;height:100%}
+.auth-wordmark{font-family:'Michroma',sans-serif;font-size:28px;font-weight:800;color:var(--teal);text-shadow:0 0 16px rgba(0,208,156,0.5);margin-bottom:4px}
+.auth-wordmark span{color:var(--ac);text-shadow:0 0 16px rgba(212,232,74,0.5)}
+.auth-sub{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:40px}
+.auth-tagline{font-family:'Fraunces',serif;font-size:22px;font-weight:300;font-style:italic;color:var(--ac);max-width:340px;line-height:1.5;margin-bottom:40px}
+.auth-tagline em{font-style:normal;color:var(--sand)}
+.google-btn{display:flex;align-items:center;gap:12px;padding:14px 32px;background:#fff;color:#333;border:none;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+.google-btn:hover{box-shadow:0 4px 16px rgba(0,0,0,0.3);transform:translateY(-1px)}
+.google-btn svg{width:20px;height:20px}
+.auth-privacy{font-size:12px;color:var(--muted);margin-top:20px;max-width:280px;line-height:1.6}
+
+/* APP LAYOUT */
+#app{display:none}
+.hdr{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(7,30,28,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--div)}
+.hdr-logo{display:flex;align-items:center;gap:8px}
+.hdr-icon{width:28px;height:28px;filter:drop-shadow(0 0 6px rgba(0,208,156,0.3))}
+.hdr-icon svg{width:100%;height:100%}
+.hdr-wm{font-family:'Michroma',sans-serif;font-size:14px;color:var(--teal);text-shadow:0 0 12px rgba(0,208,156,0.4)}
+.hdr-wm span{color:var(--ac);text-shadow:0 0 12px rgba(212,232,74,0.4)}
+.hdr-user{display:flex;align-items:center;gap:8px}
+.hdr-name{font-size:12px;color:var(--muted)}
+.hdr-avatar{width:28px;height:28px;border-radius:50%;border:1px solid var(--teal);cursor:pointer}
+.hdr-signout{background:none;border:1px solid var(--div);color:var(--muted);font-size:11px;padding:4px 10px;cursor:pointer;transition:all .2s}
+.hdr-signout:hover{border-color:var(--red);color:var(--red)}
+
+/* MAIN CONTENT */
+.main{padding:64px 16px 80px;max-width:600px;margin:0 auto}
+@media(min-width:768px){.main{max-width:900px;padding:72px 32px 80px}}
+
+/* SUMMARY CARDS */
+.summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px}
+.scard{background:var(--card);padding:14px 12px;border:1px solid var(--div);text-align:center}
+.scard-lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.scard-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:700}
+.scard-val.green{color:var(--ac)}
+.scard-val.teal{color:var(--teal)}
+.scard-val.red{color:var(--red)}
+
+/* GREETING */
+.greeting{margin-bottom:20px}
+.greeting h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px}
+.greeting p{font-size:13px;color:var(--muted)}
+
+/* QUOTE */
+.quote-card{background:var(--card);border:1px solid var(--div);padding:16px 20px;margin-bottom:20px;position:relative}
+.quote-card::before{content:'';position:absolute;top:0;left:12px;right:12px;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.2}
+.quote-text{font-family:'Fraunces',serif;font-size:14px;font-weight:300;font-style:italic;color:var(--ac);line-height:1.6}
+.quote-text em{font-style:normal;color:var(--sand)}
+
+/* SECTION HEADERS */
+.sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;margin-top:24px}
+.sec-hdr h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+.sec-hdr-btn{background:none;border:1px solid var(--div);color:var(--teal);font-size:11px;padding:5px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.sec-hdr-btn:hover{border-color:var(--teal);background:rgba(0,208,156,0.08)}
+
+/* BUDGET BARS */
+.budget-list{display:flex;flex-direction:column;gap:8px}
+.bud-row{background:var(--card);padding:12px 14px;border:1px solid var(--div)}
+.bud-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.bud-cat{font-size:13px;font-weight:500}
+.bud-amt{font-size:12px;color:var(--muted)}
+.bud-amt span{color:var(--sand)}
+.bud-bar{height:6px;background:rgba(228,244,243,0.06);border-radius:3px;overflow:hidden}
+.bud-fill{height:100%;border-radius:3px;transition:width .4s var(--ease)}
+.bud-fill.ok{background:var(--teal)}
+.bud-fill.warn{background:#F5A623}
+.bud-fill.over{background:var(--red)}
+
+/* SAVINGS GOALS */
+.goals-list{display:flex;flex-direction:column;gap:8px}
+.goal-row{background:var(--card);padding:14px;border:1px solid var(--div)}
+.goal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.goal-name{font-size:14px;font-weight:600}
+.goal-badge{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--bg);background:var(--ac);padding:2px 8px}
+.goal-progress{font-size:12px;color:var(--muted);margin-bottom:6px}
+.goal-progress span{color:var(--teal)}
+.goal-bar{height:8px;background:rgba(228,244,243,0.06);border-radius:4px;overflow:hidden}
+.goal-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--ac));transition:width .4s var(--ease)}
+
+/* TRANSACTIONS LIST */
+.tx-list{display:flex;flex-direction:column;gap:4px}
+.tx-row{background:var(--card);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--div)}
+.tx-left{display:flex;align-items:center;gap:10px}
+.tx-cat{font-size:18px}
+.tx-info{display:flex;flex-direction:column}
+.tx-desc{font-size:13px;font-weight:500}
+.tx-meta{font-size:11px;color:var(--muted)}
+.tx-amt{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+.tx-amt.spend{color:var(--red)}
+.tx-amt.income{color:var(--teal)}
+.tx-amt.save{color:var(--ac)}
+
+/* FAB */
+.fab{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:var(--ac);color:var(--bg);border:none;font-size:28px;font-weight:300;cursor:pointer;box-shadow:0 8px 24px rgba(212,232,74,0.3);transition:all .2s;z-index:90;display:flex;align-items:center;justify-content:center}
+.fab:hover{transform:scale(1.08);box-shadow:0 12px 32px rgba(212,232,74,0.4)}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--div);width:100%;max-width:420px;max-height:90vh;overflow-y:auto;padding:28px 24px}
+.modal h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:20px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;background:var(--card);border:1px solid var(--div);color:var(--sand);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group select:focus{border-color:var(--teal)}
+.form-group select{appearance:none;cursor:pointer}
+.form-group textarea{resize:vertical;min-height:60px}
+
+/* TYPE TOGGLE */
+.type-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-bottom:16px}
+.type-btn{padding:10px;text-align:center;background:var(--card);border:1px solid var(--div);color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.type-btn.active-spend{background:rgba(255,107,107,0.12);border-color:var(--red);color:var(--red)}
+.type-btn.active-income{background:rgba(0,208,156,0.12);border-color:var(--teal);color:var(--teal)}
+.type-btn.active-save{background:rgba(212,232,74,0.12);border-color:var(--ac);color:var(--ac)}
+
+.modal-actions{display:flex;gap:8px;margin-top:20px}
+.modal-actions button{flex:1;padding:12px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none}
+.btn-save{background:var(--ac);color:var(--bg)}
+.btn-save:hover{opacity:.88}
+.btn-cancel{background:transparent;border:1px solid var(--div)!important;color:var(--muted)}
+.btn-cancel:hover{border-color:var(--red)!important;color:var(--red)}
+
+/* TOAST */
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--card);border:1px solid var(--teal);color:var(--sand);padding:12px 24px;font-size:13px;z-index:300;transition:transform .3s var(--ease);white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.err{border-color:var(--red)}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:32px 16px;color:var(--muted);font-size:13px;line-height:1.6}
+.empty strong{color:var(--sand);display:block;margin-bottom:4px}
+
+/* NAV TABS */
+.nav-tabs{position:fixed;bottom:0;left:0;right:0;height:56px;background:rgba(7,30,28,0.95);backdrop-filter:blur(16px);border-top:1px solid var(--div);display:flex;z-index:100}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:var(--muted);font-size:10px;cursor:pointer;transition:color .2s}
+.nav-tab.active{color:var(--teal)}
+.nav-tab-icon{font-size:20px}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+@media(min-width:768px){
+.summary{grid-template-columns:1fr 1fr 1fr}
+.scard-val{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-logo"><svg viewBox="0 0 1024 1024" fill="none"><rect x="85" y="85" width="854" height="854" rx="213" stroke="#00D09C" stroke-width="22" fill="none"/><rect x="170" y="170" width="684" height="684" rx="149" fill="#0D2219" stroke="#00D09C" stroke-width="16"/><path d="M384 554L512 406L640 554" stroke="#00D09C" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="auth-wordmark">M4L<span>–C</span></div>
+  <div class="auth-sub">Money For Life</div>
+  <div class="auth-tagline">You can't manage what you don't measure. <em>Start measuring.</em></div>
+  <button class="google-btn" onclick="signInWithGoogle()">
+    <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+    Sign in with Google
+  </button>
+  <p class="auth-privacy">Your data is encrypted, isolated, and never sold. We're funded by subscriptions, not your data.</p>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hdr-logo">
+      <div class="hdr-icon"><svg viewBox="0 0 1024 1024" fill="none"><rect x="85" y="85" width="854" height="854" rx="213" stroke="#00D09C" stroke-width="22" fill="none"/><rect x="170" y="170" width="684" height="684" rx="149" fill="#0D2219" stroke="#00D09C" stroke-width="16"/><path d="M384 554L512 406L640 554" stroke="#00D09C" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="hdr-wm">M4L<span>–C</span></div>
+    </div>
+    <div class="hdr-user">
+      <span class="hdr-name" id="hdrName"></span>
+      <button class="hdr-signout" onclick="signOut()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- HOME PAGE -->
+  <div class="main">
+    <div class="page active" id="page-home">
+      <div class="greeting" id="greeting"><h2>Loading...</h2></div>
+      
+      <div class="summary" id="summary">
+        <div class="scard"><div class="scard-lbl">Income</div><div class="scard-val teal" id="sumIncome">$0</div></div>
+        <div class="scard"><div class="scard-lbl">Spent</div><div class="scard-val red" id="sumSpent">$0</div></div>
+        <div class="scard"><div class="scard-lbl">Saved</div><div class="scard-val green" id="sumSaved">$0</div></div>
+      </div>
+
+      <div class="quote-card"><div class="quote-text" id="quoteText"></div></div>
+
+      <div class="sec-hdr"><h3>Budget</h3><button class="sec-hdr-btn" onclick="showPage('page-budget')">View All</button></div>
+      <div class="budget-list" id="homeBudget"><div class="loading">Loading budgets...</div></div>
+
+      <div class="sec-hdr"><h3>Savings Goals</h3><button class="sec-hdr-btn" onclick="showPage('page-goals')">View All</button></div>
+      <div class="goals-list" id="homeGoals"><div class="loading">Loading goals...</div></div>
+
+      <div class="sec-hdr"><h3>Recent Transactions</h3><button class="sec-hdr-btn" onclick="showPage('page-history')">View All</button></div>
+      <div class="tx-list" id="homeTx"><div class="loading">Loading...</div></div>
+    </div>
+
+    <!-- BUDGET PAGE -->
+    <div class="page" id="page-budget">
+      <div class="sec-hdr"><h3>Budget — <span id="budMonth"></span></h3><button class="sec-hdr-btn" onclick="openBudgetModal()">+ Add</button></div>
+      <div class="budget-list" id="budgetFull"><div class="loading">Loading...</div></div>
+    </div>
+
+    <!-- GOALS PAGE -->
+    <div class="page" id="page-goals">
+      <div class="sec-hdr"><h3>Savings Goals</h3><button class="sec-hdr-btn" onclick="openGoalModal()">+ New Goal</button></div>
+      <div class="goals-list" id="goalsFull"><div class="loading">Loading...</div></div>
+    </div>
+
+    <!-- HISTORY PAGE -->
+    <div class="page" id="page-history">
+      <div class="sec-hdr"><h3>All Transactions</h3></div>
+      <div class="tx-list" id="historyFull"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <button class="fab" onclick="openTxModal()">+</button>
+
+  <!-- NAV TABS -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('page-home')"><span class="nav-tab-icon">🏠</span>Home</button>
+    <button class="nav-tab" onclick="showPage('page-budget')"><span class="nav-tab-icon">📊</span>Budget</button>
+    <button class="nav-tab" onclick="showPage('page-goals')"><span class="nav-tab-icon">🎯</span>Goals</button>
+    <button class="nav-tab" onclick="showPage('page-history')"><span class="nav-tab-icon">📋</span>History</button>
+  </div>
+</div>
+
+<!-- TRANSACTION MODAL -->
+<div class="modal-bg" id="txModal">
+  <div class="modal">
+    <h3>New Transaction</h3>
+    <div class="type-toggle">
+      <button class="type-btn active-spend" onclick="setTxType('Spend')" id="typeSpend">Spend</button>
+      <button class="type-btn" onclick="setTxType('Income')" id="typeIncome">Income</button>
+      <button class="type-btn" onclick="setTxType('Save')" id="typeSave">Save</button>
+    </div>
+    <div class="form-group"><label>Amount</label><input type="number" id="txAmt" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+    <div class="form-group"><label>Category</label><select id="txCat"></select></div>
+    <div class="form-group" id="goalRefGroup" style="display:none"><label>Savings Goal</label><select id="txGoalRef"></select></div>
+    <div class="form-group"><label>Description</label><input type="text" id="txDesc" placeholder="What was this for?"></div>
+    <div class="form-group"><label>Date</label><input type="date" id="txDate"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeTxModal()">Cancel</button>
+      <button class="btn-save" onclick="saveTx()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- BUDGET MODAL -->
+<div class="modal-bg" id="budModal">
+  <div class="modal">
+    <h3>Add Budget Category</h3>
+    <div class="form-group"><label>Category</label><select id="budCat"></select></div>
+    <div class="form-group"><label>Monthly Budget</label><input type="number" id="budAmt" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeBudModal()">Cancel</button>
+      <button class="btn-save" onclick="saveBudget()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- GOAL MODAL -->
+<div class="modal-bg" id="goalModal">
+  <div class="modal">
+    <h3>New Savings Goal</h3>
+    <div class="form-group"><label>Goal Name</label><input type="text" id="goalName" placeholder="e.g. Emergency Fund"></div>
+    <div class="form-group"><label>Target Amount</label><input type="number" id="goalTarget" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+    <div class="form-group"><label>Primary Goal?</label><select id="goalPrimary"><option value="false">No</option><option value="true">Yes</option></select></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeGoalModal()">Cancel</button>
+      <button class="btn-save" onclick="saveGoal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════ SUPABASE INIT ═══════════════
+const SUPA_URL = 'https://cefnrnptdwoivdvpppgf.supabase.co';
+const SUPA_KEY = 'sb_publishable_zuvIFieamgRHfb0Ndi_k6Q_OwtsK6Ms';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// ═══════════════ STATE ═══════════════
+let S = { user: null, profile: null, tx: [], budgets: [], goals: [], txType: 'Spend' };
+
+const CATS_SPEND = ['😋 Eating Out','❤️ Groceries','🚗 Gas','🛍 Shopping','🎉 Fun','📚 School','📱 Subscriptions','📂 Bills','📳 Phone'];
+const CATS_INCOME = ['💵 Paycheck','💰 Side Job','🎁 Gift','📦 Other Income'];
+const CATS_SAVE = ['💰 Savings In','💸 Savings Out'];
+
+const QUOTES = [
+  "You can't manage what you <em>don't measure.</em>",
+  "Pay yourself first — <em>every single time.</em>",
+  "A budget is telling your money <em>where to go</em> instead of wondering where it went.",
+  "The best time to start was yesterday. The second best time is <em>right now.</em>",
+  "Small habits compound into <em>massive outcomes.</em>",
+  "$50 saved at 19 is worth more than <em>$500 saved at 30.</em>",
+  "Savings without a purpose is just <em>money waiting to be spent.</em>",
+  "Financial discipline is step one in <em>financial fitness.</em>",
+  "Nobody manages money responsibly <em>without a budget.</em> No one.",
+  "Wealth is made in the years <em>everyone else is waiting.</em>"
+];
+
+function monthKey(d){ return d ? d.slice(0,7) : new Date().toISOString().slice(0,7); }
+function fmtMoney(n){ return '$' + Math.abs(n||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+function today(){ return new Date().toISOString().slice(0,10); }
+
+// ═══════════════ AUTH ═══════════════
+async function signInWithGoogle(){
+  const {error} = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin + window.location.pathname }
+  });
+  if(error) toast('Sign in failed: '+error.message, true);
+}
+
+async function signOut(){
+  await sb.auth.signOut();
+  location.reload();
+}
+
+async function checkAuth(){
+  const {data:{session}} = await sb.auth.getSession();
+  if(session){
+    S.user = session.user;
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    await loadProfile();
+    await loadAll();
+  }
+}
+
+sb.auth.onAuthStateChange((event, session) => {
+  if(event === 'SIGNED_IN' && session){
+    S.user = session.user;
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadProfile().then(loadAll);
+  }
+});
+
+async function loadProfile(){
+  const {data} = await sb.from('profiles').select('*').eq('id', S.user.id).single();
+  S.profile = data;
+  const name = data?.first_name || S.user.user_metadata?.full_name || 'there';
+  document.getElementById('hdrName').textContent = name.split(' ')[0];
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greeting').innerHTML = `<h2>${greet}, ${name.split(' ')[0]}.</h2><p>${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p>`;
+}
+
+// ═══════════════ DATA LOADING ═══════════════
+async function loadAll(){
+  const mk = monthKey();
+  await Promise.all([loadTx(mk), loadBudgets(mk), loadGoals()]);
+  renderHome(mk);
+  renderQuote();
+}
+
+async function loadTx(mk){
+  const {data} = await sb.from('transactions').select('*').eq('user_id', S.user.id).order('date',{ascending:false});
+  S.tx = data || [];
+}
+
+async function loadBudgets(mk){
+  const {data} = await sb.from('budgets').select('*').eq('user_id', S.user.id).eq('month_key', mk);
+  S.budgets = data || [];
+}
+
+async function loadGoals(){
+  const {data} = await sb.from('savings_goals').select('*').eq('user_id', S.user.id).order('is_primary',{ascending:false});
+  S.goals = data || [];
+}
+
+// ═══════════════ RENDERING ═══════════════
+function renderHome(mk){
+  mk = mk || monthKey();
+  const mtx = S.tx.filter(t => t.month_key === mk || (t.date && t.date.startsWith(mk)));
+  const income = mtx.filter(t=>t.type==='Income').reduce((s,t)=>s+Number(t.amount),0);
+  const spent = mtx.filter(t=>t.type==='Spend').reduce((s,t)=>s+Number(t.amount),0);
+  const saved = mtx.filter(t=>t.type==='Save').reduce((s,t)=>s+Number(t.amount),0);
+
+  document.getElementById('sumIncome').textContent = fmtMoney(income);
+  document.getElementById('sumSpent').textContent = fmtMoney(spent);
+  document.getElementById('sumSaved').textContent = fmtMoney(saved);
+
+  // Budget preview (top 3)
+  renderBudgetList('homeBudget', mk, 3);
+  
+  // Goals preview
+  renderGoalsList('homeGoals', 2);
+
+  // Recent transactions (5)
+  renderTxList('homeTx', S.tx.slice(0, 5));
+
+  // Full pages
+  document.getElementById('budMonth').textContent = new Date(mk+'-01').toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  renderBudgetList('budgetFull', mk);
+  renderGoalsList('goalsFull');
+  renderTxList('historyFull', S.tx);
+}
+
+function renderBudgetList(elId, mk, limit){
+  const el = document.getElementById(elId);
+  const buds = limit ? S.budgets.slice(0, limit) : S.budgets;
+  if(!buds.length){ el.innerHTML = '<div class="empty"><strong>No budgets yet</strong>Tap "+ Add" to set your first budget category.</div>'; return; }
+  
+  const mtx = S.tx.filter(t => t.type === 'Spend' && (t.month_key === mk || (t.date && t.date.startsWith(mk))));
+  
+  el.innerHTML = buds.map(b => {
+    const spent = mtx.filter(t => t.category === b.category).reduce((s,t) => s + Number(t.amount), 0);
+    const pct = b.planned_amount > 0 ? Math.min((spent / b.planned_amount) * 100, 100) : 0;
+    const cls = pct > 90 ? 'over' : pct > 70 ? 'warn' : 'ok';
+    return `<div class="bud-row"><div class="bud-top"><span class="bud-cat">${b.category}</span><span class="bud-amt"><span>${fmtMoney(spent)}</span> / ${fmtMoney(b.planned_amount)}</span></div><div class="bud-bar"><div class="bud-fill ${cls}" style="width:${pct}%"></div></div></div>`;
+  }).join('');
+}
+
+function renderGoalsList(elId, limit){
+  const el = document.getElementById(elId);
+  const goals = limit ? S.goals.slice(0, limit) : S.goals;
+  if(!goals.length){ el.innerHTML = '<div class="empty"><strong>No savings goals yet</strong>Tap "+ New Goal" to set your first target.</div>'; return; }
+  
+  el.innerHTML = goals.map(g => {
+    const saved = S.tx.filter(t => t.type === 'Save' && t.goal_ref === g.id).reduce((s,t) => s + Number(t.amount), 0);
+    const pct = g.target_amount > 0 ? Math.min((saved / g.target_amount) * 100, 100) : 0;
+    return `<div class="goal-row"><div class="goal-top"><span class="goal-name">${g.goal_name}</span>${g.is_primary ? '<span class="goal-badge">Primary</span>' : ''}</div><div class="goal-progress"><span>${fmtMoney(saved)}</span> of ${fmtMoney(g.target_amount)} · ${Math.round(pct)}%</div><div class="goal-bar"><div class="goal-fill" style="width:${pct}%"></div></div></div>`;
+  }).join('');
+}
+
+function renderTxList(elId, txs){
+  const el = document.getElementById(elId);
+  if(!txs.length){ el.innerHTML = '<div class="empty"><strong>No transactions yet</strong>Tap the + button to log your first one.</div>'; return; }
+  
+  el.innerHTML = txs.map(t => {
+    const cls = t.type === 'Spend' ? 'spend' : t.type === 'Income' ? 'income' : 'save';
+    const sign = t.type === 'Spend' ? '-' : '+';
+    const emoji = t.category ? t.category.split(' ')[0] : '💲';
+    return `<div class="tx-row"><div class="tx-left"><span class="tx-cat">${emoji}</span><div class="tx-info"><span class="tx-desc">${t.description || t.category}</span><span class="tx-meta">${t.date} · ${t.type}</span></div></div><span class="tx-amt ${cls}">${sign}${fmtMoney(t.amount)}</span></div>`;
+  }).join('');
+}
+
+function renderQuote(){
+  const day = Math.floor(Date.now() / 86400000);
+  document.getElementById('quoteText').innerHTML = QUOTES[day % QUOTES.length];
+}
+
+// ═══════════════ NAVIGATION ═══════════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach((t,i) => {
+    const pages = ['page-home','page-budget','page-goals','page-history'];
+    t.classList.toggle('active', pages[i] === id);
+  });
+  window.scrollTo(0,0);
+}
+
+// ═══════════════ TRANSACTION MODAL ═══════════════
+function openTxModal(){
+  document.getElementById('txModal').classList.add('open');
+  document.getElementById('txDate').value = today();
+  setTxType('Spend');
+  document.getElementById('txAmt').value = '';
+  document.getElementById('txDesc').value = '';
+  document.getElementById('txAmt').focus();
+}
+function closeTxModal(){ document.getElementById('txModal').classList.remove('open'); }
+
+function setTxType(type){
+  S.txType = type;
+  ['Spend','Income','Save'].forEach(t => {
+    const btn = document.getElementById('type'+t);
+    btn.className = 'type-btn' + (t === type ? ' active-' + t.toLowerCase() : '');
+  });
+  const sel = document.getElementById('txCat');
+  const cats = type === 'Spend' ? CATS_SPEND : type === 'Income' ? CATS_INCOME : CATS_SAVE;
+  sel.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+  document.getElementById('goalRefGroup').style.display = type === 'Save' ? 'block' : 'none';
+  if(type === 'Save'){
+    const gsel = document.getElementById('txGoalRef');
+    gsel.innerHTML = '<option value="">No specific goal</option>' + S.goals.map(g => `<option value="${g.id}">${g.goal_name}</option>`).join('');
+  }
+}
+
+async function saveTx(){
+  const amt = parseFloat(document.getElementById('txAmt').value);
+  if(!amt || amt <= 0){ toast('Enter a valid amount', true); return; }
+  const cat = document.getElementById('txCat').value;
+  const desc = document.getElementById('txDesc').value;
+  const date = document.getElementById('txDate').value || today();
+  const goalRef = S.txType === 'Save' ? document.getElementById('txGoalRef').value || null : null;
+
+  const {error} = await sb.from('transactions').insert({
+    user_id: S.user.id,
+    type: S.txType,
+    category: cat,
+    amount: amt,
+    description: desc,
+    date: date,
+    month_key: monthKey(date),
+    goal_ref: goalRef
+  });
+
+  if(error){ toast('Error: '+error.message, true); return; }
+  closeTxModal();
+  toast(S.txType + ' of ' + fmtMoney(amt) + ' saved!');
+  await loadAll();
+}
+
+// ═══════════════ BUDGET MODAL ═══════════════
+function openBudgetModal(){
+  document.getElementById('budModal').classList.add('open');
+  const sel = document.getElementById('budCat');
+  sel.innerHTML = CATS_SPEND.map(c => `<option value="${c}">${c}</option>`).join('');
+  document.getElementById('budAmt').value = '';
+}
+function closeBudModal(){ document.getElementById('budModal').classList.remove('open'); }
+
+async function saveBudget(){
+  const cat = document.getElementById('budCat').value;
+  const amt = parseFloat(document.getElementById('budAmt').value);
+  if(!amt || amt <= 0){ toast('Enter a valid amount', true); return; }
+
+  const {error} = await sb.from('budgets').upsert({
+    user_id: S.user.id,
+    month_key: monthKey(),
+    category: cat,
+    planned_amount: amt
+  }, {onConflict: 'user_id,month_key,category'});
+
+  if(error){ toast('Error: '+error.message, true); return; }
+  closeBudModal();
+  toast('Budget updated!');
+  await loadAll();
+}
+
+// ═══════════════ GOAL MODAL ═══════════════
+function openGoalModal(){
+  document.getElementById('goalModal').classList.add('open');
+  document.getElementById('goalName').value = '';
+  document.getElementById('goalTarget').value = '';
+}
+function closeGoalModal(){ document.getElementById('goalModal').classList.remove('open'); }
+
+async function saveGoal(){
+  const name = document.getElementById('goalName').value.trim();
+  const target = parseFloat(document.getElementById('goalTarget').value);
+  const primary = document.getElementById('goalPrimary').value === 'true';
+  if(!name){ toast('Enter a goal name', true); return; }
+  if(!target || target <= 0){ toast('Enter a target amount', true); return; }
+
+  if(primary){
+    await sb.from('savings_goals').update({is_primary: false}).eq('user_id', S.user.id);
+  }
+
+  const {error} = await sb.from('savings_goals').insert({
+    user_id: S.user.id,
+    goal_name: name,
+    target_amount: target,
+    is_primary: primary
+  });
+
+  if(error){ toast('Error: '+error.message, true); return; }
+  closeGoalModal();
+  toast('Goal "'+name+'" created!');
+  await loadAll();
+}
+
+// ═══════════════ TOAST ═══════════════
+function toast(msg, err){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (err ? ' err' : '');
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ═══════════════ INIT ═══════════════
+checkAuth();
+</script>
+</body>
+</html>
