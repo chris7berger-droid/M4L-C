@@ -190,6 +190,27 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;display:flex;ali
 .guide-card p{font-size:14px;line-height:1.75;color:var(--body)}
 .guide-card em{color:var(--sand);font-style:normal}
 
+/* PRICING */
+.pricing-wrap{display:flex;justify-content:center;gap:2px;margin-top:52px;flex-wrap:wrap}
+.price-card{background:var(--card);padding:48px 40px;width:360px;position:relative;border:1px solid var(--div);transition:border-color .3s}
+.price-card.featured{border-color:var(--teal);background:linear-gradient(180deg,rgba(0,208,156,0.06) 0%,var(--card) 100%)}
+.price-card.featured::before{content:'';position:absolute;top:0;left:20px;right:20px;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent)}
+.price-badge{font-family:'Michroma',sans-serif;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--bg);background:var(--teal);padding:4px 12px;display:inline-block;margin-bottom:20px}
+.price-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:8px}
+.price-amt{font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:var(--sand);margin-bottom:4px}
+.price-amt span{font-size:18px;font-weight:400;color:var(--muted)}
+.price-trial{font-size:14px;color:var(--teal);margin-bottom:28px;font-weight:500}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:36px}
+.price-features li{font-size:14px;color:var(--body);padding-left:24px;position:relative;line-height:1.5}
+.price-features li::before{content:'✓';position:absolute;left:0;color:var(--teal);font-size:13px}
+.price-btn{display:block;width:100%;padding:16px;text-align:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .28s;border:none}
+.price-btn-primary{background:var(--ac);color:var(--bg)}
+.price-btn-primary:hover{opacity:.86;transform:translateY(-2px);box-shadow:0 12px 32px rgba(212,232,74,0.2)}
+.price-btn-outline{background:transparent;color:var(--ac);border:1px solid rgba(212,232,74,0.3)}
+.price-btn-outline:hover{background:rgba(212,232,74,0.08)}
+.price-note{text-align:center;margin-top:32px;font-size:13px;color:var(--muted);line-height:1.7}
+.price-note em{color:var(--sand);font-style:normal}
+
 /* ROADMAP */
 .roadmap-track{display:flex;gap:0;margin-top:48px;position:relative}
 .roadmap-track::before{content:'';position:absolute;top:36px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal),var(--ac) 40%,var(--div) 70%);opacity:.3}
@@ -245,6 +266,8 @@ nav{padding:0 20px;height:56px}
 .priv-grid{grid-template-columns:1fr}
 .priv-compare{grid-template-columns:1fr}
 .setup-flow{grid-template-columns:1fr}
+.pricing-wrap{flex-direction:column;align-items:center}
+.price-card{width:100%;max-width:400px}
 .setup-step::after{display:none}
 .pds-banner{margin:0 16px;padding:28px 24px;flex-direction:column;text-align:center;gap:16px}
 .strip{padding:48px 0 48px 24px}
@@ -273,9 +296,10 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     <li><a href="#philosophy" onclick="closeNav()">Philosophy</a></li>
     <li><a href="#how-it-works" onclick="closeNav()">How It Works</a></li>
     <li><a href="#privacy" onclick="closeNav()">Privacy</a></li>
+    <li><a href="#pricing" onclick="closeNav()">Pricing</a></li>
     <li><a href="#roadmap" onclick="closeNav()">Roadmap</a></li>
   </ul>
-  <a href="#get-started" class="nav-cta">Get Started</a>
+  <a href="#pricing" class="nav-cta">Start Free Trial</a>
   <button class="hamburger" onclick="document.getElementById('navMid').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 
@@ -381,7 +405,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   </div>
   <div class="setup-time reveal"><div class="setup-time-badge">⏱ Total setup time: under 2 minutes</div></div>
   <div class="setup-cta-row reveal">
-    <a href="#get-started" class="btn-primary">Start Free Trial</a>
+    <a href="#pricing" class="btn-primary">Start Free Trial</a>
     <a href="javascript:void(0)" class="btn-secondary" onclick="document.getElementById('setupGuide').style.display=this.style.display='block';this.style.display='none'">View Setup Guide</a>
   </div>
   <div id="setupGuide" style="display:none;margin-top:48px;max-width:680px;margin-left:auto;margin-right:auto;">
@@ -390,6 +414,48 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     <div class="guide-card"><h4>Step 3 — Log Your First Transaction</h4><p>Tap the + button, enter an amount, pick a category, and save. That's it — you just started measuring your financial life.</p></div>
     <div class="guide-card"><h4>Step 4 — Build the Habit</h4><p>Bookmark M4L-C on your phone, log transactions daily, and watch your financial awareness grow. After 14 days, continue for $7/month — less than one coffee run.</p></div>
   </div>
+</section>
+
+<section class="sec sec-alt section-id" id="pricing">
+  <div class="reveal"><div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span class="sec-eyebrow-text">Pricing</span></div>
+  <div class="sec-title">Built for students.</div><div class="sec-title-accent">Priced like it.</div>
+  <p class="sec-body">Same full experience for everyone. If you're in college, you get the student rate — just sign up with your .edu email.</p></div>
+
+  <div class="pricing-wrap reveal">
+    <div class="price-card featured">
+      <div class="price-badge">Student Rate</div>
+      <div class="price-name">College</div>
+      <div class="price-amt">$7<span>/month</span></div>
+      <div class="price-trial">14-day free trial · .edu email required</div>
+      <ul class="price-features">
+        <li>Unlimited transaction tracking</li>
+        <li>Budget creation &amp; monitoring</li>
+        <li>Savings goals with progress tracking</li>
+        <li>Worth It? spending reflections</li>
+        <li>Daily financial wisdom quotes</li>
+        <li>Guided onboarding &amp; tour</li>
+        <li>Encrypted &amp; private — data never sold</li>
+        <li>Cancel anytime, no contracts</li>
+      </ul>
+      <button class="price-btn price-btn-primary" onclick="alert('Signup coming soon — we\'re building the app now!')">Start Free Trial</button>
+    </div>
+
+    <div class="price-card">
+      <div class="price-name">Everyone Else</div>
+      <div class="price-amt">$27<span>/month</span></div>
+      <div class="price-trial">14-day free trial · Any email</div>
+      <ul class="price-features">
+        <li>Everything in the student plan</li>
+        <li>Same full-featured experience</li>
+        <li>Built on the same M4L-C philosophy</li>
+        <li>Encrypted &amp; private — data never sold</li>
+        <li>Cancel anytime, no contracts</li>
+      </ul>
+      <button class="price-btn price-btn-outline" onclick="alert('Signup coming soon — we\'re building the app now!')">Start Free Trial</button>
+    </div>
+  </div>
+
+  <p class="price-note reveal"><em>$7/month is less than one coffee run</em> for a lifetime of financial discipline.<br>No bank connections. No ads. No data selling. Just you and your money habits.</p>
 </section>
 
 <section class="sec section-id" id="roadmap">
@@ -410,7 +476,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     <div class="sec-title">You can't manage</div><div class="sec-title-accent">what you don't measure.</div>
     <p class="sec-body">Every day you wait is a day of compound growth you'll never get back. The best time to start was yesterday. The second best time is right now.</p>
     <div class="final-cta-row">
-      <a href="#get-started" class="btn-primary">Start Free Trial</a>
+      <a href="#pricing" class="btn-primary">Start Free Trial</a>
       <a href="#philosophy" class="btn-secondary">Read the Philosophy</a>
     </div>
   </div>
