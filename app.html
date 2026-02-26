@@ -19,7 +19,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .auth-logo{width:64px;height:64px;filter:drop-shadow(0 0 12px rgba(0,208,156,0.4));margin-bottom:16px}
 .auth-logo svg{width:100%;height:100%}
 .auth-wordmark{font-family:'Michroma',sans-serif;font-size:28px;font-weight:800;color:var(--teal);text-shadow:0 0 16px rgba(0,208,156,0.5);margin-bottom:4px}
-.auth-wordmark span{color:var(--ac);text-shadow:0 0 16px rgba(212,232,74,0.5)}
+.auth-wordmark .four{font-size:22px;vertical-align:baseline;position:relative;top:3px}
+.auth-wordmark .dash{color:var(--ac);text-shadow:0 0 16px rgba(212,232,74,0.5)}
 .auth-sub{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:40px}
 .auth-tagline{font-family:'Fraunces',serif;font-size:22px;font-weight:300;font-style:italic;color:var(--ac);max-width:340px;line-height:1.5;margin-bottom:40px}
 .auth-tagline em{font-style:normal;color:var(--sand)}
@@ -35,10 +36,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .hdr-icon{width:28px;height:28px;filter:drop-shadow(0 0 6px rgba(0,208,156,0.3))}
 .hdr-icon svg{width:100%;height:100%}
 .hdr-wm{font-family:'Michroma',sans-serif;font-size:14px;color:var(--teal);text-shadow:0 0 12px rgba(0,208,156,0.4)}
-.hdr-wm span{color:var(--ac);text-shadow:0 0 12px rgba(212,232,74,0.4)}
+.hdr-wm .four{font-size:11px;position:relative;top:2px}
+.hdr-wm .dash{color:var(--ac);text-shadow:0 0 12px rgba(212,232,74,0.4)}
 .hdr-user{display:flex;align-items:center;gap:8px}
 .hdr-name{font-size:12px;color:var(--muted)}
-.hdr-avatar{width:28px;height:28px;border-radius:50%;border:1px solid var(--teal);cursor:pointer}
 .hdr-signout{background:none;border:1px solid var(--div);color:var(--muted);font-size:11px;padding:4px 10px;cursor:pointer;transition:all .2s}
 .hdr-signout:hover{border-color:var(--red);color:var(--red)}
 
@@ -46,17 +47,34 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .main{padding:64px 16px 80px;max-width:600px;margin:0 auto}
 @media(min-width:768px){.main{max-width:900px;padding:72px 32px 80px}}
 
-/* SUMMARY CARDS */
-.summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px}
-.scard{background:var(--card);padding:14px 12px;border:1px solid var(--div);text-align:center}
-.scard-lbl{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.scard-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:700}
-.scard-val.green{color:var(--ac)}
-.scard-val.teal{color:var(--teal)}
-.scard-val.red{color:var(--red)}
+/* PAY YOURSELF FIRST HERO */
+.pyf-tag{font-family:'Syne',sans-serif;font-size:9px;color:var(--ac);text-transform:uppercase;letter-spacing:0.2em;font-weight:700;margin-bottom:10px;opacity:0.8}
+.shero{background:var(--card);border:1px solid var(--div);padding:20px;margin-bottom:14px;position:relative;overflow:hidden}
+.shero::before{content:'';position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:0.25}
+.shero-top{display:flex;align-items:center;gap:16px}
+.shero-gauge{width:120px;height:66px;flex-shrink:0}
+.shero-gauge svg{width:100%;height:100%}
+.shero-info{flex:1;min-width:0}
+.shero-pct{font-family:'Fraunces',serif;font-size:36px;font-weight:400;color:var(--ac);line-height:1}
+.shero-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:-0.01em;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shero-amt{font-family:'Fraunces',serif;font-size:11px;color:var(--muted);margin-top:2px}
+.shero-msg{margin-top:14px;padding-top:14px;border-top:1px solid var(--div);font-size:12px;font-weight:500;line-height:1.65;color:var(--body)}
+.shero-empty{background:var(--card);border:1px solid var(--div);padding:28px;margin-bottom:14px;text-align:center}
+
+/* SUMMARY GRID */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.sc{background:var(--card);padding:14px 14px;border:1px solid var(--div);position:relative}
+.sc .ic{font-size:18px;margin-bottom:4px;display:block}
+.sc .lb{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.sc .vl{font-family:'Syne',sans-serif;font-size:22px;font-weight:700}
+.sc .sb{font-size:10px;color:var(--muted);margin-top:2px}
+.sc.ci .vl{color:var(--teal)}
+.sc.cv .vl{color:var(--ac)}
+.sc.cs .vl{color:var(--red)}
+.sc.cb .vl{color:var(--sand)}
 
 /* GREETING */
-.greeting{margin-bottom:20px}
+.greeting{margin-bottom:16px}
 .greeting h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px}
 .greeting p{font-size:13px;color:var(--muted)}
 
@@ -124,14 +142,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .form-group input:focus,.form-group select:focus{border-color:var(--teal)}
 .form-group select{appearance:none;cursor:pointer}
 .form-group textarea{resize:vertical;min-height:60px}
-
-/* TYPE TOGGLE */
 .type-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-bottom:16px}
 .type-btn{padding:10px;text-align:center;background:var(--card);border:1px solid var(--div);color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
 .type-btn.active-spend{background:rgba(255,107,107,0.12);border-color:var(--red);color:var(--red)}
 .type-btn.active-income{background:rgba(0,208,156,0.12);border-color:var(--teal);color:var(--teal)}
 .type-btn.active-save{background:rgba(212,232,74,0.12);border-color:var(--ac);color:var(--ac)}
-
 .modal-actions{display:flex;gap:8px;margin-top:20px}
 .modal-actions button{flex:1;padding:12px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none}
 .btn-save{background:var(--ac);color:var(--bg)}
@@ -144,10 +159,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.err{border-color:var(--red)}
 
-/* LOADING */
+/* LOADING / EMPTY */
 .loading{text-align:center;padding:40px;color:var(--muted);font-size:13px}
-
-/* EMPTY STATE */
 .empty{text-align:center;padding:32px 16px;color:var(--muted);font-size:13px;line-height:1.6}
 .empty strong{color:var(--sand);display:block;margin-bottom:4px}
 
@@ -162,8 +175,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .page.active{display:block}
 
 @media(min-width:768px){
-.summary{grid-template-columns:1fr 1fr 1fr}
-.scard-val{font-size:24px}
+.sgrid{grid-template-columns:1fr 1fr 1fr 1fr}
+.sc .vl{font-size:24px}
 }
 </style>
 </head>
@@ -172,7 +185,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 <!-- AUTH SCREEN -->
 <div id="auth-screen">
   <div class="auth-logo"><svg viewBox="0 0 1024 1024" fill="none"><rect x="85" y="85" width="854" height="854" rx="213" stroke="#00D09C" stroke-width="22" fill="none"/><rect x="170" y="170" width="684" height="684" rx="149" fill="#0D2219" stroke="#00D09C" stroke-width="16"/><path d="M384 554L512 406L640 554" stroke="#00D09C" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  <div class="auth-wordmark">M4L<span>–C</span></div>
+  <div class="auth-wordmark">M<span class="four">4</span>L<span class="dash">–C</span></div>
   <div class="auth-sub">Money For Life</div>
   <div class="auth-tagline">You can't manage what you don't measure. <em>Start measuring.</em></div>
   <button class="google-btn" onclick="signInWithGoogle()">
@@ -184,11 +197,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 
 <!-- APP -->
 <div id="app">
-  <!-- HEADER -->
   <div class="hdr">
     <div class="hdr-logo">
       <div class="hdr-icon"><svg viewBox="0 0 1024 1024" fill="none"><rect x="85" y="85" width="854" height="854" rx="213" stroke="#00D09C" stroke-width="22" fill="none"/><rect x="170" y="170" width="684" height="684" rx="149" fill="#0D2219" stroke="#00D09C" stroke-width="16"/><path d="M384 554L512 406L640 554" stroke="#00D09C" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="hdr-wm">M4L<span>–C</span></div>
+      <div class="hdr-wm">M<span class="four">4</span>L<span class="dash">–C</span></div>
     </div>
     <div class="hdr-user">
       <span class="hdr-name" id="hdrName"></span>
@@ -196,15 +208,37 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     </div>
   </div>
 
-  <!-- HOME PAGE -->
   <div class="main">
+    <!-- HOME PAGE -->
     <div class="page active" id="page-home">
       <div class="greeting" id="greeting"><h2>Loading...</h2></div>
-      
-      <div class="summary" id="summary">
-        <div class="scard"><div class="scard-lbl">Income</div><div class="scard-val teal" id="sumIncome">$0</div></div>
-        <div class="scard"><div class="scard-lbl">Spent</div><div class="scard-val red" id="sumSpent">$0</div></div>
-        <div class="scard"><div class="scard-lbl">Saved</div><div class="scard-val green" id="sumSaved">$0</div></div>
+
+      <!-- PAY YOURSELF FIRST HERO -->
+      <div class="shero" id="shero" style="display:none">
+        <div class="pyf-tag">Pay Yourself First</div>
+        <div class="shero-top">
+          <div class="shero-gauge"><svg viewBox="0 0 200 110"><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#0C2624" stroke-width="12" stroke-linecap="round"/><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gg)" stroke-width="12" stroke-linecap="round" id="gfill" stroke-dasharray="0 251.2"/><defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="#00D09C"/><stop offset="100%" stop-color="#D4E84A"/></linearGradient></defs></svg></div>
+          <div class="shero-info">
+            <div class="shero-pct" id="gpct">0%</div>
+            <div class="shero-name" id="gnm"></div>
+            <div class="shero-amt" id="gdt"></div>
+          </div>
+        </div>
+        <div class="shero-msg" id="gmsg"></div>
+      </div>
+      <div class="shero-empty" id="shero-empty" style="display:none">
+        <div class="pyf-tag">Pay Yourself First</div>
+        <div style="font-size:28px;margin-bottom:8px">🎯</div>
+        <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">No savings goal set</div>
+        <div style="font-size:12px;color:var(--body);line-height:1.7">Before you spend a dollar, decide what you're saving for.<br>Set a primary goal to start tracking.</div>
+      </div>
+
+      <!-- 4-CARD SUMMARY GRID -->
+      <div class="sgrid">
+        <div class="sc ci"><span class="ic">💵</span><div class="lb">Earned</div><div class="vl" id="sumIncome">$0</div><div class="sb">this month</div></div>
+        <div class="sc cv"><span class="ic">🏦</span><div class="lb">Saved</div><div class="vl" id="sumSaved">$0</div><div class="sb">this month</div></div>
+        <div class="sc cs"><span class="ic">💸</span><div class="lb">Spent</div><div class="vl" id="sumSpent">$0</div><div class="sb">this month</div></div>
+        <div class="sc cb"><span class="ic">📊</span><div class="lb">Left to Spend</div><div class="vl" id="sumLeft">$0</div><div class="sb" id="leftSub">remaining</div></div>
       </div>
 
       <div class="quote-card"><div class="quote-text" id="quoteText"></div></div>
@@ -238,10 +272,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     </div>
   </div>
 
-  <!-- FAB -->
   <button class="fab" onclick="openTxModal()">+</button>
 
-  <!-- NAV TABS -->
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showPage('page-home')"><span class="nav-tab-icon">🏠</span>Home</button>
     <button class="nav-tab" onclick="showPage('page-budget')"><span class="nav-tab-icon">📊</span>Budget</button>
@@ -298,7 +330,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -308,7 +339,7 @@ const SUPA_KEY = 'sb_publishable_zuvIFieamgRHfb0Ndi_k6Q_OwtsK6Ms';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
 // ═══════════════ STATE ═══════════════
-let S = { user: null, profile: null, tx: [], budgets: [], goals: [], txType: 'Spend' };
+let S = { user:null, profile:null, tx:[], budgets:[], goals:[], txType:'Spend' };
 
 const CATS_SPEND = ['😋 Eating Out','❤️ Groceries','🚗 Gas','🛍 Shopping','🎉 Fun','📚 School','📱 Subscriptions','📂 Bills','📳 Phone'];
 const CATS_INCOME = ['💵 Paycheck','💰 Side Job','🎁 Gift','📦 Other Income'];
@@ -327,23 +358,31 @@ const QUOTES = [
   "Wealth is made in the years <em>everyone else is waiting.</em>"
 ];
 
-function monthKey(d){ return d ? d.slice(0,7) : new Date().toISOString().slice(0,7); }
+const PYF_MSGS = [
+  "Every dollar you save now is a vote for your future self. Keep going.",
+  "You're building something most people won't start until their 30s.",
+  "This is how wealth starts — one decision at a time.",
+  "The gap between your income and spending is your freedom.",
+  "Saving isn't sacrifice. It's paying your most important bill — yourself."
+];
+
+function monthKey(d){
+  if(d && typeof d === 'string') return d.slice(0,7);
+  const now = new Date();
+  return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+}
 function fmtMoney(n){ return '$' + Math.abs(n||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}); }
 function today(){ return new Date().toISOString().slice(0,10); }
 
 // ═══════════════ AUTH ═══════════════
 async function signInWithGoogle(){
   const {error} = await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin + window.location.pathname }
+    provider:'google',
+    options:{ redirectTo: window.location.origin + window.location.pathname }
   });
   if(error) toast('Sign in failed: '+error.message, true);
 }
-
-async function signOut(){
-  await sb.auth.signOut();
-  location.reload();
-}
+async function signOut(){ await sb.auth.signOut(); location.reload(); }
 
 async function checkAuth(){
   const {data:{session}} = await sb.auth.getSession();
@@ -378,12 +417,12 @@ async function loadProfile(){
 // ═══════════════ DATA LOADING ═══════════════
 async function loadAll(){
   const mk = monthKey();
-  await Promise.all([loadTx(mk), loadBudgets(mk), loadGoals()]);
+  await Promise.all([loadTx(), loadBudgets(mk), loadGoals()]);
   renderHome(mk);
   renderQuote();
 }
 
-async function loadTx(mk){
+async function loadTx(){
   const {data} = await sb.from('transactions').select('*').eq('user_id', S.user.id).order('date',{ascending:false});
   S.tx = data || [];
 }
@@ -401,38 +440,73 @@ async function loadGoals(){
 // ═══════════════ RENDERING ═══════════════
 function renderHome(mk){
   mk = mk || monthKey();
-  const mtx = S.tx.filter(t => t.month_key === mk || (t.date && t.date.startsWith(mk)));
+  const mtx = S.tx.filter(t => (t.month_key === mk) || (t.date && t.date.startsWith(mk)));
   const income = mtx.filter(t=>t.type==='Income').reduce((s,t)=>s+Number(t.amount),0);
   const spent = mtx.filter(t=>t.type==='Spend').reduce((s,t)=>s+Number(t.amount),0);
   const saved = mtx.filter(t=>t.type==='Save').reduce((s,t)=>s+Number(t.amount),0);
+  const totalBudget = S.budgets.reduce((s,b)=>s+Number(b.planned_amount),0);
+  const left = totalBudget > 0 ? totalBudget - spent : income - spent - saved;
 
   document.getElementById('sumIncome').textContent = fmtMoney(income);
   document.getElementById('sumSpent').textContent = fmtMoney(spent);
   document.getElementById('sumSaved').textContent = fmtMoney(saved);
+  document.getElementById('sumLeft').textContent = fmtMoney(Math.abs(left));
+  document.getElementById('sumLeft').style.color = left >= 0 ? 'var(--sand)' : 'var(--red)';
+  document.getElementById('leftSub').textContent = left >= 0 ? 'remaining' : 'over budget';
+
+  // PAY YOURSELF FIRST HERO
+  renderSavingsHero(mk);
 
   // Budget preview (top 3)
   renderBudgetList('homeBudget', mk, 3);
-  
-  // Goals preview
   renderGoalsList('homeGoals', 2);
-
-  // Recent transactions (5)
   renderTxList('homeTx', S.tx.slice(0, 5));
 
   // Full pages
-  document.getElementById('budMonth').textContent = new Date(mk+'-01').toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  const monthName = new Date(mk+'-15').toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  document.getElementById('budMonth').textContent = monthName;
   renderBudgetList('budgetFull', mk);
   renderGoalsList('goalsFull');
   renderTxList('historyFull', S.tx);
+}
+
+function renderSavingsHero(mk){
+  const shero = document.getElementById('shero');
+  const sheroEmpty = document.getElementById('shero-empty');
+  const primary = S.goals.find(g => g.is_primary);
+
+  if(!primary){
+    shero.style.display = 'none';
+    sheroEmpty.style.display = 'block';
+    return;
+  }
+
+  shero.style.display = 'block';
+  sheroEmpty.style.display = 'none';
+
+  // Calculate total saved toward this goal (all time)
+  const goalSaved = S.tx.filter(t => t.type === 'Save' && t.goal_ref === primary.id).reduce((s,t) => s + Number(t.amount), 0);
+  const target = Number(primary.target_amount) || 1;
+  const pct = Math.min(Math.round((goalSaved / target) * 100), 100);
+
+  document.getElementById('gpct').textContent = pct + '%';
+  document.getElementById('gnm').textContent = primary.goal_name;
+  document.getElementById('gdt').textContent = fmtMoney(goalSaved) + ' of ' + fmtMoney(target);
+
+  // Animate gauge arc (half circle = 251.2 total dash)
+  const arcLen = (pct / 100) * 251.2;
+  document.getElementById('gfill').setAttribute('stroke-dasharray', arcLen + ' 251.2');
+
+  // Motivational message
+  const day = Math.floor(Date.now() / 86400000);
+  document.getElementById('gmsg').textContent = PYF_MSGS[day % PYF_MSGS.length];
 }
 
 function renderBudgetList(elId, mk, limit){
   const el = document.getElementById(elId);
   const buds = limit ? S.budgets.slice(0, limit) : S.budgets;
   if(!buds.length){ el.innerHTML = '<div class="empty"><strong>No budgets yet</strong>Tap "+ Add" to set your first budget category.</div>'; return; }
-  
-  const mtx = S.tx.filter(t => t.type === 'Spend' && (t.month_key === mk || (t.date && t.date.startsWith(mk))));
-  
+  const mtx = S.tx.filter(t => t.type === 'Spend' && ((t.month_key === mk) || (t.date && t.date.startsWith(mk))));
   el.innerHTML = buds.map(b => {
     const spent = mtx.filter(t => t.category === b.category).reduce((s,t) => s + Number(t.amount), 0);
     const pct = b.planned_amount > 0 ? Math.min((spent / b.planned_amount) * 100, 100) : 0;
@@ -445,7 +519,6 @@ function renderGoalsList(elId, limit){
   const el = document.getElementById(elId);
   const goals = limit ? S.goals.slice(0, limit) : S.goals;
   if(!goals.length){ el.innerHTML = '<div class="empty"><strong>No savings goals yet</strong>Tap "+ New Goal" to set your first target.</div>'; return; }
-  
   el.innerHTML = goals.map(g => {
     const saved = S.tx.filter(t => t.type === 'Save' && t.goal_ref === g.id).reduce((s,t) => s + Number(t.amount), 0);
     const pct = g.target_amount > 0 ? Math.min((saved / g.target_amount) * 100, 100) : 0;
@@ -456,7 +529,6 @@ function renderGoalsList(elId, limit){
 function renderTxList(elId, txs){
   const el = document.getElementById(elId);
   if(!txs.length){ el.innerHTML = '<div class="empty"><strong>No transactions yet</strong>Tap the + button to log your first one.</div>'; return; }
-  
   el.innerHTML = txs.map(t => {
     const cls = t.type === 'Spend' ? 'spend' : t.type === 'Income' ? 'income' : 'save';
     const sign = t.type === 'Spend' ? '-' : '+';
@@ -514,19 +586,12 @@ async function saveTx(){
   const cat = document.getElementById('txCat').value;
   const desc = document.getElementById('txDesc').value;
   const date = document.getElementById('txDate').value || today();
-  const goalRef = S.txType === 'Save' ? document.getElementById('txGoalRef').value || null : null;
+  const goalRef = S.txType === 'Save' ? (document.getElementById('txGoalRef').value || null) : null;
 
   const {error} = await sb.from('transactions').insert({
-    user_id: S.user.id,
-    type: S.txType,
-    category: cat,
-    amount: amt,
-    description: desc,
-    date: date,
-    month_key: monthKey(date),
-    goal_ref: goalRef
+    user_id: S.user.id, type: S.txType, category: cat, amount: amt,
+    description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef
   });
-
   if(error){ toast('Error: '+error.message, true); return; }
   closeTxModal();
   toast(S.txType + ' of ' + fmtMoney(amt) + ' saved!');
@@ -536,8 +601,7 @@ async function saveTx(){
 // ═══════════════ BUDGET MODAL ═══════════════
 function openBudgetModal(){
   document.getElementById('budModal').classList.add('open');
-  const sel = document.getElementById('budCat');
-  sel.innerHTML = CATS_SPEND.map(c => `<option value="${c}">${c}</option>`).join('');
+  document.getElementById('budCat').innerHTML = CATS_SPEND.map(c => `<option value="${c}">${c}</option>`).join('');
   document.getElementById('budAmt').value = '';
 }
 function closeBudModal(){ document.getElementById('budModal').classList.remove('open'); }
@@ -546,14 +610,9 @@ async function saveBudget(){
   const cat = document.getElementById('budCat').value;
   const amt = parseFloat(document.getElementById('budAmt').value);
   if(!amt || amt <= 0){ toast('Enter a valid amount', true); return; }
-
   const {error} = await sb.from('budgets').upsert({
-    user_id: S.user.id,
-    month_key: monthKey(),
-    category: cat,
-    planned_amount: amt
+    user_id: S.user.id, month_key: monthKey(), category: cat, planned_amount: amt
   }, {onConflict: 'user_id,month_key,category'});
-
   if(error){ toast('Error: '+error.message, true); return; }
   closeBudModal();
   toast('Budget updated!');
@@ -574,18 +633,10 @@ async function saveGoal(){
   const primary = document.getElementById('goalPrimary').value === 'true';
   if(!name){ toast('Enter a goal name', true); return; }
   if(!target || target <= 0){ toast('Enter a target amount', true); return; }
-
-  if(primary){
-    await sb.from('savings_goals').update({is_primary: false}).eq('user_id', S.user.id);
-  }
-
+  if(primary){ await sb.from('savings_goals').update({is_primary:false}).eq('user_id', S.user.id); }
   const {error} = await sb.from('savings_goals').insert({
-    user_id: S.user.id,
-    goal_name: name,
-    target_amount: target,
-    is_primary: primary
+    user_id: S.user.id, goal_name: name, target_amount: target, is_primary: primary
   });
-
   if(error){ toast('Error: '+error.message, true); return; }
   closeGoalModal();
   toast('Goal "'+name+'" created!');
