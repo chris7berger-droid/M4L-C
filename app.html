@@ -29,6 +29,39 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .google-btn svg{width:20px;height:20px}
 .auth-privacy{font-size:12px;color:var(--muted);margin-top:20px;max-width:280px;line-height:1.6}
 
+/* ONBOARDING */
+#onboarding{display:none;min-height:100vh;min-height:100dvh}
+.ob-slide{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;padding:32px 24px;text-align:center}
+.ob-slide.active{display:flex}
+.ob-dots{display:flex;gap:8px;margin-bottom:32px}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:var(--div);transition:all .3s}
+.ob-dot.on{background:var(--teal);box-shadow:0 0 8px rgba(0,208,156,0.4)}
+.ob-icon{font-size:56px;margin-bottom:20px;filter:drop-shadow(0 0 20px rgba(0,208,156,0.3))}
+.ob-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:12px;line-height:1.3}
+.ob-title .hl{color:var(--ac)}
+.ob-body{font-family:'Fraunces',serif;font-size:16px;font-weight:300;font-style:italic;color:var(--body);max-width:360px;line-height:1.7;margin-bottom:32px}
+.ob-body em{font-style:normal;color:var(--ac)}
+.ob-quote{font-family:'Fraunces',serif;font-size:18px;font-weight:300;font-style:italic;color:var(--ac);max-width:340px;line-height:1.6;margin-bottom:32px;padding:20px;border:1px solid rgba(212,232,74,0.15);position:relative}
+.ob-quote::before{content:'';position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.3}
+.ob-input-group{width:100%;max-width:340px;margin-bottom:24px}
+.ob-input-group label{display:block;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;text-align:left}
+.ob-input{width:100%;padding:14px 16px;background:var(--card);border:1px solid var(--div);color:var(--sand);font-family:'Syne',sans-serif;font-size:20px;font-weight:700;text-align:center;outline:none;transition:border-color .2s}
+.ob-input:focus{border-color:var(--teal)}
+.ob-input::placeholder{color:var(--muted);font-weight:400;font-size:16px}
+.ob-cats{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:340px;margin-bottom:24px}
+.ob-cat{padding:12px 8px;background:var(--card);border:1px solid var(--div);color:var(--body);font-size:13px;cursor:pointer;transition:all .2s;text-align:center}
+.ob-cat.sel{border-color:var(--teal);background:rgba(0,208,156,0.08);color:var(--teal)}
+.ob-btn{padding:14px 48px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none}
+.ob-btn.primary{background:var(--ac);color:var(--bg)}
+.ob-btn.primary:hover{opacity:.88}
+.ob-btn.secondary{background:transparent;border:1px solid var(--div);color:var(--muted);margin-top:12px}
+.ob-btn.secondary:hover{border-color:var(--teal);color:var(--teal)}
+.ob-actions{display:flex;flex-direction:column;align-items:center}
+.ob-manifesto{max-width:380px;margin-bottom:32px}
+.ob-manifesto p{font-family:'Fraunces',serif;font-size:15px;font-weight:300;color:var(--body);line-height:1.8;margin-bottom:16px}
+.ob-manifesto p em{font-style:normal;color:var(--ac);font-weight:400}
+.ob-manifesto p strong{color:var(--sand);font-weight:400}
+
 /* APP LAYOUT */
 #app{display:none}
 .hdr{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(7,30,28,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--div)}
@@ -42,8 +75,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .hdr-name{font-size:12px;color:var(--muted)}
 .hdr-signout{background:none;border:1px solid var(--div);color:var(--muted);font-size:11px;padding:4px 10px;cursor:pointer;transition:all .2s}
 .hdr-signout:hover{border-color:var(--red);color:var(--red)}
-
-/* MAIN CONTENT */
 .main{padding:64px 16px 80px;max-width:600px;margin:0 auto}
 @media(min-width:768px){.main{max-width:900px;padding:72px 32px 80px}}
 
@@ -93,25 +124,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .sc.cv .vl{color:var(--ac)}
 .sc.cs .vl{color:var(--red)}
 .sc.cb .vl{color:var(--sand)}
-
-/* GREETING */
 .greeting{margin-bottom:16px}
 .greeting h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px}
 .greeting p{font-size:13px;color:var(--muted)}
-
-/* QUOTE */
 .quote-card{background:var(--card);border:1px solid var(--div);padding:16px 20px;margin-bottom:20px;position:relative}
 .quote-card::before{content:'';position:absolute;top:0;left:12px;right:12px;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.2}
 .quote-text{font-family:'Fraunces',serif;font-size:14px;font-weight:300;font-style:italic;color:var(--ac);line-height:1.6}
 .quote-text em{font-style:normal;color:var(--sand)}
-
-/* SECTION HEADERS */
 .sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;margin-top:24px}
 .sec-hdr h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
 .sec-hdr-btn{background:none;border:1px solid var(--div);color:var(--teal);font-size:11px;padding:5px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
 .sec-hdr-btn:hover{border-color:var(--teal);background:rgba(0,208,156,0.08)}
-
-/* BUDGET BARS */
 .budget-list{display:flex;flex-direction:column;gap:8px}
 .bud-row{background:var(--card);padding:12px 14px;border:1px solid var(--div)}
 .bud-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
@@ -123,8 +146,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .bud-fill.ok{background:var(--teal)}
 .bud-fill.warn{background:#F5A623}
 .bud-fill.over{background:var(--red)}
-
-/* SAVINGS GOALS */
 .goals-list{display:flex;flex-direction:column;gap:8px}
 .goal-row{background:var(--card);padding:14px;border:1px solid var(--div)}
 .goal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
@@ -134,8 +155,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .goal-progress span{color:var(--teal)}
 .goal-bar{height:8px;background:rgba(228,244,243,0.06);border-radius:4px;overflow:hidden}
 .goal-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--ac));transition:width .4s var(--ease)}
-
-/* TRANSACTIONS LIST */
 .tx-list{display:flex;flex-direction:column;gap:4px}
 .tx-row{background:var(--card);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--div)}
 .tx-left{display:flex;align-items:center;gap:10px}
@@ -147,13 +166,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .tx-amt.spend{color:var(--red)}
 .tx-amt.income{color:var(--teal)}
 .tx-amt.save{color:var(--ac)}
-
-/* NAV FAB (center + button) */
 .nav-fab{position:relative}
 .nav-fab-btn{width:48px;height:48px;border-radius:50%;background:var(--ac);color:var(--bg);font-size:28px;font-weight:300;display:flex;align-items:center;justify-content:center;position:relative;top:-12px;box-shadow:0 6px 20px rgba(212,232,74,0.3);transition:all .2s}
 .nav-fab:hover .nav-fab-btn{transform:scale(1.08);box-shadow:0 8px 28px rgba(212,232,74,0.4)}
-
-/* MODAL */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;padding:16px}
 .modal-bg.open{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--div);width:100%;max-width:420px;max-height:90vh;overflow-y:auto;padding:28px 24px}
@@ -175,27 +190,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .btn-save:hover{opacity:.88}
 .btn-cancel{background:transparent;border:1px solid var(--div)!important;color:var(--muted)}
 .btn-cancel:hover{border-color:var(--red)!important;color:var(--red)}
-
-/* TOAST */
 .toast{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--card);border:1px solid var(--teal);color:var(--sand);padding:12px 24px;font-size:13px;z-index:300;transition:transform .3s var(--ease);white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.err{border-color:var(--red)}
-
-/* LOADING / EMPTY */
 .loading{text-align:center;padding:40px;color:var(--muted);font-size:13px}
 .empty{text-align:center;padding:32px 16px;color:var(--muted);font-size:13px;line-height:1.6}
 .empty strong{color:var(--sand);display:block;margin-bottom:4px}
-
-/* NAV TABS */
 .nav-tabs{position:fixed;bottom:0;left:0;right:0;height:56px;background:rgba(7,30,28,0.95);backdrop-filter:blur(16px);border-top:1px solid var(--div);display:flex;z-index:100}
 .nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:var(--muted);font-size:10px;cursor:pointer;transition:color .2s}
 .nav-tab.active{color:var(--teal)}
 .nav-tab-icon{font-size:20px}
-
-/* PAGES */
 .page{display:none}
 .page.active{display:block}
-
 @media(min-width:768px){
 .sgrid{grid-template-columns:1fr 1fr 1fr 1fr}
 .sc .vl{font-size:24px}
@@ -217,6 +223,87 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
   <p class="auth-privacy">Your data is encrypted, isolated, and never sold. We're funded by subscriptions, not your data.</p>
 </div>
 
+<!-- ONBOARDING -->
+<div id="onboarding">
+  <!-- SLIDE 1: Manifesto -->
+  <div class="ob-slide" id="ob1">
+    <div class="ob-dots"><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+    <div class="ob-icon">
+      <svg width="56" height="56" viewBox="0 0 1024 1024" fill="none"><rect x="85" y="85" width="854" height="854" rx="213" stroke="#00D09C" stroke-width="22" fill="none"/><rect x="170" y="170" width="684" height="684" rx="149" fill="#0D2219" stroke="#00D09C" stroke-width="16"/><path d="M384 554L512 406L640 554" stroke="#00D09C" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="ob-title">Welcome to <span class="hl">M4L-C</span></div>
+    <div class="ob-manifesto">
+      <p>You learned how to <em>make money.</em> But nobody taught you how to <strong>manage it.</strong></p>
+      <p>Budgeting and saving are <em>step one in financial fitness</em> — essential life skills that most people don't learn until it's too late.</p>
+      <p>M4L-C is built on one belief: <em>you can't manage what you don't measure.</em></p>
+      <p>This isn't about restricting yourself. It's about <em>knowing where your money goes</em> so you can make it go where you want.</p>
+    </div>
+    <div class="ob-actions">
+      <button class="ob-btn primary" onclick="obNext(2)">I'm Ready</button>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Monthly Income -->
+  <div class="ob-slide" id="ob2">
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+    <div class="ob-icon">💵</div>
+    <div class="ob-title">What do you <span class="hl">earn</span> each month?</div>
+    <div class="ob-body">This doesn't have to be exact. Include your job, side gigs, allowance — <em>whatever comes in regularly.</em></div>
+    <div class="ob-input-group">
+      <label>Monthly Income (estimate)</label>
+      <input type="number" class="ob-input" id="obIncome" placeholder="$0" inputmode="decimal">
+    </div>
+    <div class="ob-actions">
+      <button class="ob-btn primary" onclick="obNext(3)">Next</button>
+      <button class="ob-btn secondary" onclick="obNext(3)">Skip for now</button>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: First Savings Goal -->
+  <div class="ob-slide" id="ob3">
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+    <div class="ob-icon">🎯</div>
+    <div class="ob-title">Pay Yourself <span class="hl">First</span></div>
+    <div class="ob-body">Before you spend a dollar, decide what you're <em>saving for.</em> What's one thing you want to save up for?</div>
+    <div class="ob-input-group">
+      <label>Goal Name</label>
+      <input type="text" class="ob-input" id="obGoalName" placeholder="e.g. Emergency Fund" style="font-size:16px;text-align:left">
+    </div>
+    <div class="ob-input-group">
+      <label>Target Amount</label>
+      <input type="number" class="ob-input" id="obGoalAmt" placeholder="$500" inputmode="decimal">
+    </div>
+    <div class="ob-actions">
+      <button class="ob-btn primary" onclick="obNext(4)">Next</button>
+      <button class="ob-btn secondary" onclick="obNext(4)">Skip for now</button>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Budget Categories -->
+  <div class="ob-slide" id="ob4">
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div></div>
+    <div class="ob-icon">📊</div>
+    <div class="ob-title">Where does your <span class="hl">money go?</span></div>
+    <div class="ob-body">Select the categories that apply to you. You can always add more later.</div>
+    <div class="ob-cats" id="obCats"></div>
+    <div class="ob-actions">
+      <button class="ob-btn primary" onclick="obNext(5)">Next</button>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Ready -->
+  <div class="ob-slide" id="ob5">
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div></div>
+    <div class="ob-icon">🚀</div>
+    <div class="ob-title">You're <span class="hl">all set.</span></div>
+    <div class="ob-quote">"Financial discipline is step one in <em>financial fitness.</em> You just took that step."</div>
+    <div class="ob-body">Your dashboard is ready. Start logging your first transaction — it takes <em>10 seconds.</em></div>
+    <div class="ob-actions">
+      <button class="ob-btn primary" onclick="finishOnboarding()">Let's Go 🚀</button>
+    </div>
+  </div>
+</div>
+
 <!-- APP -->
 <div id="app">
   <div class="hdr">
@@ -229,13 +316,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
       <button class="hdr-signout" onclick="signOut()">Sign Out</button>
     </div>
   </div>
-
   <div class="main">
-    <!-- HOME PAGE -->
     <div class="page active" id="page-home">
       <div class="greeting" id="greeting"><h2>Loading...</h2></div>
-
-      <!-- SAVINGS CAROUSEL -->
       <div class="scar-wrap" id="scarWrap" style="display:none">
         <div class="scar-nav">
           <div class="pyf-tag">Pay Yourself First</div>
@@ -251,46 +334,33 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
         <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">No savings goals yet</div>
         <div style="font-size:12px;color:var(--body);line-height:1.7">Before you spend a dollar, decide what you're saving for.<br>Set a goal to start tracking.</div>
       </div>
-
-      <!-- 4-CARD SUMMARY GRID -->
       <div class="sgrid">
         <div class="sc ci"><span class="ic">💵</span><div class="lb">Earned</div><div class="vl" id="sumIncome">$0</div><div class="sb">this month</div></div>
         <div class="sc cv"><span class="ic">🏦</span><div class="lb">Saved</div><div class="vl" id="sumSaved">$0</div><div class="sb">this month</div></div>
         <div class="sc cs"><span class="ic">💸</span><div class="lb">Spent</div><div class="vl" id="sumSpent">$0</div><div class="sb">this month</div></div>
         <div class="sc cb"><span class="ic">📊</span><div class="lb">Left to Spend</div><div class="vl" id="sumLeft">$0</div><div class="sb" id="leftSub">remaining</div></div>
       </div>
-
       <div class="quote-card"><div class="quote-text" id="quoteText"></div></div>
-
       <div class="sec-hdr"><h3>Budget</h3><button class="sec-hdr-btn" onclick="showPage('page-budget')">View All</button></div>
       <div class="budget-list" id="homeBudget"><div class="loading">Loading budgets...</div></div>
-
       <div class="sec-hdr"><h3>Savings Goals</h3><button class="sec-hdr-btn" onclick="showPage('page-goals')">View All</button></div>
       <div class="goals-list" id="homeGoals"><div class="loading">Loading goals...</div></div>
-
       <div class="sec-hdr"><h3>Recent Transactions</h3><button class="sec-hdr-btn" onclick="showPage('page-history')">View All</button></div>
       <div class="tx-list" id="homeTx"><div class="loading">Loading...</div></div>
     </div>
-
-    <!-- BUDGET PAGE -->
     <div class="page" id="page-budget">
       <div class="sec-hdr"><h3>Budget — <span id="budMonth"></span></h3><button class="sec-hdr-btn" onclick="openBudgetModal()">+ Add</button></div>
       <div class="budget-list" id="budgetFull"><div class="loading">Loading...</div></div>
     </div>
-
-    <!-- GOALS PAGE -->
     <div class="page" id="page-goals">
       <div class="sec-hdr"><h3>Savings Goals</h3><button class="sec-hdr-btn" onclick="openGoalModal()">+ New Goal</button></div>
       <div class="goals-list" id="goalsFull"><div class="loading">Loading...</div></div>
     </div>
-
-    <!-- HISTORY PAGE -->
     <div class="page" id="page-history">
       <div class="sec-hdr"><h3>All Transactions</h3></div>
       <div class="tx-list" id="historyFull"><div class="loading">Loading...</div></div>
     </div>
   </div>
-
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showPage('page-home')"><span class="nav-tab-icon">🏠</span>Home</button>
     <button class="nav-tab" onclick="showPage('page-budget')"><span class="nav-tab-icon">📊</span>Budget</button>
@@ -320,7 +390,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     </div>
   </div>
 </div>
-
 <!-- BUDGET MODAL -->
 <div class="modal-bg" id="budModal">
   <div class="modal">
@@ -333,7 +402,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     </div>
   </div>
 </div>
-
 <!-- GOAL MODAL -->
 <div class="modal-bg" id="goalModal">
   <div class="modal">
@@ -347,7 +415,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -363,6 +430,7 @@ const CATS_SPEND = ['😋 Eating Out','❤️ Groceries','🚗 Gas','🛍 Shoppi
 const CATS_INCOME = ['💵 Paycheck','💰 Side Job','🎁 Gift','📦 Other Income'];
 const CATS_SAVE = ['💰 Savings In','💸 Savings Out'];
 
+// ═══════════════ 150 DAILY QUOTES ═══════════════
 const QUOTES = [
   "You can't manage what you <em>don't measure.</em>",
   "Pay yourself first — <em>every single time.</em>",
@@ -373,7 +441,145 @@ const QUOTES = [
   "Savings without a purpose is just <em>money waiting to be spent.</em>",
   "Financial discipline is step one in <em>financial fitness.</em>",
   "Nobody manages money responsibly <em>without a budget.</em> No one.",
-  "Wealth is made in the years <em>everyone else is waiting.</em>"
+  "Wealth is made in the years <em>everyone else is waiting.</em>",
+  "Every dollar has a job. <em>Give it one.</em>",
+  "Broke is temporary. <em>Poor is a mindset.</em>",
+  "Track every dollar like it's <em>your last one.</em>",
+  "Your spending tells the truth about <em>your priorities.</em>",
+  "Discipline today means <em>freedom tomorrow.</em>",
+  "The goal isn't to be cheap — it's to be <em>intentional.</em>",
+  "Money flows to those who <em>respect it.</em>",
+  "You don't need more money. You need <em>more awareness.</em>",
+  "A budget doesn't limit you. It <em>liberates you.</em>",
+  "What gets measured <em>gets managed.</em>",
+  "Financial freedom starts with <em>financial honesty.</em>",
+  "Stop buying things you don't need to impress people <em>you don't like.</em>",
+  "Rich people plan for three generations. Poor people plan for <em>Saturday night.</em>",
+  "The habit of saving is itself <em>an education.</em>",
+  "Don't save what's left after spending. Spend what's left <em>after saving.</em>",
+  "Being aware of your money is the first step to <em>controlling it.</em>",
+  "Money is a terrible master but <em>an excellent servant.</em>",
+  "Your future self will thank you for <em>every dollar saved today.</em>",
+  "It's not about how much you earn. It's about how much <em>you keep.</em>",
+  "Compound interest is the eighth wonder <em>of the world.</em>",
+  "Live below your means so you can live <em>above your expectations.</em>",
+  "Financial literacy is not a skill. It's <em>a lifestyle.</em>",
+  "The quickest way to double your money: <em>fold it and put it back in your pocket.</em>",
+  "An investment in knowledge pays <em>the best interest.</em>",
+  "Beware of little expenses — a small leak can <em>sink a great ship.</em>",
+  "Money looks better in your savings account than <em>on your feet.</em>",
+  "If you buy things you don't need, you'll soon sell things <em>you do need.</em>",
+  "Do not save what is left after spending. Spend what is left <em>after saving.</em>",
+  "The art is not in making money, but in <em>keeping it.</em>",
+  "Every time you borrow money you're robbing <em>your future self.</em>",
+  "It takes as much energy to wish as it does <em>to plan.</em>",
+  "A penny saved is <em>a penny earned.</em>",
+  "Financial fitness is a marathon, <em>not a sprint.</em>",
+  "Your budget is your battle plan for <em>financial victory.</em>",
+  "Today's sacrifice is <em>tomorrow's reward.</em>",
+  "Money management is 80% behavior and <em>20% knowledge.</em>",
+  "The secret to wealth: <em>earn more, spend less, invest the difference.</em>",
+  "Budgeting isn't about deprivation — it's about <em>prioritization.</em>",
+  "Success is the sum of small efforts <em>repeated daily.</em>",
+  "You are one budget away from <em>changing your life.</em>",
+  "Money saved is money <em>earned twice.</em>",
+  "Spend less than you earn and invest the rest. It's <em>that simple.</em>",
+  "A dollar saved in college is a dollar that <em>works for decades.</em>",
+  "Don't let your spending become <em>a surprise.</em>",
+  "Track it. Budget it. Save it. <em>Repeat.</em>",
+  "Financial discipline separates those who wish from those <em>who have.</em>",
+  "Your wallet doesn't care about your excuses. <em>Neither does your future.</em>",
+  "When you know where your money goes, you can tell it <em>where to go.</em>",
+  "Saving money isn't about being cheap. It's about being <em>strategic.</em>",
+  "Every purchase is a vote for the life <em>you want to live.</em>",
+  "The best financial decision you'll ever make is <em>starting now.</em>",
+  "Money doesn't grow on trees, but it does grow <em>in savings accounts.</em>",
+  "Tomorrow's financial freedom is built on <em>today's discipline.</em>",
+  "You can have anything you want. You just can't have <em>everything you want.</em>",
+  "A budget is a moral document. It shows what you <em>truly value.</em>",
+  "Don't sacrifice what you want most for what you <em>want right now.</em>",
+  "The borrower is slave <em>to the lender.</em>",
+  "Build your savings muscle while <em>you're young.</em>",
+  "Being rich isn't about having money. It's about <em>having choices.</em>",
+  "Stop treating your bank account like it has <em>unlimited lives.</em>",
+  "The biggest risk is not taking one with <em>your finances.</em>",
+  "Making money is common sense. Keeping it requires <em>discipline.</em>",
+  "Luxury is something you can afford. Everything else is <em>debt.</em>",
+  "Your credit score is your adult <em>report card.</em>",
+  "Budget like you're broke. Save like you're <em>rich.</em>",
+  "The person who saves always has <em>options.</em>",
+  "Wealth isn't about what you drive. It's about what <em>you've built.</em>",
+  "Financial peace isn't about getting more. It's about managing <em>what you have.</em>",
+  "Time is money, but money saved <em>buys you time.</em>",
+  "Don't go broke trying to <em>look rich.</em>",
+  "Savings are a reward you give <em>your future self.</em>",
+  "Every financial expert started with <em>a budget.</em>",
+  "Money without a plan is just numbers <em>passing through.</em>",
+  "Patience and discipline are the two most important traits <em>in building wealth.</em>",
+  "Debt steals from tomorrow to pay for <em>yesterday.</em>",
+  "You'll never reach financial freedom by spending more than <em>you make.</em>",
+  "The earlier you start, the less you have to <em>save later.</em>",
+  "Financial security requires sacrifice now for <em>abundance later.</em>",
+  "Skip the latte? No. Skip the things that <em>don't align with your goals.</em>",
+  "Consistency beats intensity when it comes to <em>saving money.</em>",
+  "Treat your savings like a bill that must <em>be paid first.</em>",
+  "A rich life isn't expensive — a wasteful one <em>is.</em>",
+  "The budget isn't the problem. The spending habits <em>are.</em>",
+  "Financial responsibility is the ultimate form of <em>self-care.</em>",
+  "Want vs. need — learn the difference and <em>master your money.</em>",
+  "Emergency funds aren't optional. They're <em>essential.</em>",
+  "Pay attention to your money or your money <em>will pay no attention to you.</em>",
+  "Broke is a temporary situation. Poor is <em>a state of mind.</em>",
+  "Money in the bank gives you confidence that <em>nothing else can.</em>",
+  "The greatest wealth is to live <em>content with little.</em>",
+  "Your net worth is not your <em>self-worth.</em>",
+  "Financial growth happens slowly, then <em>all at once.</em>",
+  "Automate your savings so you never have to <em>think about it.</em>",
+  "Less stuff, more freedom. <em>Always.</em>",
+  "The cost of something is the amount of life you exchange <em>for it.</em>",
+  "A fool and his money are <em>soon parted.</em>",
+  "Invest in yourself first. It pays <em>the best dividends.</em>",
+  "Cash is king. Savings is <em>the kingdom.</em>",
+  "You don't have to be rich to budget. You have to budget <em>to get rich.</em>",
+  "Don't compare your chapter 1 to someone else's <em>chapter 20.</em>",
+  "Money doesn't buy happiness, but poverty <em>doesn't either.</em>",
+  "The real flex is having six months of expenses <em>in savings.</em>",
+  "Your 20s are for building the habits that your 30s <em>will reward.</em>",
+  "If it won't matter in 5 years, don't spend more than <em>5 minutes worrying about it.</em>",
+  "Know the difference between investing in yourself and <em>treating yourself.</em>",
+  "Smart money moves in your 20s make everything easier <em>in your 30s.</em>",
+  "Guard your credit like you guard <em>your reputation.</em>",
+  "Small changes in spending create big changes <em>in savings.</em>",
+  "Money is a tool. The better you are at using it, the better <em>your life gets.</em>",
+  "Don't let lifestyle inflation eat <em>your raises.</em>",
+  "The best budget is one you actually <em>follow.</em>",
+  "Wealth is the ability to fully experience <em>life.</em>",
+  "Save for the life you want, not the things <em>you think you need.</em>",
+  "Your bank account is a scoreboard. Make sure you're <em>winning.</em>",
+  "There is no shortcut to building <em>real wealth.</em>",
+  "A wise person should have money in their head, not <em>in their heart.</em>",
+  "Income is vanity. Spending is sanity. Savings is <em>reality.</em>",
+  "Don't tell me what you value. Show me your budget and I'll <em>tell you.</em>",
+  "You're not too young to save. You're too young <em>to waste time.</em>",
+  "Financial success is not about luck. It's about <em>preparation.</em>",
+  "Money problems are usually <em>behavior problems.</em>",
+  "It's easier to build a budget than to rebuild <em>from debt.</em>",
+  "A strong financial foundation starts with <em>a single tracked dollar.</em>",
+  "Your relationship with money defines your relationship with <em>freedom.</em>",
+  "Frugality is not about spending less. It's about spending on <em>what matters.</em>",
+  "The difference between rich and wealthy: rich is flashy. Wealthy is <em>quiet.</em>",
+  "Plan your spending or your spending will <em>plan your life.</em>",
+  "Money anxiety disappears when you have <em>a plan.</em>",
+  "Every month you track is a month you <em>improve.</em>",
+  "You are not your salary. You are your <em>savings rate.</em>",
+  "The money you save in your 20s does the heaviest lifting <em>of your entire life.</em>",
+  "Stop spending money you haven't earned to buy things you don't need to impress <em>people you don't know.</em>",
+  "Financial discipline isn't punishment — it's <em>empowerment.</em>",
+  "Make your money work as hard as <em>you do.</em>",
+  "A goal without a budget is just <em>a wish.</em>",
+  "The first step to getting what you want is knowing <em>what you have.</em>",
+  "Money comes and goes. Financial habits <em>stay forever.</em>",
+  "Your greatest asset isn't your income — it's <em>your discipline.</em>"
 ];
 
 const PYF_MSGS = [
@@ -381,7 +587,12 @@ const PYF_MSGS = [
   "You're building something most people won't start until their 30s.",
   "This is how wealth starts — one decision at a time.",
   "The gap between your income and spending is your freedom.",
-  "Saving isn't sacrifice. It's paying your most important bill — yourself."
+  "Saving isn't sacrifice. It's paying your most important bill — yourself.",
+  "Your savings are seeds. Every deposit is planting something bigger.",
+  "Most people your age are spending everything. You're not most people.",
+  "Consistency beats intensity. Just keep showing up.",
+  "The money you save today buys options tomorrow.",
+  "Financial discipline is a superpower. You're building yours right now."
 ];
 
 function monthKey(d){
@@ -407,9 +618,8 @@ async function checkAuth(){
   if(session){
     S.user = session.user;
     document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
     await loadProfile();
-    await loadAll();
+    await checkOnboarding();
   }
 }
 
@@ -417,19 +627,99 @@ sb.auth.onAuthStateChange((event, session) => {
   if(event === 'SIGNED_IN' && session){
     S.user = session.user;
     document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    loadProfile().then(loadAll);
+    loadProfile().then(checkOnboarding);
   }
 });
 
 async function loadProfile(){
   const {data} = await sb.from('profiles').select('*').eq('id', S.user.id).single();
   S.profile = data;
-  const name = data?.first_name || S.user.user_metadata?.full_name || 'there';
+}
+
+// ═══════════════ ONBOARDING ═══════════════
+async function checkOnboarding(){
+  // Check if user has any transactions or budgets (existing user)
+  const {data:txCheck} = await sb.from('transactions').select('id').eq('user_id', S.user.id).limit(1);
+  const {data:budCheck} = await sb.from('budgets').select('id').eq('user_id', S.user.id).limit(1);
+  const isNew = (!txCheck || txCheck.length === 0) && (!budCheck || budCheck.length === 0) && !localStorage.getItem('m4lc_onboarded_'+S.user.id);
+
+  if(isNew){
+    startOnboarding();
+  } else {
+    showApp();
+  }
+}
+
+function startOnboarding(){
+  document.getElementById('onboarding').style.display = 'block';
+  document.getElementById('ob1').classList.add('active');
+  // Populate category picker
+  const catsEl = document.getElementById('obCats');
+  catsEl.innerHTML = CATS_SPEND.map(c =>
+    `<div class="ob-cat" onclick="this.classList.toggle('sel')" data-cat="${c}">${c}</div>`
+  ).join('');
+  // Pre-select first 4
+  catsEl.querySelectorAll('.ob-cat').forEach((el, i) => { if(i < 4) el.classList.add('sel'); });
+}
+
+function obNext(n){
+  document.querySelectorAll('.ob-slide').forEach(s => s.classList.remove('active'));
+  document.getElementById('ob'+n).classList.add('active');
+}
+
+async function finishOnboarding(){
+  document.getElementById('onboarding').style.display = 'none';
+  localStorage.setItem('m4lc_onboarded_'+S.user.id, '1');
+
+  // Save onboarding data
+  const income = parseFloat(document.getElementById('obIncome').value) || 0;
+  const goalName = document.getElementById('obGoalName').value.trim();
+  const goalAmt = parseFloat(document.getElementById('obGoalAmt').value) || 0;
+  const selectedCats = [];
+  document.querySelectorAll('.ob-cat.sel').forEach(el => selectedCats.push(el.dataset.cat));
+
+  // Create savings goal if provided
+  if(goalName && goalAmt > 0){
+    await sb.from('savings_goals').insert({
+      user_id: S.user.id, goal_name: goalName, target_amount: goalAmt, is_primary: true
+    });
+  }
+
+  // Create budget categories from selection
+  const mk = monthKey();
+  if(selectedCats.length > 0 && income > 0){
+    const perCat = Math.round(income * 0.7 / selectedCats.length); // 70% of income split across categories
+    const budgets = selectedCats.map(cat => ({
+      user_id: S.user.id, month_key: mk, category: cat, planned_amount: perCat
+    }));
+    await sb.from('budgets').insert(budgets);
+  } else if(selectedCats.length > 0){
+    const budgets = selectedCats.map(cat => ({
+      user_id: S.user.id, month_key: mk, category: cat, planned_amount: 0
+    }));
+    await sb.from('budgets').insert(budgets);
+  }
+
+  // Log income as a transaction if provided
+  if(income > 0){
+    await sb.from('transactions').insert({
+      user_id: S.user.id, type: 'Income', category: '💵 Paycheck',
+      amount: income, description: 'Monthly income (onboarding)',
+      date: today(), month_key: mk
+    });
+  }
+
+  showApp();
+}
+
+function showApp(){
+  document.getElementById('app').style.display = 'block';
+  const name = S.profile?.first_name || S.user.user_metadata?.full_name || 'there';
   document.getElementById('hdrName').textContent = name.split(' ')[0];
   const hour = new Date().getHours();
   const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
   document.getElementById('greeting').innerHTML = `<h2>${greet}, ${name.split(' ')[0]}.</h2><p>${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p>`;
+  loadAll();
 }
 
 // ═══════════════ DATA LOADING ═══════════════
@@ -439,17 +729,14 @@ async function loadAll(){
   renderHome(mk);
   renderQuote();
 }
-
 async function loadTx(){
   const {data} = await sb.from('transactions').select('*').eq('user_id', S.user.id).order('date',{ascending:false});
   S.tx = data || [];
 }
-
 async function loadBudgets(mk){
   const {data} = await sb.from('budgets').select('*').eq('user_id', S.user.id).eq('month_key', mk);
   S.budgets = data || [];
 }
-
 async function loadGoals(){
   const {data} = await sb.from('savings_goals').select('*').eq('user_id', S.user.id).order('is_primary',{ascending:false});
   S.goals = data || [];
@@ -464,23 +751,16 @@ function renderHome(mk){
   const saved = mtx.filter(t=>t.type==='Save').reduce((s,t)=>s+Number(t.amount),0);
   const totalBudget = S.budgets.reduce((s,b)=>s+Number(b.planned_amount),0);
   const left = totalBudget > 0 ? totalBudget - spent : income - spent - saved;
-
   document.getElementById('sumIncome').textContent = fmtMoney(income);
   document.getElementById('sumSpent').textContent = fmtMoney(spent);
   document.getElementById('sumSaved').textContent = fmtMoney(saved);
   document.getElementById('sumLeft').textContent = fmtMoney(Math.abs(left));
   document.getElementById('sumLeft').style.color = left >= 0 ? 'var(--sand)' : 'var(--red)';
   document.getElementById('leftSub').textContent = left >= 0 ? 'remaining' : 'over budget';
-
-  // PAY YOURSELF FIRST HERO
   renderSavingsHero(mk);
-
-  // Budget preview (top 3)
   renderBudgetList('homeBudget', mk, 3);
   renderGoalsList('homeGoals', 2);
   renderTxList('homeTx', S.tx.slice(0, 5));
-
-  // Full pages
   const monthName = new Date(mk+'-15').toLocaleDateString('en-US',{month:'long',year:'numeric'});
   document.getElementById('budMonth').textContent = monthName;
   renderBudgetList('budgetFull', mk);
@@ -493,80 +773,44 @@ function renderSavingsHero(mk){
   const empty = document.getElementById('scarEmpty');
   const track = document.getElementById('scarTrack');
   const dotsEl = document.getElementById('scarDots');
-
-  if(!S.goals.length){
-    wrap.style.display = 'none';
-    empty.style.display = 'block';
-    return;
-  }
-
-  wrap.style.display = 'block';
-  empty.style.display = 'none';
-
-  // Calculate saved amounts for all goals
+  if(!S.goals.length){ wrap.style.display = 'none'; empty.style.display = 'block'; return; }
+  wrap.style.display = 'block'; empty.style.display = 'none';
   const goalData = S.goals.map(g => {
     const saved = S.tx.filter(t => t.type === 'Save' && t.goal_ref === g.id).reduce((s,t) => s + Number(t.amount), 0);
     const target = Number(g.target_amount) || 1;
     const pct = Math.min(Math.round((saved / target) * 100), 100);
     return { ...g, saved, pct };
   });
-
   const totalSaved = goalData.reduce((s,g) => s + g.saved, 0);
   const totalTarget = goalData.reduce((s,g) => s + Number(g.target_amount), 0);
   const goalCount = goalData.length;
   const monthSaved = S.tx.filter(t => t.type === 'Save' && ((t.month_key === mk) || (t.date && t.date.startsWith(mk)))).reduce((s,t) => s + Number(t.amount), 0);
-
-  // Build cards HTML
   let cards = '';
-
-  // CARD 1: Total Savings Summary
   cards += `<div class="scar-card total-card">
-    <div class="scar-total-top">
-      <div class="scar-total-icon">🏦</div>
-      <div class="scar-total-info">
-        <div class="scar-total-label">Total Saved</div>
-        <div class="scar-total-amt">${fmtMoney(totalSaved)}</div>
-        <div class="scar-total-sub">across ${goalCount} goal${goalCount !== 1 ? 's' : ''} · ${fmtMoney(totalTarget)} target</div>
-      </div>
-    </div>
-    <div class="scar-total-breakdown">
-      <div>This month: <span>${fmtMoney(monthSaved)}</span></div>
-      <div>Overall: <span>${totalTarget > 0 ? Math.round((totalSaved/totalTarget)*100) : 0}%</span></div>
-    </div>
+    <div class="scar-total-top"><div class="scar-total-icon">🏦</div><div class="scar-total-info">
+      <div class="scar-total-label">Total Saved</div>
+      <div class="scar-total-amt">${fmtMoney(totalSaved)}</div>
+      <div class="scar-total-sub">across ${goalCount} goal${goalCount !== 1 ? 's' : ''} · ${fmtMoney(totalTarget)} target</div>
+    </div></div>
+    <div class="scar-total-breakdown"><div>This month: <span>${fmtMoney(monthSaved)}</span></div><div>Overall: <span>${totalTarget > 0 ? Math.round((totalSaved/totalTarget)*100) : 0}%</span></div></div>
   </div>`;
-
-  // CARDS 2+: Individual goal cards with gauges
   const day = Math.floor(Date.now() / 86400000);
   goalData.forEach((g, i) => {
     const msg = PYF_MSGS[(day + i) % PYF_MSGS.length];
     const arcLen = (g.pct / 100) * 251.2;
     cards += `<div class="scar-card">
-      <div class="scar-goal-top">
-        <div class="scar-gauge"><svg viewBox="0 0 200 110"><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#0C2624" stroke-width="12" stroke-linecap="round"/><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gg${i})" stroke-width="12" stroke-linecap="round" stroke-dasharray="${arcLen} 251.2"/><defs><linearGradient id="gg${i}" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="#00D09C"/><stop offset="100%" stop-color="#D4E84A"/></linearGradient></defs></svg></div>
-        <div class="scar-goal-info">
-          <div class="scar-goal-pct">${g.pct}%</div>
-          <div class="scar-goal-name">${g.goal_name}${g.is_primary ? ' ⭐' : ''}</div>
-          <div class="scar-goal-amt">${fmtMoney(g.saved)} of ${fmtMoney(g.target_amount)}</div>
-        </div>
-      </div>
-      <div class="scar-goal-msg">${msg}</div>
-    </div>`;
+      <div class="scar-goal-top"><div class="scar-gauge"><svg viewBox="0 0 200 110"><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#0C2624" stroke-width="12" stroke-linecap="round"/><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gg${i})" stroke-width="12" stroke-linecap="round" stroke-dasharray="${arcLen} 251.2"/><defs><linearGradient id="gg${i}" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="#00D09C"/><stop offset="100%" stop-color="#D4E84A"/></linearGradient></defs></svg></div>
+        <div class="scar-goal-info"><div class="scar-goal-pct">${g.pct}%</div><div class="scar-goal-name">${g.goal_name}${g.is_primary ? ' ⭐' : ''}</div><div class="scar-goal-amt">${fmtMoney(g.saved)} of ${fmtMoney(g.target_amount)}</div></div>
+      </div><div class="scar-goal-msg">${msg}</div></div>`;
   });
-
   track.innerHTML = cards;
-
-  // Dots
   const totalCards = 1 + goalData.length;
   dotsEl.innerHTML = Array.from({length: totalCards}, (_,i) => `<div class="scar-dot${i===0?' on':''}"></div>`).join('');
-
-  // Scroll handler for dots
   track.onscroll = function(){
     const cardW = track.querySelector('.scar-card').offsetWidth + 10;
     const idx = Math.round(track.scrollLeft / cardW);
     dotsEl.querySelectorAll('.scar-dot').forEach((d,i) => d.classList.toggle('on', i === idx));
   };
-
-  // Arrow buttons
   document.getElementById('scarPrev').onclick = function(){
     const cardW = track.querySelector('.scar-card').offsetWidth + 10;
     track.scrollBy({left: -cardW, behavior:'smooth'});
@@ -623,7 +867,7 @@ function showPage(id){
   document.getElementById(id).classList.add('active');
   const pageMap = {'page-home':0,'page-budget':1,'page-goals':3,'page-history':4};
   document.querySelectorAll('.nav-tab').forEach((t,i) => {
-    if(i === 2) return; // skip center FAB
+    if(i === 2) return;
     t.classList.toggle('active', pageMap[id] === i);
   });
   window.scrollTo(0,0);
@@ -639,7 +883,6 @@ function openTxModal(){
   document.getElementById('txAmt').focus();
 }
 function closeTxModal(){ document.getElementById('txModal').classList.remove('open'); }
-
 function setTxType(type){
   S.txType = type;
   ['Spend','Income','Save'].forEach(t => {
@@ -655,7 +898,6 @@ function setTxType(type){
     gsel.innerHTML = '<option value="">No specific goal</option>' + S.goals.map(g => `<option value="${g.id}">${g.goal_name}</option>`).join('');
   }
 }
-
 async function saveTx(){
   const amt = parseFloat(document.getElementById('txAmt').value);
   if(!amt || amt <= 0){ toast('Enter a valid amount', true); return; }
@@ -663,7 +905,6 @@ async function saveTx(){
   const desc = document.getElementById('txDesc').value;
   const date = document.getElementById('txDate').value || today();
   const goalRef = S.txType === 'Save' ? (document.getElementById('txGoalRef').value || null) : null;
-
   const {error} = await sb.from('transactions').insert({
     user_id: S.user.id, type: S.txType, category: cat, amount: amt,
     description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef
@@ -681,7 +922,6 @@ function openBudgetModal(){
   document.getElementById('budAmt').value = '';
 }
 function closeBudModal(){ document.getElementById('budModal').classList.remove('open'); }
-
 async function saveBudget(){
   const cat = document.getElementById('budCat').value;
   const amt = parseFloat(document.getElementById('budAmt').value);
@@ -702,7 +942,6 @@ function openGoalModal(){
   document.getElementById('goalTarget').value = '';
 }
 function closeGoalModal(){ document.getElementById('goalModal').classList.remove('open'); }
-
 async function saveGoal(){
   const name = document.getElementById('goalName').value.trim();
   const target = parseFloat(document.getElementById('goalTarget').value);
