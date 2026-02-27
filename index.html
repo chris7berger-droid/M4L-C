@@ -490,7 +490,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
 <script>
 function closeNav(){document.getElementById('navMid').classList.remove('open')}
-const track=document.getElementById('track'),dots=document.querySelectorAll('.dot'),W=288;
+const track=document.getElementById('track'),dots=document.querySelectorAll('.dot'),W=396;
 document.getElementById('next').onclick=()=>track.scrollBy({left:W,behavior:'smooth'});
 document.getElementById('prev').onclick=()=>track.scrollBy({left:-W,behavior:'smooth'});
 dots.forEach((d,i)=>d.addEventListener('click',()=>track.scrollTo({left:i*W,behavior:'smooth'})));
