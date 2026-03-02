@@ -227,6 +227,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 </style>
 </head>
 <body>
+  <div id="splash" style="position:fixed;inset:0;z-index:9999;background:#071E1C;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .4s">
+  <svg width="64" height="64" viewBox="0 0 512 512" fill="none" style="animation:pulse 1.5s ease infinite">
+    <rect width="512" height="512" rx="106" fill="#071E1C"/>
+    <rect x="37" y="37" width="438" height="438" rx="106" stroke="#00D09C" stroke-width="11" fill="none"/>
+    <rect x="85" y="85" width="342" height="342" rx="75" fill="#0D2219" stroke="#00D09C" stroke-width="8"/>
+    <path d="M192 277L256 203L320 277" stroke="#00D09C" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </svg>
+  <div style="font-family:Michroma,sans-serif;font-size:18px;color:#00D09C;margin-top:16px;text-shadow:0 0 14px rgba(0,208,156,0.4);letter-spacing:0.5px">M4L–C</div>
+  <style>@keyframes pulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}</style>
+</div>
 
 <!-- AUTH SCREEN -->
 <div id="auth-screen">
@@ -1053,7 +1063,7 @@ function toast(msg, err){
 }
 
 // ═══════════════ INIT ═══════════════
-checkAuth();
+checkAuth().finally(()=>{const s=document.getElementById('splash');if(s){s.style.opacity='0';setTimeout(()=>s.remove(),400)}});
 </script>
 </body>
 </html>
