@@ -58,7 +58,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .ob-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:12px;line-height:1.3}
 .ob-title .hl{color:var(--ac)}
 .ob-body{font-family:'Fraunces',serif;font-size:16px;font-weight:300;font-style:italic;color:var(--body);max-width:360px;line-height:1.7;margin-bottom:32px}
-.ob-body em{font-style:normal;color:var(--ac)}
+.ob-body em{font-style:normal;color:var(--ac);font-weight:400}
 .ob-quote{font-family:'Fraunces',serif;font-size:18px;font-weight:300;font-style:italic;color:var(--ac);max-width:340px;line-height:1.6;margin-bottom:32px;padding:20px;border:1px solid rgba(212,232,74,0.15);position:relative}
 .ob-quote::before{content:'';position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.3}
 .ob-input-group{width:100%;max-width:340px;margin-bottom:24px}
@@ -79,6 +79,35 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .ob-manifesto p{font-family:'Fraunces',serif;font-size:15px;font-weight:300;color:var(--body);line-height:1.8;margin-bottom:16px}
 .ob-manifesto p em{font-style:normal;color:var(--ac);font-weight:400}
 .ob-manifesto p strong{color:var(--sand);font-weight:400}
+
+/* Pay frequency selector */
+.ob-freq-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:340px;margin-bottom:28px}
+.ob-freq-btn{padding:16px 12px;background:var(--card);border:1px solid var(--div);color:var(--body);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;text-align:center}
+.ob-freq-btn.sel{border-color:var(--teal);background:rgba(0,208,156,0.08);color:var(--teal)}
+.ob-freq-btn .freq-label{display:block;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px}
+.ob-freq-btn .freq-sub{display:block;font-size:11px;color:var(--muted)}
+.ob-freq-btn.sel .freq-sub{color:rgba(0,208,156,0.6)}
+
+/* Start mode selector */
+.ob-start-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:340px;margin-bottom:24px}
+.ob-start-btn{padding:20px 12px;background:var(--card);border:1px solid var(--div);color:var(--body);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;transition:all .2s;text-align:center}
+.ob-start-btn.sel{border-color:var(--teal);background:rgba(0,208,156,0.08);color:var(--teal)}
+.ob-start-btn .start-icon{font-size:28px;display:block;margin-bottom:8px}
+.ob-start-btn .start-label{display:block;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px}
+.ob-start-btn .start-sub{display:block;font-size:11px;color:var(--muted);line-height:1.5}
+.ob-start-btn.sel .start-sub{color:rgba(0,208,156,0.6)}
+
+/* Varies sub-choice */
+.ob-varies-sub{display:none;width:100%;max-width:340px;margin-bottom:24px}
+.ob-varies-sub.show{display:block}
+.ob-varies-sub p{font-size:13px;color:var(--body);margin-bottom:12px;line-height:1.6}
+.ob-varies-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ob-varies-btn{padding:14px;background:var(--card);border:1px solid var(--div);color:var(--body);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center}
+.ob-varies-btn.sel{border-color:var(--teal);background:rgba(0,208,156,0.08);color:var(--teal)}
+
+/* Start mode detail sections */
+.ob-start-details{display:none;width:100%;max-width:340px}
+.ob-start-details.show{display:block}
 
 /* APP LAYOUT */
 #app{display:none}
@@ -274,7 +303,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 <div id="onboarding">
   <!-- SLIDE 1: Manifesto -->
   <div class="ob-slide" id="ob1">
-    <div class="ob-dots"><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+    <div class="ob-dots"><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
     <div class="ob-icon">
       <svg width="56" height="56" viewBox="0 0 1024 1024" fill="none"><rect x="85" y="85" width="854" height="854" rx="213" stroke="#00D09C" stroke-width="22" fill="none"/><rect x="170" y="170" width="684" height="684" rx="149" fill="#0D2219" stroke="#00D09C" stroke-width="16"/><path d="M384 554L512 406L640 554" stroke="#00D09C" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
@@ -290,25 +319,120 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     </div>
   </div>
 
-  <!-- SLIDE 2: Monthly Income -->
+  <!-- SLIDE 2: Name -->
   <div class="ob-slide" id="ob2">
-    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
-    <div class="ob-icon">💵</div>
-    <div class="ob-title">What do you <span class="hl">earn</span> each month?</div>
-    <div class="ob-body">This doesn't have to be exact. Include your job, side gigs, allowance — <em>whatever comes in regularly.</em></div>
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+    <div class="ob-icon">👋</div>
+    <div class="ob-title">What should we <span class="hl">call you?</span></div>
+    <div class="ob-body">Just your first name — we'll use it to personalize <em>your dashboard.</em></div>
     <div class="ob-input-group">
-      <label>Monthly Income (estimate)</label>
-      <input type="number" class="ob-input" id="obIncome" placeholder="$0" inputmode="decimal">
+      <label>First Name</label>
+      <input type="text" class="ob-input" id="obName" placeholder="Your name" style="font-size:18px">
     </div>
     <div class="ob-actions">
       <button class="ob-btn primary" onclick="obNext(3)">Next</button>
-      <button class="ob-btn secondary" onclick="obNext(3)">Skip for now</button>
     </div>
   </div>
 
-  <!-- SLIDE 3: First Savings Goal -->
+  <!-- SLIDE 3: Pay Frequency -->
   <div class="ob-slide" id="ob3">
-    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+    <div class="ob-icon">📅</div>
+    <div class="ob-title">How often do you <span class="hl">get paid?</span></div>
+    <div class="ob-body">This helps us set up budgets that match <em>your actual pay cycle</em> — not some abstract monthly number.</div>
+    <div class="ob-freq-options">
+      <div class="ob-freq-btn" onclick="selectFreq(this,'weekly')">
+        <span class="freq-label">Weekly</span>
+        <span class="freq-sub">Every week</span>
+      </div>
+      <div class="ob-freq-btn" onclick="selectFreq(this,'biweekly')">
+        <span class="freq-label">Biweekly</span>
+        <span class="freq-sub">Every 2 weeks</span>
+      </div>
+      <div class="ob-freq-btn" onclick="selectFreq(this,'monthly')">
+        <span class="freq-label">Monthly</span>
+        <span class="freq-sub">Once a month</span>
+      </div>
+      <div class="ob-freq-btn" onclick="selectFreq(this,'varies')">
+        <span class="freq-label">It Varies</span>
+        <span class="freq-sub">Irregular schedule</span>
+      </div>
+    </div>
+    <div class="ob-varies-sub" id="obVariesSub">
+      <p>No worries — pick the tracking period that works best for you:</p>
+      <div class="ob-varies-row">
+        <div class="ob-varies-btn" onclick="selectVaries(this,'weekly')">Weekly</div>
+        <div class="ob-varies-btn" onclick="selectVaries(this,'biweekly')">Biweekly</div>
+      </div>
+    </div>
+    <div class="ob-actions">
+      <button class="ob-btn primary" onclick="obNext(4)" id="obFreqNext" style="opacity:0.4;pointer-events:none">Next</button>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Starting Point -->
+  <div class="ob-slide" id="ob4">
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+    <div class="ob-icon">🎬</div>
+    <div class="ob-title">When do you want to <span class="hl">start tracking?</span></div>
+    <div class="ob-body">You can start with what you have right now, or wait until <em>your next payday.</em></div>
+    <div class="ob-start-options">
+      <div class="ob-start-btn" onclick="selectStart(this,'today')">
+        <span class="start-icon">💰</span>
+        <span class="start-label">Start Today</span>
+        <span class="start-sub">Use what I have right now</span>
+      </div>
+      <div class="ob-start-btn" onclick="selectStart(this,'next_payday')">
+        <span class="start-icon">📆</span>
+        <span class="start-label">Next Payday</span>
+        <span class="start-sub">Start fresh on payday</span>
+      </div>
+    </div>
+
+    <!-- Today details -->
+    <div class="ob-start-details" id="obStartToday">
+      <div class="ob-input-group">
+        <label>Checking Account Balance</label>
+        <input type="number" class="ob-input" id="obChecking" placeholder="$0" inputmode="decimal">
+      </div>
+      <div class="ob-input-group">
+        <label>Cash on Hand</label>
+        <input type="number" class="ob-input" id="obCash" placeholder="$0" inputmode="decimal">
+      </div>
+    </div>
+
+    <!-- Next payday details -->
+    <div class="ob-start-details" id="obStartPayday">
+      <div class="ob-input-group">
+        <label>When is your next payday?</label>
+        <input type="date" class="ob-input" id="obNextPayday" style="font-size:16px">
+      </div>
+      <div class="ob-input-group">
+        <label>Expected Paycheck Amount</label>
+        <input type="number" class="ob-input" id="obPayAmount" placeholder="$0" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="ob-actions" style="margin-top:24px">
+      <button class="ob-btn primary" onclick="obNext(5)" id="obStartNext" style="opacity:0.4;pointer-events:none">Next</button>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Budget Categories -->
+  <div class="ob-slide" id="ob5">
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+    <div class="ob-icon">📊</div>
+    <div class="ob-title">Where does your <span class="hl">money go?</span></div>
+    <div class="ob-body">Select the categories that apply to you. We'll auto-split your <em id="obBudgetBasis">pay period budget</em> across these.</div>
+    <div class="ob-cats" id="obCats"></div>
+    <div class="ob-actions">
+      <button class="ob-btn primary" onclick="obNext(6)">Next</button>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Savings Goal -->
+  <div class="ob-slide" id="ob6">
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div></div>
     <div class="ob-icon">🎯</div>
     <div class="ob-title">Pay Yourself <span class="hl">First</span></div>
     <div class="ob-body">Before you spend a dollar, decide what you're <em>saving for.</em> What's one thing you want to save up for?</div>
@@ -321,26 +445,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
       <input type="number" class="ob-input" id="obGoalAmt" placeholder="$500" inputmode="decimal">
     </div>
     <div class="ob-actions">
-      <button class="ob-btn primary" onclick="obNext(4)">Next</button>
-      <button class="ob-btn secondary" onclick="obNext(4)">Skip for now</button>
+      <button class="ob-btn primary" onclick="obNext(7)">Next</button>
+      <button class="ob-btn secondary" onclick="obNext(7)">Skip for now</button>
     </div>
   </div>
 
-  <!-- SLIDE 4: Budget Categories -->
-  <div class="ob-slide" id="ob4">
-    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div></div>
-    <div class="ob-icon">📊</div>
-    <div class="ob-title">Where does your <span class="hl">money go?</span></div>
-    <div class="ob-body">Select the categories that apply to you. You can always add more later.</div>
-    <div class="ob-cats" id="obCats"></div>
-    <div class="ob-actions">
-      <button class="ob-btn primary" onclick="obNext(5)">Next</button>
-    </div>
-  </div>
-
-  <!-- SLIDE 5: Ready -->
-  <div class="ob-slide" id="ob5">
-    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div></div>
+  <!-- SLIDE 7: Ready -->
+  <div class="ob-slide" id="ob7">
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div></div>
     <div class="ob-icon">🚀</div>
     <div class="ob-title">You're <span class="hl">all set.</span></div>
     <div class="ob-quote">"Financial discipline is step one in <em>financial fitness.</em> You just took that step."</div>
@@ -471,11 +583,14 @@ const SUPA_KEY = 'sb_publishable_zuvIFieamgRHfb0Ndi_k6Q_OwtsK6Ms';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
 // ═══════════════ STATE ═══════════════
-let S = { user:null, profile:null, tx:[], budgets:[], goals:[], txType:'Spend' };
+let S = { user:null, profile:null, settings:null, tx:[], budgets:[], goals:[], txType:'Spend' };
 
 const CATS_SPEND = ['😋 Eating Out','❤️ Groceries','🚗 Gas','🛍 Shopping','🎉 Fun','📚 School','📱 Subscriptions','📂 Bills','📳 Phone'];
 const CATS_INCOME = ['💵 Paycheck','💰 Side Job','🎁 Gift','📦 Other Income'];
 const CATS_SAVE = ['💰 Savings In','💸 Savings Out'];
+
+// Onboarding state
+let obData = { freq: null, effectiveFreq: null, startMode: null };
 
 // ═══════════════ 150 DAILY QUOTES ═══════════════
 const QUOTES = [
@@ -666,7 +781,7 @@ function togglePassVis(){
   else { inp.type = 'password'; btn.textContent = 'Show'; }
 }
 
-let authMode = 'signup'; // 'signup' or 'login'
+let authMode = 'signup';
 
 function toggleAuthMode(){
   authMode = authMode === 'signup' ? 'login' : 'signup';
@@ -694,17 +809,14 @@ async function emailAuth(){
       options: { emailRedirectTo: window.location.origin + window.location.pathname }
     });
     if(error){ errEl.textContent = error.message; return; }
-    // Check if email confirmation is required
     if(data.user && !data.session){
       document.getElementById('authForm').style.display = 'none';
       document.getElementById('authConfirm').style.display = 'block';
       document.getElementById('confirmEmail').textContent = email;
     }
-    // If session exists immediately (email confirmation disabled), it'll be caught by onAuthStateChange
   } else {
     const {error} = await sb.auth.signInWithPassword({ email, password: pass });
     if(error){ errEl.textContent = error.message; return; }
-    // Success handled by onAuthStateChange
   }
 }
 async function signOut(){ await sb.auth.signOut(); location.reload(); }
@@ -715,6 +827,7 @@ async function checkAuth(){
     S.user = session.user;
     document.getElementById('auth-screen').style.display = 'none';
     await loadProfile();
+    await loadSettings();
     await checkOnboarding();
   }
 }
@@ -723,7 +836,7 @@ sb.auth.onAuthStateChange((event, session) => {
   if(event === 'SIGNED_IN' && session){
     S.user = session.user;
     document.getElementById('auth-screen').style.display = 'none';
-    loadProfile().then(checkOnboarding);
+    loadProfile().then(() => loadSettings()).then(checkOnboarding);
   }
 });
 
@@ -732,17 +845,27 @@ async function loadProfile(){
   S.profile = data;
 }
 
+async function loadSettings(){
+  const {data} = await sb.from('user_settings').select('*').eq('user_id', S.user.id).single();
+  S.settings = data;
+}
+
 // ═══════════════ ONBOARDING ═══════════════
 async function checkOnboarding(){
-  // Check if user has any transactions or budgets (existing user)
+  // Check if user has settings (completed new onboarding)
+  if(S.settings && S.settings.pay_frequency){
+    showApp();
+    return;
+  }
+  // Check if user has any transactions or budgets (existing user from old onboarding)
   const {data:txCheck} = await sb.from('transactions').select('id').eq('user_id', S.user.id).limit(1);
   const {data:budCheck} = await sb.from('budgets').select('id').eq('user_id', S.user.id).limit(1);
-  const isNew = (!txCheck || txCheck.length === 0) && (!budCheck || budCheck.length === 0) && !localStorage.getItem('m4lc_onboarded_'+S.user.id);
+  const isExisting = (txCheck && txCheck.length > 0) || (budCheck && budCheck.length > 0) || localStorage.getItem('m4lc_onboarded_'+S.user.id);
 
-  if(isNew){
-    startOnboarding();
-  } else {
+  if(isExisting){
     showApp();
+  } else {
+    startOnboarding();
   }
 }
 
@@ -759,20 +882,116 @@ function startOnboarding(){
 }
 
 function obNext(n){
+  // Validation for slide 2 (name)
+  if(n === 3){
+    const name = document.getElementById('obName').value.trim();
+    if(!name){ toast('Please enter your name', true); return; }
+  }
   document.querySelectorAll('.ob-slide').forEach(s => s.classList.remove('active'));
   document.getElementById('ob'+n).classList.add('active');
+}
+
+// Pay frequency selection
+function selectFreq(el, freq){
+  document.querySelectorAll('.ob-freq-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  obData.freq = freq;
+
+  const variesSub = document.getElementById('obVariesSub');
+  const nextBtn = document.getElementById('obFreqNext');
+
+  if(freq === 'varies'){
+    variesSub.classList.add('show');
+    // Don't enable next until they pick weekly or biweekly
+    if(!obData.effectiveFreq){
+      nextBtn.style.opacity = '0.4';
+      nextBtn.style.pointerEvents = 'none';
+    }
+  } else {
+    variesSub.classList.remove('show');
+    obData.effectiveFreq = freq;
+    nextBtn.style.opacity = '1';
+    nextBtn.style.pointerEvents = 'auto';
+  }
+}
+
+function selectVaries(el, freq){
+  document.querySelectorAll('.ob-varies-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  obData.effectiveFreq = freq;
+  const nextBtn = document.getElementById('obFreqNext');
+  nextBtn.style.opacity = '1';
+  nextBtn.style.pointerEvents = 'auto';
+}
+
+// Start mode selection
+function selectStart(el, mode){
+  document.querySelectorAll('.ob-start-btn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  obData.startMode = mode;
+
+  document.getElementById('obStartToday').classList.toggle('show', mode === 'today');
+  document.getElementById('obStartPayday').classList.toggle('show', mode === 'next_payday');
+
+  const nextBtn = document.getElementById('obStartNext');
+  nextBtn.style.opacity = '1';
+  nextBtn.style.pointerEvents = 'auto';
 }
 
 async function finishOnboarding(){
   document.getElementById('onboarding').style.display = 'none';
   localStorage.setItem('m4lc_onboarded_'+S.user.id, '1');
 
-  // Save onboarding data
-  const income = parseFloat(document.getElementById('obIncome').value) || 0;
+  const firstName = document.getElementById('obName').value.trim();
   const goalName = document.getElementById('obGoalName').value.trim();
   const goalAmt = parseFloat(document.getElementById('obGoalAmt').value) || 0;
   const selectedCats = [];
   document.querySelectorAll('.ob-cat.sel').forEach(el => selectedCats.push(el.dataset.cat));
+
+  const freq = obData.effectiveFreq || 'biweekly';
+  const startMode = obData.startMode || 'today';
+
+  // Calculate the starting income/balance for budget splitting
+  let startingBalance = 0;
+  let nextPayday = null;
+  let payAmount = 0;
+
+  if(startMode === 'today'){
+    const checking = parseFloat(document.getElementById('obChecking').value) || 0;
+    const cash = parseFloat(document.getElementById('obCash').value) || 0;
+    startingBalance = checking + cash;
+  } else {
+    nextPayday = document.getElementById('obNextPayday').value || null;
+    payAmount = parseFloat(document.getElementById('obPayAmount').value) || 0;
+    startingBalance = payAmount;
+  }
+
+  // Save first name to profiles
+  if(firstName){
+    await sb.from('profiles').upsert({
+      id: S.user.id,
+      first_name: firstName
+    });
+    if(S.profile) S.profile.first_name = firstName;
+    else S.profile = { id: S.user.id, first_name: firstName };
+  }
+
+  // Calculate pay period start date
+  let periodStart = today();
+  if(startMode === 'next_payday' && nextPayday){
+    periodStart = nextPayday;
+  }
+
+  // Save user settings
+  await sb.from('user_settings').upsert({
+    user_id: S.user.id,
+    pay_frequency: freq,
+    start_mode: startMode,
+    starting_balance: startingBalance,
+    next_payday: nextPayday,
+    pay_amount: payAmount,
+    pay_period_start: periodStart
+  });
 
   // Create savings goal if provided
   if(goalName && goalAmt > 0){
@@ -781,10 +1000,11 @@ async function finishOnboarding(){
     });
   }
 
-  // Create budget categories from selection
+  // Create budget categories — use 70% of starting balance for spending
   const mk = monthKey();
-  if(selectedCats.length > 0 && income > 0){
-    const perCat = Math.round(income * 0.7 / selectedCats.length); // 70% of income split across categories
+  const budgetBasis = startingBalance * 0.7;
+  if(selectedCats.length > 0 && budgetBasis > 0){
+    const perCat = Math.round(budgetBasis / selectedCats.length);
     const budgets = selectedCats.map(cat => ({
       user_id: S.user.id, month_key: mk, category: cat, planned_amount: perCat
     }));
@@ -796,25 +1016,28 @@ async function finishOnboarding(){
     await sb.from('budgets').insert(budgets);
   }
 
-  // Log income as a transaction if provided
-  if(income > 0){
+  // Log income as transaction if starting today with money
+  if(startMode === 'today' && startingBalance > 0){
     await sb.from('transactions').insert({
       user_id: S.user.id, type: 'Income', category: '💵 Paycheck',
-      amount: income, description: 'Monthly income (onboarding)',
+      amount: startingBalance, description: 'Starting balance (checking + cash)',
       date: today(), month_key: mk
     });
   }
 
+  // Reload settings
+  await loadSettings();
   showApp();
 }
 
 function showApp(){
   document.getElementById('app').style.display = 'block';
-  const name = S.profile?.first_name || S.user.user_metadata?.full_name || 'there';
-  document.getElementById('hdrName').textContent = name.split(' ')[0];
+  const name = S.profile?.first_name || S.user.user_metadata?.full_name || S.user.user_metadata?.name || '';
+  const displayName = name ? name.split(' ')[0] : 'there';
+  document.getElementById('hdrName').textContent = displayName;
   const hour = new Date().getHours();
   const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('greeting').innerHTML = `<h2>${greet}, ${name.split(' ')[0]}.</h2><p>${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p>`;
+  document.getElementById('greeting').innerHTML = `<h2>${greet}, ${displayName}.</h2><p>${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p>`;
   loadAll();
 }
 
@@ -845,8 +1068,10 @@ function renderHome(mk){
   const income = mtx.filter(t=>t.type==='Income').reduce((s,t)=>s+Number(t.amount),0);
   const spent = mtx.filter(t=>t.type==='Spend').reduce((s,t)=>s+Number(t.amount),0);
   const saved = mtx.filter(t=>t.type==='Save').reduce((s,t)=>s+Number(t.amount),0);
-  const totalBudget = S.budgets.reduce((s,b)=>s+Number(b.planned_amount),0);
-  const left = totalBudget > 0 ? totalBudget - spent : income - spent - saved;
+
+  // FIX: Left to Spend = Income - Spent - Saved (real available money)
+  const left = income - spent - saved;
+
   document.getElementById('sumIncome').textContent = fmtMoney(income);
   document.getElementById('sumSpent').textContent = fmtMoney(spent);
   document.getElementById('sumSaved').textContent = fmtMoney(saved);
