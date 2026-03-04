@@ -42,6 +42,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .auth-submit:hover{opacity:.88}
 .auth-toggle{font-size:13px;color:var(--muted);margin-top:12px;cursor:pointer}
 .auth-toggle span{color:var(--teal);text-decoration:underline;cursor:pointer}
+.auth-forgot{font-size:12px;color:var(--muted);margin-top:8px}
+.auth-forgot span{color:var(--teal);text-decoration:underline;cursor:pointer}
 .auth-divider{display:flex;align-items:center;gap:16px;width:100%;max-width:320px;margin:20px 0}
 .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--div)}
 .auth-divider span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
@@ -288,6 +290,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     <button class="auth-submit" id="authSubmit" onclick="emailAuth()">Sign Up</button>
     <div class="auth-error" id="authError"></div>
     <div class="auth-toggle" id="authToggle">Already have an account? <span onclick="toggleAuthMode()">Log In</span></div>
+    <div class="auth-forgot" id="authForgot" style="display:none"><span onclick="forgotPassword()">Forgot password?</span></div>
   </div>
 
   <div class="auth-confirm" id="authConfirm" style="display:none">
@@ -795,9 +798,26 @@ function toggleAuthMode(){
   document.getElementById('authToggle').innerHTML = authMode === 'signup'
     ? 'Already have an account? <span onclick="toggleAuthMode()">Log In</span>'
     : 'Don\'t have an account? <span onclick="toggleAuthMode()">Sign Up</span>';
+  document.getElementById('authForgot').style.display = authMode === 'login' ? 'block' : 'none';
   document.getElementById('authError').textContent = '';
   document.getElementById('authConfirm').style.display = 'none';
   document.getElementById('authForm').style.display = 'block';
+}
+
+async function forgotPassword(){
+  const email = document.getElementById('authEmail').value.trim();
+  const errEl = document.getElementById('authError');
+  if(!email){ errEl.textContent = 'Enter your email address first.'; return; }
+  errEl.textContent = '';
+  const {error} = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + window.location.pathname
+  });
+  if(error){ errEl.textContent = error.message; return; }
+  document.getElementById('authForm').style.display = 'none';
+  document.getElementById('authConfirm').style.display = 'block';
+  document.getElementById('confirmEmail').textContent = email;
+  document.querySelector('#authConfirm p:first-child strong').textContent = 'Check your email!';
+  document.querySelector('#authConfirm p:last-child').innerHTML = 'We sent a password reset link to <strong>' + email + '</strong>. Click it to set a new password.';
 }
 
 async function emailAuth(){
