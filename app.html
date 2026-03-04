@@ -122,6 +122,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .hdr-name{font-size:11px;color:var(--muted);opacity:0.7}
 .hdr-signout{background:none;border:1px solid var(--div);color:var(--muted);font-size:10px;padding:4px 10px;cursor:pointer;transition:all .2s;opacity:0.7}
 .hdr-signout:hover{border-color:var(--red);color:var(--red);opacity:1}
+.hdr-reset{background:none;border:1px solid var(--div);color:var(--muted);font-size:10px;padding:4px 10px;cursor:pointer;transition:all .2s;opacity:0.5}
+.hdr-reset:hover{border-color:#F5A623;color:#F5A623;opacity:1}
 .main{padding:72px 16px 80px;max-width:600px;margin:0 auto}
 @media(min-width:768px){.main{max-width:900px;padding:80px 32px 80px}}
 
@@ -472,6 +474,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     </div>
     <div class="hdr-user">
       <span class="hdr-name" id="hdrName"></span>
+      <button class="hdr-signout" onclick="resetOnboarding()" style="border-color:rgba(212,232,74,0.3);color:var(--ac);opacity:1">Reset</button>
       <button class="hdr-signout" onclick="signOut()">Sign Out</button>
     </div>
   </div>
@@ -820,6 +823,19 @@ async function emailAuth(){
   }
 }
 async function signOut(){ await sb.auth.signOut(); location.reload(); }
+
+async function resetOnboarding(){
+  if(!confirm('⚠️ Reset your onboarding?\n\nThis will clear YOUR budgets, transactions, goals, and settings so you can redo the onboarding.\n\nOther users are NOT affected.')) return;
+  if(!confirm('Are you really sure? This cannot be undone.')) return;
+  const uid = S.user.id;
+  await sb.from('user_settings').delete().eq('user_id', uid);
+  await sb.from('budgets').delete().eq('user_id', uid);
+  await sb.from('transactions').delete().eq('user_id', uid);
+  await sb.from('savings_goals').delete().eq('user_id', uid);
+  localStorage.removeItem('m4lc_onboarded_'+uid);
+  toast('Reset complete! Reloading...');
+  setTimeout(() => location.reload(), 1000);
+}
 
 async function checkAuth(){
   const {data:{session}} = await sb.auth.getSession();
@@ -1277,6 +1293,20 @@ async function saveGoal(){
   closeGoalModal();
   toast('Goal "'+name+'" created!');
   await loadAll();
+}
+
+// ═══════════════ RESET (TESTING) ═══════════════
+async function resetAccount(){
+  if(!confirm('⚠️ This will DELETE all your data (transactions, budgets, goals, settings) and restart onboarding. Are you sure?')) return;
+  const uid = S.user.id;
+  await sb.from('transactions').delete().eq('user_id', uid);
+  await sb.from('budgets').delete().eq('user_id', uid);
+  await sb.from('savings_goals').delete().eq('user_id', uid);
+  await sb.from('user_settings').delete().eq('user_id', uid);
+  await sb.from('profiles').update({ first_name: null }).eq('id', uid);
+  localStorage.removeItem('m4lc_onboarded_'+uid);
+  toast('Account reset! Reloading...');
+  setTimeout(() => location.reload(), 1000);
 }
 
 // ═══════════════ TOAST ═══════════════
