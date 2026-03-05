@@ -1042,11 +1042,13 @@ async function finishOnboarding(){
     pay_period_start: periodStart
   });
 
-  // Create savings goal if provided
+  // Create savings goal if provided, and capture the ID
+  let savingsGoalId = null;
   if(goalName && goalAmt > 0){
-    await sb.from('savings_goals').insert({
+    const {data:goalData} = await sb.from('savings_goals').insert({
       user_id: S.user.id, goal_name: goalName, target_amount: goalAmt, is_primary: true
-    });
+    }).select('id').single();
+    if(goalData) savingsGoalId = goalData.id;
   }
 
   // Create budget categories — split across spendable money (savings tracked separately)
@@ -1074,12 +1076,12 @@ async function finishOnboarding(){
     });
   }
 
-  // Log existing savings as a savings transaction (separate from spendable income)
-  if(startMode === 'today' && obData.existingSavings > 0){
+  // Log existing savings linked to the savings goal
+  if(startMode === 'today' && obData.existingSavings > 0 && savingsGoalId){
     await sb.from('transactions').insert({
-      user_id: S.user.id, type: 'Savings', category: '🏦 Existing Savings',
+      user_id: S.user.id, type: 'Save', category: '🏦 Existing Savings',
       amount: obData.existingSavings, description: 'Existing savings at signup',
-      date: today(), month_key: mk
+      date: today(), month_key: mk, goal_ref: savingsGoalId
     });
   }
 
