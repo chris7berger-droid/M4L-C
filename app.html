@@ -860,8 +860,12 @@ async function resetOnboarding(){
   await sb.from('transactions').delete().eq('user_id', uid);
   await sb.from('savings_goals').delete().eq('user_id', uid);
   localStorage.removeItem('m4lc_onboarded_'+uid);
-  toast('Reset complete! Reloading...');
-  setTimeout(() => location.reload(), 1000);
+  // Clear in-memory state so checkOnboarding sees a fresh user
+  S.settings = null;
+  // Hide the app and launch onboarding directly
+  document.getElementById('app').style.display = 'none';
+  startOnboarding();
+  toast('Reset complete! Running onboarding...');
 }
 
 async function checkAuth(){
