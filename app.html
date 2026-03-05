@@ -407,6 +407,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
         <label>Cash on Hand</label>
         <input type="number" class="ob-input" id="obCash" placeholder="$0" inputmode="decimal">
       </div>
+      <div class="ob-input-group">
+        <label>Already Have Savings?</label>
+        <input type="number" class="ob-input" id="obExistingSavings" placeholder="$0 (optional)" inputmode="decimal">
+      </div>
     </div>
 
     <!-- Next payday details -->
@@ -998,7 +1002,9 @@ async function finishOnboarding(){
   if(startMode === 'today'){
     const checking = parseFloat(document.getElementById('obChecking').value) || 0;
     const cash = parseFloat(document.getElementById('obCash').value) || 0;
+    const existingSavings = parseFloat(document.getElementById('obExistingSavings').value) || 0;
     startingBalance = checking + cash;
+    obData.existingSavings = existingSavings;
   } else {
     nextPayday = document.getElementById('obNextPayday').value || null;
     payAmount = parseFloat(document.getElementById('obPayAmount').value) || 0;
@@ -1039,9 +1045,9 @@ async function finishOnboarding(){
     });
   }
 
-  // Create budget categories — use 70% of starting balance for spending
+  // Create budget categories — split across spendable money (savings tracked separately)
   const mk = monthKey();
-  const budgetBasis = startingBalance * 0.7;
+  const budgetBasis = startingBalance;
   if(selectedCats.length > 0 && budgetBasis > 0){
     const perCat = Math.round(budgetBasis / selectedCats.length);
     const budgets = selectedCats.map(cat => ({
@@ -1060,6 +1066,15 @@ async function finishOnboarding(){
     await sb.from('transactions').insert({
       user_id: S.user.id, type: 'Income', category: '💵 Paycheck',
       amount: startingBalance, description: 'Starting balance (checking + cash)',
+      date: today(), month_key: mk
+    });
+  }
+
+  // Log existing savings as a savings transaction (separate from spendable income)
+  if(startMode === 'today' && obData.existingSavings > 0){
+    await sb.from('transactions').insert({
+      user_id: S.user.id, type: 'Savings', category: '🏦 Existing Savings',
+      amount: obData.existingSavings, description: 'Existing savings at signup',
       date: today(), month_key: mk
     });
   }
