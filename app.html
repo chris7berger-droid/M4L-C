@@ -579,6 +579,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
         <button type="button" class="type-btn" onclick="setWorthIt('No')" id="wiNo" style="flex:1">👎 No</button>
       </div>
     </div>
+    <div class="form-group" id="txNotesGroup" style="display:none"><label>Notes</label><textarea id="txNotes" placeholder="Why? How did it feel? Would you do it again?" style="width:100%;min-height:60px;background:var(--bg);border:1px solid var(--div);color:var(--fg);padding:10px;font-family:'DM Sans',sans-serif;font-size:14px;resize:vertical"></textarea></div>
     <div class="form-group"><label>Date</label><input type="date" id="txDate"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeTxModal()">Cancel</button>
@@ -1336,6 +1337,7 @@ function editTx(id){
   } else {
     setWorthIt(null);
   }
+  document.getElementById('txNotes').value = t.notes || '';
   // Set category after type is set (which populates the dropdown)
   const catSel = document.getElementById('txCat');
   for(let i = 0; i < catSel.options.length; i++){
@@ -1443,6 +1445,7 @@ function openTxModal(){
   document.getElementById('txAmt').value = '';
   document.getElementById('txDesc').value = '';
   setWorthIt(null);
+  document.getElementById('txNotes').value = '';
   document.getElementById('txAmt').focus();
 }
 function closeTxModal(){ document.getElementById('txModal').classList.remove('open'); }
@@ -1462,6 +1465,7 @@ function setTxType(type){
   sel.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
   document.getElementById('goalRefGroup').style.display = type === 'Save' ? 'block' : 'none';
   document.getElementById('worthItGroup').style.display = type === 'Spend' ? 'block' : 'none';
+  document.getElementById('txNotesGroup').style.display = type === 'Spend' ? 'block' : 'none';
   if(type !== 'Spend') setWorthIt(null);
   if(type === 'Save'){
     const gsel = document.getElementById('txGoalRef');
@@ -1492,12 +1496,13 @@ async function saveTx(){
   const editId = document.getElementById('txEditId').value;
 
   const worthIt = S.txType === 'Spend' ? S.worthIt : null;
+  const notes = S.txType === 'Spend' ? (document.getElementById('txNotes').value || null) : null;
 
   if(editId){
     // UPDATE existing
     const {error} = await sb.from('transactions').update({
       type: S.txType, category: cat, amount: amt,
-      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef, worth_it: worthIt
+      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef, worth_it: worthIt, notes: notes
     }).eq('id', editId).eq('user_id', S.user.id);
     if(error){ toast('Error: '+error.message, true); return; }
     toast('Transaction updated!');
@@ -1505,7 +1510,7 @@ async function saveTx(){
     // INSERT new
     const {error} = await sb.from('transactions').insert({
       user_id: S.user.id, type: S.txType, category: cat, amount: amt,
-      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef, worth_it: worthIt
+      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef, worth_it: worthIt, notes: notes
     });
     if(error){ toast('Error: '+error.message, true); return; }
     toast(S.txType + ' of ' + fmtMoney(amt) + ' saved!');
