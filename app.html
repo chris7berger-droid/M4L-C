@@ -1185,7 +1185,7 @@ function renderSavingsHero(mk){
   const totalSaved = goalData.reduce((s,g) => s + g.saved, 0);
   const totalTarget = goalData.reduce((s,g) => s + Number(g.target_amount), 0);
   const goalCount = goalData.length;
-  const monthSaved = S.tx.filter(t => t.type === 'Save' && ((t.month_key === mk) || (t.date && t.date.startsWith(mk)))).reduce((s,t) => s + Number(t.amount), 0);
+  const monthSaved = S.tx.filter(t => t.type === 'Save' && t.goal_ref && ((t.month_key === mk) || (t.date && t.date.startsWith(mk)))).reduce((s,t) => s + Number(t.amount), 0);
   let cards = '';
   cards += `<div class="scar-card total-card">
     <div class="scar-total-top"><div class="scar-total-icon">🏦</div><div class="scar-total-info">
@@ -1408,8 +1408,13 @@ function setTxType(type){
   document.getElementById('goalRefGroup').style.display = type === 'Save' ? 'block' : 'none';
   if(type === 'Save'){
     const gsel = document.getElementById('txGoalRef');
-    gsel.innerHTML = '<option value="">No specific goal</option>' + S.goals.map(g => `<option value="${g.id}">${g.goal_name}</option>`).join('');
-    if(S.goals.length === 1) gsel.value = S.goals[0].id;
+    if(S.goals.length === 0){
+      gsel.innerHTML = '<option value="">Create a goal first</option>';
+    } else if(S.goals.length === 1){
+      gsel.innerHTML = `<option value="${S.goals[0].id}">${S.goals[0].goal_name}</option>`;
+    } else {
+      gsel.innerHTML = S.goals.map(g => `<option value="${g.id}">${g.goal_name}</option>`).join('');
+    }
   }
 }
 async function saveTx(){
@@ -1419,6 +1424,7 @@ async function saveTx(){
   const desc = document.getElementById('txDesc').value;
   const date = document.getElementById('txDate').value || today();
   const goalRef = S.txType === 'Save' ? (document.getElementById('txGoalRef').value || null) : null;
+  if(S.txType === 'Save' && !goalRef){ toast('Select a savings goal first', true); return; }
   const editId = document.getElementById('txEditId').value;
 
   if(editId){
