@@ -1409,6 +1409,7 @@ function setTxType(type){
   if(type === 'Save'){
     const gsel = document.getElementById('txGoalRef');
     gsel.innerHTML = '<option value="">No specific goal</option>' + S.goals.map(g => `<option value="${g.id}">${g.goal_name}</option>`).join('');
+    if(S.goals.length === 1) gsel.value = S.goals[0].id;
   }
 }
 async function saveTx(){
