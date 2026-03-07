@@ -250,6 +250,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .type-btn.active-spend{background:rgba(255,107,107,0.12);border-color:var(--red);color:var(--red)}
 .type-btn.active-income{background:rgba(0,208,156,0.12);border-color:var(--teal);color:var(--teal)}
 .type-btn.active-save{background:rgba(212,232,74,0.12);border-color:var(--ac);color:var(--ac)}
+.type-btn.wi-yes{background:rgba(0,208,156,0.15);border-color:var(--teal);color:var(--teal)}
+.type-btn.wi-meh{background:rgba(212,232,74,0.15);border-color:var(--ac);color:var(--ac)}
+.type-btn.wi-no{background:rgba(231,76,60,0.15);border-color:var(--red);color:var(--red)}
+.tx-worth{font-size:11px;margin-left:4px}
 .modal-actions{display:flex;gap:8px;margin-top:20px}
 .modal-actions button{flex:1;padding:12px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none}
 .btn-save{background:var(--ac);color:var(--bg)}
@@ -568,6 +572,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     <div class="form-group"><label>Category</label><select id="txCat"></select></div>
     <div class="form-group" id="goalRefGroup" style="display:none"><label>Savings Goal</label><select id="txGoalRef"></select></div>
     <div class="form-group"><label>Description</label><input type="text" id="txDesc" placeholder="What was this for?"></div>
+    <div class="form-group" id="worthItGroup" style="display:none"><label>Worth It?</label>
+      <div class="type-toggle" id="worthItToggle">
+        <button type="button" class="type-btn" onclick="setWorthIt('Yes')" id="wiYes" style="flex:1">👍 Yes</button>
+        <button type="button" class="type-btn" onclick="setWorthIt('Meh')" id="wiMeh" style="flex:1">😐 Meh</button>
+        <button type="button" class="type-btn" onclick="setWorthIt('No')" id="wiNo" style="flex:1">👎 No</button>
+      </div>
+    </div>
     <div class="form-group"><label>Date</label><input type="date" id="txDate"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeTxModal()">Cancel</button>
@@ -626,7 +637,7 @@ const SUPA_KEY = 'sb_publishable_zuvIFieamgRHfb0Ndi_k6Q_OwtsK6Ms';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
 // ═══════════════ STATE ═══════════════
-let S = { user:null, profile:null, settings:null, tx:[], budgets:[], goals:[], txType:'Spend' };
+let S = { user:null, profile:null, settings:null, tx:[], budgets:[], goals:[], txType:'Spend', worthIt:null };
 
 const CATS_SPEND = ['😋 Eating Out','❤️ Groceries','🚗 Gas','🛍 Shopping','🎉 Fun','📚 School','📱 Subscriptions','📂 Bills','📳 Phone'];
 const CATS_INCOME = ['💵 Paycheck','💰 Side Job','🎁 Gift','📦 Other Income'];
@@ -1263,7 +1274,8 @@ function renderTxList(elId, txs){
     const cls = t.type === 'Spend' ? 'spend' : t.type === 'Income' ? 'income' : 'save';
     const sign = t.type === 'Spend' ? '-' : '+';
     const emoji = t.category ? t.category.split(' ')[0] : '💲';
-    return `<div class="tx-row" onclick="openTxActions('${t.id}')"><div class="tx-left"><span class="tx-cat">${emoji}</span><div class="tx-info"><span class="tx-desc">${t.description || t.category}</span><span class="tx-meta">${t.date} · ${t.type}</span></div></div><span class="tx-amt ${cls}">${sign}${fmtMoney(t.amount)}</span></div>`;
+    const wi = t.worth_it === 'Yes' ? ' 👍' : t.worth_it === 'Meh' ? ' 😐' : t.worth_it === 'No' ? ' 👎' : '';
+    return `<div class="tx-row" onclick="openTxActions('${t.id}')"><div class="tx-left"><span class="tx-cat">${emoji}</span><div class="tx-info"><span class="tx-desc">${t.description || t.category}${wi ? '<span class="tx-worth">'+wi+'</span>' : ''}</span><span class="tx-meta">${t.date} · ${t.type}</span></div></div><span class="tx-amt ${cls}">${sign}${fmtMoney(t.amount)}</span></div>`;
   }).join('');
 }
 
@@ -1318,6 +1330,12 @@ function editTx(id){
   document.getElementById('txAmt').value = t.amount;
   document.getElementById('txDesc').value = t.description || '';
   document.getElementById('txDate').value = t.date || today();
+  // Set worth it rating
+  if(t.type === 'Spend' && t.worth_it){
+    setWorthIt(t.worth_it);
+  } else {
+    setWorthIt(null);
+  }
   // Set category after type is set (which populates the dropdown)
   const catSel = document.getElementById('txCat');
   for(let i = 0; i < catSel.options.length; i++){
@@ -1424,6 +1442,7 @@ function openTxModal(){
   setTxType('Spend');
   document.getElementById('txAmt').value = '';
   document.getElementById('txDesc').value = '';
+  setWorthIt(null);
   document.getElementById('txAmt').focus();
 }
 function closeTxModal(){ document.getElementById('txModal').classList.remove('open'); }
@@ -1442,6 +1461,8 @@ function setTxType(type){
   }
   sel.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
   document.getElementById('goalRefGroup').style.display = type === 'Save' ? 'block' : 'none';
+  document.getElementById('worthItGroup').style.display = type === 'Spend' ? 'block' : 'none';
+  if(type !== 'Spend') setWorthIt(null);
   if(type === 'Save'){
     const gsel = document.getElementById('txGoalRef');
     if(S.goals.length === 0){
@@ -1453,6 +1474,13 @@ function setTxType(type){
     }
   }
 }
+function setWorthIt(val){
+  S.worthIt = val;
+  ['Yes','Meh','No'].forEach(v => {
+    const btn = document.getElementById('wi'+v);
+    btn.className = 'type-btn' + (v === val ? ' wi-' + v.toLowerCase() : '');
+  });
+}
 async function saveTx(){
   const amt = parseFloat(document.getElementById('txAmt').value);
   if(!amt || amt <= 0){ toast('Enter a valid amount', true); return; }
@@ -1463,11 +1491,13 @@ async function saveTx(){
   if(S.txType === 'Save' && !goalRef){ toast('Select a savings goal first', true); return; }
   const editId = document.getElementById('txEditId').value;
 
+  const worthIt = S.txType === 'Spend' ? S.worthIt : null;
+
   if(editId){
     // UPDATE existing
     const {error} = await sb.from('transactions').update({
       type: S.txType, category: cat, amount: amt,
-      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef
+      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef, worth_it: worthIt
     }).eq('id', editId).eq('user_id', S.user.id);
     if(error){ toast('Error: '+error.message, true); return; }
     toast('Transaction updated!');
@@ -1475,7 +1505,7 @@ async function saveTx(){
     // INSERT new
     const {error} = await sb.from('transactions').insert({
       user_id: S.user.id, type: S.txType, category: cat, amount: amt,
-      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef
+      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef, worth_it: worthIt
     });
     if(error){ toast('Error: '+error.message, true); return; }
     toast(S.txType + ' of ' + fmtMoney(amt) + ' saved!');
