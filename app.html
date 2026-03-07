@@ -1353,11 +1353,32 @@ function editBudget(id){
   document.getElementById('budEditId').value = id;
   document.getElementById('budModalTitle').textContent = 'Edit Budget';
   document.getElementById('budModal').classList.add('open');
-  const catSel = document.getElementById('budCat');
-  catSel.innerHTML = `<option value="${b.category}">${b.category}</option>`;
-  catSel.disabled = true;
   document.getElementById('budAmt').value = b.planned_amount;
-  document.getElementById('budAmt').focus();
+  document.getElementById('emojiPicker').style.display = 'none';
+
+  const isCustom = !CATS_SPEND.includes(b.category);
+  const catSel = document.getElementById('budCat');
+
+  if(isCustom){
+    // Custom category — let them edit emoji and name
+    catSel.innerHTML = `<option value="__custom__">✨ Custom Category...</option>`;
+    catSel.disabled = true;
+    document.getElementById('customBudGroup').style.display = 'block';
+    // Split emoji from name (first char cluster is emoji, rest is name)
+    const parts = b.category.match(/^(\S+)\s+(.+)$/);
+    if(parts){
+      document.getElementById('budEmojiBtn').textContent = parts[1];
+      document.getElementById('budCustomName').value = parts[2];
+    } else {
+      document.getElementById('budEmojiBtn').textContent = '🎯';
+      document.getElementById('budCustomName').value = b.category;
+    }
+  } else {
+    // Built-in category — lock it
+    catSel.innerHTML = `<option value="${b.category}">${b.category}</option>`;
+    catSel.disabled = true;
+    document.getElementById('customBudGroup').style.display = 'none';
+  }
 }
 async function deleteBudget(id){
   if(!confirm('Delete this budget category?')) return;
@@ -1520,9 +1541,13 @@ async function saveBudget(){
   const editId = document.getElementById('budEditId').value;
 
   if(editId){
-    const {error} = await sb.from('budgets').update({
-      planned_amount: amt
-    }).eq('id', editId).eq('user_id', S.user.id);
+    const updateData = { planned_amount: amt };
+    // If editing a custom category, also update the category name/emoji
+    const b = S.budgets.find(x => x.id === editId);
+    if(b && !CATS_SPEND.includes(b.category)){
+      updateData.category = cat;
+    }
+    const {error} = await sb.from('budgets').update(updateData).eq('id', editId).eq('user_id', S.user.id);
     if(error){ toast('Error: '+error.message, true); return; }
     toast('Budget updated!');
   } else {
