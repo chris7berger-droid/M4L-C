@@ -580,7 +580,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
   <div class="modal">
     <h3 id="budModalTitle">Add Budget Category</h3>
     <input type="hidden" id="budEditId">
-    <div class="form-group"><label>Category</label><select id="budCat"></select></div>
+    <div class="form-group"><label>Category</label><select id="budCat" onchange="toggleCustomBudCat()"></select></div>
+    <div class="form-group" id="customBudGroup" style="display:none">
+      <label>Custom Category Name</label>
+      <div style="display:flex;gap:8px">
+        <button type="button" id="budEmojiBtn" onclick="toggleEmojiPicker()" style="font-size:22px;width:48px;height:48px;background:var(--bg);border:1px solid var(--div);border-radius:4px;cursor:pointer;flex-shrink:0">🎯</button>
+        <input type="text" class="auth-input" id="budCustomName" placeholder="e.g. Parking, Laundry..." style="margin:0;flex:1">
+      </div>
+      <div id="emojiPicker" style="display:none;margin-top:8px;background:var(--bg);border:1px solid var(--div);padding:8px;border-radius:4px;max-height:150px;overflow-y:auto">
+        <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px;text-align:center" id="emojiGrid"></div>
+      </div>
+    </div>
     <div class="form-group"><label>Monthly Budget</label><input type="number" id="budAmt" placeholder="0.00" step="0.01" inputmode="decimal"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeBudModal()">Cancel</button>
@@ -1403,7 +1413,12 @@ function setTxType(type){
     btn.className = 'type-btn' + (t === type ? ' active-' + t.toLowerCase() : '');
   });
   const sel = document.getElementById('txCat');
-  const cats = type === 'Spend' ? CATS_SPEND : type === 'Income' ? CATS_INCOME : CATS_SAVE;
+  let cats = type === 'Spend' ? CATS_SPEND : type === 'Income' ? CATS_INCOME : CATS_SAVE;
+  // Add any custom budget categories to spend list
+  if(type === 'Spend'){
+    const customCats = S.budgets.map(b => b.category).filter(c => !CATS_SPEND.includes(c));
+    if(customCats.length) cats = [...cats, ...customCats];
+  }
   sel.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
   document.getElementById('goalRefGroup').style.display = type === 'Save' ? 'block' : 'none';
   if(type === 'Save'){
@@ -1449,23 +1464,59 @@ async function saveTx(){
 }
 
 // ═══════════════ BUDGET MODAL ═══════════════
+const BUDGET_EMOJIS = ['🎯','💰','🏠','🚗','✈️','🎮','🎵','📖','🍕','☕','🛒','💊','🐶','🏋️','💇','🎁','🔧','🧹','🅿️','👕','🧺','💻','📱','🎓','🚌','🏥','🎬','🍺','⛽','💡','🚿','📬','🏦','🛡','🎨','🌿','🧸','🪥','🍳','🧊'];
+
 function openBudgetModal(){
   document.getElementById('budModal').classList.add('open');
   document.getElementById('budModalTitle').textContent = 'Add Budget Category';
   document.getElementById('budEditId').value = '';
   const catSel = document.getElementById('budCat');
   catSel.disabled = false;
-  catSel.innerHTML = CATS_SPEND.map(c => `<option value="${c}">${c}</option>`).join('');
+  catSel.innerHTML = CATS_SPEND.map(c => `<option value="${c}">${c}</option>`).join('') + '<option value="__custom__">✨ Custom Category...</option>';
+  document.getElementById('customBudGroup').style.display = 'none';
   document.getElementById('budAmt').value = '';
+  document.getElementById('budCustomName').value = '';
+  document.getElementById('budEmojiBtn').textContent = '🎯';
+  document.getElementById('emojiPicker').style.display = 'none';
 }
 function closeBudModal(){
   document.getElementById('budModal').classList.remove('open');
   document.getElementById('budCat').disabled = false;
+  document.getElementById('emojiPicker').style.display = 'none';
+}
+function toggleCustomBudCat(){
+  const isCustom = document.getElementById('budCat').value === '__custom__';
+  document.getElementById('customBudGroup').style.display = isCustom ? 'block' : 'none';
+  if(isCustom) document.getElementById('budCustomName').focus();
+}
+function toggleEmojiPicker(){
+  const picker = document.getElementById('emojiPicker');
+  if(picker.style.display === 'none'){
+    picker.style.display = 'block';
+    document.getElementById('emojiGrid').innerHTML = BUDGET_EMOJIS.map(e =>
+      `<span style="font-size:22px;cursor:pointer;padding:4px;border-radius:4px" onclick="pickEmoji('${e}')">${e}</span>`
+    ).join('');
+  } else {
+    picker.style.display = 'none';
+  }
+}
+function pickEmoji(e){
+  document.getElementById('budEmojiBtn').textContent = e;
+  document.getElementById('emojiPicker').style.display = 'none';
 }
 async function saveBudget(){
-  const cat = document.getElementById('budCat').value;
+  let cat = document.getElementById('budCat').value;
   const amt = parseFloat(document.getElementById('budAmt').value);
   if(!amt || amt <= 0){ toast('Enter a valid amount', true); return; }
+
+  // Handle custom category
+  if(cat === '__custom__'){
+    const customName = document.getElementById('budCustomName').value.trim();
+    if(!customName){ toast('Enter a category name', true); return; }
+    const emoji = document.getElementById('budEmojiBtn').textContent;
+    cat = emoji + ' ' + customName;
+  }
+
   const editId = document.getElementById('budEditId').value;
 
   if(editId){
