@@ -226,6 +226,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;padding:16px}
 .modal-bg.open{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--div);width:100%;max-width:420px;max-height:90vh;overflow-y:auto;padding:28px 24px}
+.action-sheet{position:fixed;bottom:0;left:0;right:0;z-index:300;background:var(--bg2);border-top:1px solid var(--div);padding:16px 16px calc(16px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .25s ease}
+.action-sheet.open{transform:translateY(0)}
+.action-sheet-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:299}
+.action-sheet-backdrop.open{display:block}
+.action-sheet h4{font-family:'Syne',sans-serif;font-size:14px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px}
+.action-sheet-item{display:flex;align-items:center;gap:12px;padding:14px 8px;border-bottom:1px solid var(--div);cursor:pointer;font-size:15px;color:var(--fg);font-family:'DM Sans',sans-serif;transition:background .15s}
+.action-sheet-item:hover{background:rgba(0,208,156,0.08)}
+.action-sheet-item:last-child{border-bottom:none}
+.action-sheet-item.danger{color:var(--red)}
+.action-sheet-item .as-icon{font-size:18px;width:24px;text-align:center}
+.bud-row,.goal-row,.tx-row{cursor:pointer;transition:background .15s}
+.bud-row:active,.goal-row:active,.tx-row:active{background:rgba(0,208,156,0.06)}
 .modal h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:20px}
 .form-group{margin-bottom:16px}
 .form-group label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
@@ -545,7 +557,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 <!-- TRANSACTION MODAL -->
 <div class="modal-bg" id="txModal">
   <div class="modal">
-    <h3>New Transaction</h3>
+    <h3 id="txModalTitle">New Transaction</h3>
+    <input type="hidden" id="txEditId">
     <div class="type-toggle">
       <button class="type-btn active-spend" onclick="setTxType('Spend')" id="typeSpend">Spend</button>
       <button class="type-btn" onclick="setTxType('Income')" id="typeIncome">Income</button>
@@ -565,7 +578,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 <!-- BUDGET MODAL -->
 <div class="modal-bg" id="budModal">
   <div class="modal">
-    <h3>Add Budget Category</h3>
+    <h3 id="budModalTitle">Add Budget Category</h3>
+    <input type="hidden" id="budEditId">
     <div class="form-group"><label>Category</label><select id="budCat"></select></div>
     <div class="form-group"><label>Monthly Budget</label><input type="number" id="budAmt" placeholder="0.00" step="0.01" inputmode="decimal"></div>
     <div class="modal-actions">
@@ -577,7 +591,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 <!-- GOAL MODAL -->
 <div class="modal-bg" id="goalModal">
   <div class="modal">
-    <h3>New Savings Goal</h3>
+    <h3 id="goalModalTitle">New Savings Goal</h3>
+    <input type="hidden" id="goalEditId">
     <div class="form-group"><label>Goal Name</label><input type="text" id="goalName" placeholder="e.g. Emergency Fund"></div>
     <div class="form-group"><label>Target Amount</label><input type="number" id="goalTarget" placeholder="0.00" step="0.01" inputmode="decimal"></div>
     <div class="form-group"><label>Primary Goal?</label><select id="goalPrimary"><option value="false">No</option><option value="true">Yes</option></select></div>
@@ -586,6 +601,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
       <button class="btn-save" onclick="saveGoal()">Save</button>
     </div>
   </div>
+</div>
+<div class="action-sheet-backdrop" id="asBg" onclick="closeActionSheet()"></div>
+<div class="action-sheet" id="actionSheet">
+  <h4 id="asTitle">Actions</h4>
+  <div id="asItems"></div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -1211,7 +1231,7 @@ function renderBudgetList(elId, mk, limit){
     const spent = mtx.filter(t => t.category === b.category).reduce((s,t) => s + Number(t.amount), 0);
     const pct = b.planned_amount > 0 ? Math.min((spent / b.planned_amount) * 100, 100) : 0;
     const cls = pct > 90 ? 'over' : pct > 70 ? 'warn' : 'ok';
-    return `<div class="bud-row"><div class="bud-top"><span class="bud-cat">${b.category}</span><span class="bud-amt"><span>${fmtMoney(spent)}</span> / ${fmtMoney(b.planned_amount)}</span></div><div class="bud-bar"><div class="bud-fill ${cls}" style="width:${pct}%"></div></div></div>`;
+    return `<div class="bud-row" onclick="openBudgetActions('${b.id}')"><div class="bud-top"><span class="bud-cat">${b.category}</span><span class="bud-amt"><span>${fmtMoney(spent)}</span> / ${fmtMoney(b.planned_amount)}</span></div><div class="bud-bar"><div class="bud-fill ${cls}" style="width:${pct}%"></div></div></div>`;
   }).join('');
 }
 
@@ -1222,7 +1242,7 @@ function renderGoalsList(elId, limit){
   el.innerHTML = goals.map(g => {
     const saved = S.tx.filter(t => t.type === 'Save' && t.goal_ref === g.id).reduce((s,t) => s + Number(t.amount), 0);
     const pct = g.target_amount > 0 ? Math.min((saved / g.target_amount) * 100, 100) : 0;
-    return `<div class="goal-row"><div class="goal-top"><span class="goal-name">${g.goal_name}</span>${g.is_primary ? '<span class="goal-badge">Primary</span>' : ''}</div><div class="goal-progress"><span>${fmtMoney(saved)}</span> of ${fmtMoney(g.target_amount)} · ${Math.round(pct)}%</div><div class="goal-bar"><div class="goal-fill" style="width:${pct}%"></div></div></div>`;
+    return `<div class="goal-row" onclick="openGoalActions('${g.id}')"><div class="goal-top"><span class="goal-name">${g.goal_name}</span>${g.is_primary ? '<span class="goal-badge">Primary</span>' : ''}</div><div class="goal-progress"><span>${fmtMoney(saved)}</span> of ${fmtMoney(g.target_amount)} · ${Math.round(pct)}%</div><div class="goal-bar"><div class="goal-fill" style="width:${pct}%"></div></div></div>`;
   }).join('');
 }
 
@@ -1233,7 +1253,7 @@ function renderTxList(elId, txs){
     const cls = t.type === 'Spend' ? 'spend' : t.type === 'Income' ? 'income' : 'save';
     const sign = t.type === 'Spend' ? '-' : '+';
     const emoji = t.category ? t.category.split(' ')[0] : '💲';
-    return `<div class="tx-row"><div class="tx-left"><span class="tx-cat">${emoji}</span><div class="tx-info"><span class="tx-desc">${t.description || t.category}</span><span class="tx-meta">${t.date} · ${t.type}</span></div></div><span class="tx-amt ${cls}">${sign}${fmtMoney(t.amount)}</span></div>`;
+    return `<div class="tx-row" onclick="openTxActions('${t.id}')"><div class="tx-left"><span class="tx-cat">${emoji}</span><div class="tx-info"><span class="tx-desc">${t.description || t.category}</span><span class="tx-meta">${t.date} · ${t.type}</span></div></div><span class="tx-amt ${cls}">${sign}${fmtMoney(t.amount)}</span></div>`;
   }).join('');
 }
 
@@ -1255,8 +1275,120 @@ function showPage(id){
 }
 
 // ═══════════════ TRANSACTION MODAL ═══════════════
+// ═══════════════ ACTION SHEET ═══════════════
+function openActionSheet(title, items){
+  document.getElementById('asTitle').textContent = title;
+  document.getElementById('asItems').innerHTML = items.map(i =>
+    `<div class="action-sheet-item${i.danger ? ' danger' : ''}" onclick="${i.action}"><span class="as-icon">${i.icon}</span>${i.label}</div>`
+  ).join('');
+  document.getElementById('asBg').classList.add('open');
+  document.getElementById('actionSheet').classList.add('open');
+}
+function closeActionSheet(){
+  document.getElementById('asBg').classList.remove('open');
+  document.getElementById('actionSheet').classList.remove('open');
+}
+
+// ═══════════════ TRANSACTION ACTIONS ═══════════════
+function openTxActions(id){
+  const t = S.tx.find(x => x.id === id);
+  if(!t) return;
+  openActionSheet(t.description || t.category, [
+    { icon: '✏️', label: 'Edit Transaction', action: `closeActionSheet();editTx('${id}')` },
+    { icon: '🗑', label: 'Delete Transaction', action: `closeActionSheet();deleteTx('${id}')`, danger: true }
+  ]);
+}
+function editTx(id){
+  const t = S.tx.find(x => x.id === id);
+  if(!t) return;
+  document.getElementById('txEditId').value = id;
+  document.getElementById('txModalTitle').textContent = 'Edit Transaction';
+  document.getElementById('txModal').classList.add('open');
+  setTxType(t.type);
+  document.getElementById('txAmt').value = t.amount;
+  document.getElementById('txDesc').value = t.description || '';
+  document.getElementById('txDate').value = t.date || today();
+  // Set category after type is set (which populates the dropdown)
+  const catSel = document.getElementById('txCat');
+  for(let i = 0; i < catSel.options.length; i++){
+    if(catSel.options[i].value === t.category){ catSel.selectedIndex = i; break; }
+  }
+  if(t.type === 'Save' && t.goal_ref){
+    const gsel = document.getElementById('txGoalRef');
+    for(let i = 0; i < gsel.options.length; i++){
+      if(gsel.options[i].value === t.goal_ref){ gsel.selectedIndex = i; break; }
+    }
+  }
+}
+async function deleteTx(id){
+  if(!confirm('Delete this transaction?')) return;
+  const {error} = await sb.from('transactions').delete().eq('id', id).eq('user_id', S.user.id);
+  if(error){ toast('Error: '+error.message, true); return; }
+  toast('Transaction deleted');
+  await loadAll();
+}
+
+// ═══════════════ BUDGET ACTIONS ═══════════════
+function openBudgetActions(id){
+  const b = S.budgets.find(x => x.id === id);
+  if(!b) return;
+  openActionSheet(b.category, [
+    { icon: '✏️', label: 'Edit Budget Amount', action: `closeActionSheet();editBudget('${id}')` },
+    { icon: '🗑', label: 'Delete Budget Category', action: `closeActionSheet();deleteBudget('${id}')`, danger: true }
+  ]);
+}
+function editBudget(id){
+  const b = S.budgets.find(x => x.id === id);
+  if(!b) return;
+  document.getElementById('budEditId').value = id;
+  document.getElementById('budModalTitle').textContent = 'Edit Budget';
+  document.getElementById('budModal').classList.add('open');
+  const catSel = document.getElementById('budCat');
+  catSel.innerHTML = `<option value="${b.category}">${b.category}</option>`;
+  catSel.disabled = true;
+  document.getElementById('budAmt').value = b.planned_amount;
+  document.getElementById('budAmt').focus();
+}
+async function deleteBudget(id){
+  if(!confirm('Delete this budget category?')) return;
+  const {error} = await sb.from('budgets').delete().eq('id', id).eq('user_id', S.user.id);
+  if(error){ toast('Error: '+error.message, true); return; }
+  toast('Budget category deleted');
+  await loadAll();
+}
+
+// ═══════════════ GOAL ACTIONS ═══════════════
+function openGoalActions(id){
+  const g = S.goals.find(x => x.id === id);
+  if(!g) return;
+  openActionSheet(g.goal_name, [
+    { icon: '✏️', label: 'Edit Goal', action: `closeActionSheet();editGoal('${id}')` },
+    { icon: '🗑', label: 'Delete Goal', action: `closeActionSheet();deleteGoal('${id}')`, danger: true }
+  ]);
+}
+function editGoal(id){
+  const g = S.goals.find(x => x.id === id);
+  if(!g) return;
+  document.getElementById('goalEditId').value = id;
+  document.getElementById('goalModalTitle').textContent = 'Edit Goal';
+  document.getElementById('goalModal').classList.add('open');
+  document.getElementById('goalName').value = g.goal_name;
+  document.getElementById('goalTarget').value = g.target_amount;
+  document.getElementById('goalPrimary').value = g.is_primary ? 'true' : 'false';
+}
+async function deleteGoal(id){
+  if(!confirm('Delete this savings goal? Savings transactions linked to it will remain.')) return;
+  const {error} = await sb.from('savings_goals').delete().eq('id', id).eq('user_id', S.user.id);
+  if(error){ toast('Error: '+error.message, true); return; }
+  toast('Goal deleted');
+  await loadAll();
+}
+
+// ═══════════════ TRANSACTION MODAL ═══════════════
 function openTxModal(){
   document.getElementById('txModal').classList.add('open');
+  document.getElementById('txModalTitle').textContent = 'New Transaction';
+  document.getElementById('txEditId').value = '';
   document.getElementById('txDate').value = today();
   setTxType('Spend');
   document.getElementById('txAmt').value = '';
@@ -1286,39 +1418,71 @@ async function saveTx(){
   const desc = document.getElementById('txDesc').value;
   const date = document.getElementById('txDate').value || today();
   const goalRef = S.txType === 'Save' ? (document.getElementById('txGoalRef').value || null) : null;
-  const {error} = await sb.from('transactions').insert({
-    user_id: S.user.id, type: S.txType, category: cat, amount: amt,
-    description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef
-  });
-  if(error){ toast('Error: '+error.message, true); return; }
+  const editId = document.getElementById('txEditId').value;
+
+  if(editId){
+    // UPDATE existing
+    const {error} = await sb.from('transactions').update({
+      type: S.txType, category: cat, amount: amt,
+      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef
+    }).eq('id', editId).eq('user_id', S.user.id);
+    if(error){ toast('Error: '+error.message, true); return; }
+    toast('Transaction updated!');
+  } else {
+    // INSERT new
+    const {error} = await sb.from('transactions').insert({
+      user_id: S.user.id, type: S.txType, category: cat, amount: amt,
+      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef
+    });
+    if(error){ toast('Error: '+error.message, true); return; }
+    toast(S.txType + ' of ' + fmtMoney(amt) + ' saved!');
+  }
   closeTxModal();
-  toast(S.txType + ' of ' + fmtMoney(amt) + ' saved!');
   await loadAll();
 }
 
 // ═══════════════ BUDGET MODAL ═══════════════
 function openBudgetModal(){
   document.getElementById('budModal').classList.add('open');
-  document.getElementById('budCat').innerHTML = CATS_SPEND.map(c => `<option value="${c}">${c}</option>`).join('');
+  document.getElementById('budModalTitle').textContent = 'Add Budget Category';
+  document.getElementById('budEditId').value = '';
+  const catSel = document.getElementById('budCat');
+  catSel.disabled = false;
+  catSel.innerHTML = CATS_SPEND.map(c => `<option value="${c}">${c}</option>`).join('');
   document.getElementById('budAmt').value = '';
 }
-function closeBudModal(){ document.getElementById('budModal').classList.remove('open'); }
+function closeBudModal(){
+  document.getElementById('budModal').classList.remove('open');
+  document.getElementById('budCat').disabled = false;
+}
 async function saveBudget(){
   const cat = document.getElementById('budCat').value;
   const amt = parseFloat(document.getElementById('budAmt').value);
   if(!amt || amt <= 0){ toast('Enter a valid amount', true); return; }
-  const {error} = await sb.from('budgets').upsert({
-    user_id: S.user.id, month_key: monthKey(), category: cat, planned_amount: amt
-  }, {onConflict: 'user_id,month_key,category'});
-  if(error){ toast('Error: '+error.message, true); return; }
+  const editId = document.getElementById('budEditId').value;
+
+  if(editId){
+    const {error} = await sb.from('budgets').update({
+      planned_amount: amt
+    }).eq('id', editId).eq('user_id', S.user.id);
+    if(error){ toast('Error: '+error.message, true); return; }
+    toast('Budget updated!');
+  } else {
+    const {error} = await sb.from('budgets').upsert({
+      user_id: S.user.id, month_key: monthKey(), category: cat, planned_amount: amt
+    }, {onConflict: 'user_id,month_key,category'});
+    if(error){ toast('Error: '+error.message, true); return; }
+    toast('Budget updated!');
+  }
   closeBudModal();
-  toast('Budget updated!');
   await loadAll();
 }
 
 // ═══════════════ GOAL MODAL ═══════════════
 function openGoalModal(){
   document.getElementById('goalModal').classList.add('open');
+  document.getElementById('goalModalTitle').textContent = 'New Savings Goal';
+  document.getElementById('goalEditId').value = '';
   document.getElementById('goalName').value = '';
   document.getElementById('goalTarget').value = '';
 }
@@ -1329,13 +1493,24 @@ async function saveGoal(){
   const primary = document.getElementById('goalPrimary').value === 'true';
   if(!name){ toast('Enter a goal name', true); return; }
   if(!target || target <= 0){ toast('Enter a target amount', true); return; }
-  if(primary){ await sb.from('savings_goals').update({is_primary:false}).eq('user_id', S.user.id); }
-  const {error} = await sb.from('savings_goals').insert({
-    user_id: S.user.id, goal_name: name, target_amount: target, is_primary: primary
-  });
-  if(error){ toast('Error: '+error.message, true); return; }
+  const editId = document.getElementById('goalEditId').value;
+
+  if(editId){
+    if(primary){ await sb.from('savings_goals').update({is_primary:false}).eq('user_id', S.user.id); }
+    const {error} = await sb.from('savings_goals').update({
+      goal_name: name, target_amount: target, is_primary: primary
+    }).eq('id', editId).eq('user_id', S.user.id);
+    if(error){ toast('Error: '+error.message, true); return; }
+    toast('Goal updated!');
+  } else {
+    if(primary){ await sb.from('savings_goals').update({is_primary:false}).eq('user_id', S.user.id); }
+    const {error} = await sb.from('savings_goals').insert({
+      user_id: S.user.id, goal_name: name, target_amount: target, is_primary: primary
+    });
+    if(error){ toast('Error: '+error.message, true); return; }
+    toast('Goal "'+name+'" created!');
+  }
   closeGoalModal();
-  toast('Goal "'+name+'" created!');
   await loadAll();
 }
 
