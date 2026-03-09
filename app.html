@@ -244,12 +244,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .form-group input:focus,.form-group select:focus{border-color:var(--teal)}
 .form-group select{appearance:none;cursor:pointer}
 .form-group textarea{resize:vertical;min-height:60px}
-.type-toggle{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:2px;margin-bottom:16px}
+.type-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-bottom:16px}
 .type-btn{padding:10px;text-align:center;background:var(--card);border:1px solid var(--div);color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
 .type-btn.active-spend{background:rgba(255,107,107,0.12);border-color:var(--red);color:var(--red)}
 .type-btn.active-income{background:rgba(0,208,156,0.12);border-color:var(--teal);color:var(--teal)}
 .type-btn.active-save{background:rgba(212,232,74,0.12);border-color:var(--ac);color:var(--ac)}
 .type-btn.active-borrow{background:rgba(245,166,35,0.12);border-color:#F5A623;color:#F5A623}
+.pay-method-btn{flex:1;padding:10px;text-align:center;background:var(--card);border:1px solid var(--div);color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.pay-method-btn.active{border-color:var(--teal);color:var(--teal);background:rgba(0,208,156,0.08)}
+.pay-method-btn.credit-active{border-color:#F5A623;color:#F5A623;background:rgba(245,166,35,0.08)}
 .type-btn.wi-yes{background:rgba(0,208,156,0.15);border-color:var(--teal);color:var(--teal)}
 .type-btn.wi-meh{background:rgba(212,232,74,0.15);border-color:var(--ac);color:var(--ac)}
 .type-btn.wi-no{background:rgba(231,76,60,0.15);border-color:var(--red);color:var(--red)}
@@ -570,14 +573,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
       <button class="type-btn active-spend" onclick="setTxType('Spend')" id="typeSpend">Spend</button>
       <button class="type-btn" onclick="setTxType('Income')" id="typeIncome">Income</button>
       <button class="type-btn" onclick="setTxType('Save')" id="typeSave">Save</button>
-      <button class="type-btn" onclick="setTxType('Borrow')" id="typeBorrow">Borrow</button>
     </div>
     <div class="form-group"><label>Amount</label><input type="number" id="txAmt" placeholder="0.00" step="0.01" inputmode="decimal" oninput="updateRealCost()"></div>
     <div class="form-group"><label>Category</label><select id="txCat"></select></div>
-    <div class="form-group" id="goalRefGroup" style="display:none"><label>Savings Goal</label><select id="txGoalRef"></select></div>
+    <div class="form-group" id="payMethodGroup" style="display:none">
+      <label>Paid With</label>
+      <div style="display:flex;gap:8px">
+        <button type="button" class="pay-method-btn active" id="pmCash" onclick="setPayMethod('cash')">💵 Cash / Debit</button>
+        <button type="button" class="pay-method-btn" id="pmCredit" onclick="setPayMethod('credit')">💳 Credit Card</button>
+      </div>
+    </div>
     <div class="form-group" id="cardRefGroup" style="display:none"><label>Credit Card</label><select id="txCardRef" onchange="updateRealCost()"></select>
       <div id="txRealCost" style="display:none;margin-top:8px;font-size:12px;color:#F5A623;font-family:'Fraunces',serif;font-style:italic"></div>
     </div>
+    <div class="form-group" id="goalRefGroup" style="display:none"><label>Savings Goal</label><select id="txGoalRef"></select></div>
     <div class="form-group"><label>Description</label><input type="text" id="txDesc" placeholder="What was this for?"></div>
     <div class="form-group" id="worthItGroup" style="display:none"><label>Worth It?</label>
       <div class="type-toggle" id="worthItToggle">
@@ -645,7 +654,7 @@ const SUPA_KEY = 'sb_publishable_zuvIFieamgRHfb0Ndi_k6Q_OwtsK6Ms';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
 // ═══════════════ STATE ═══════════════
-let S = { user:null, profile:null, settings:null, tx:[], budgets:[], goals:[], cards:[], txType:'Spend', worthIt:null };
+let S = { user:null, profile:null, settings:null, tx:[], budgets:[], goals:[], cards:[], txType:'Spend', worthIt:null, payMethod:'cash' };
 
 // HTML escape utility to prevent XSS
 function esc(str){ if(!str) return ''; const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
@@ -653,7 +662,6 @@ function esc(str){ if(!str) return ''; const d = document.createElement('div'); 
 const CATS_SPEND = ['😋 Eating Out','❤️ Groceries','🚗 Gas','🛍 Shopping','🎉 Fun','📚 School','📱 Subscriptions','📂 Bills','📳 Phone'];
 const CATS_INCOME = ['💵 Paycheck','💰 Side Job','🎁 Gift','📦 Other Income'];
 const CATS_SAVE = ['💰 Savings In','💸 Savings Out'];
-const CATS_BORROW = ['💳 Purchase','💳 Payment','💳 Interest','💳 Fee'];
 
 // Onboarding state
 let obData = { freq: null, effectiveFreq: null, startMode: null };
@@ -1199,10 +1207,10 @@ function renderHome(mk){
   const income = mtx.filter(t=>t.type==='Income').reduce((s,t)=>s+Number(t.amount),0);
   const spent = mtx.filter(t=>t.type==='Spend').reduce((s,t)=>s+Number(t.amount),0);
   const saved = mtx.filter(t=>t.type==='Save').reduce((s,t)=>s+Number(t.amount),0);
-  const borrowed = mtx.filter(t=>t.type==='Borrow').reduce((s,t)=>s+Number(t.amount),0);
+  const borrowed = mtx.filter(t=>t.type==='Spend' && t.pay_method==='credit').reduce((s,t)=>s+Number(t.amount),0);
 
-  // Left to Spend = Income - Spent - Saved - Borrowed (real available money)
-  const left = income - spent - saved - borrowed;
+  // Left to Spend = Income - Spent - Saved (borrowed is already included in spent)
+  const left = income - spent - saved;
 
   document.getElementById('sumIncome').textContent = fmtMoney(income);
   document.getElementById('sumSpent').textContent = fmtMoney(spent);
@@ -1281,11 +1289,11 @@ function renderBudgetList(elId, mk, limit){
   const el = document.getElementById(elId);
   const buds = limit ? S.budgets.slice(0, limit) : S.budgets;
   if(!buds.length){ el.innerHTML = '<div class="empty"><strong>No budgets yet</strong>Tap "+ Add" to set your first budget category.</div>'; return; }
-  const mtx = S.tx.filter(t => (t.type === 'Spend' || t.type === 'Borrow') && ((t.month_key === mk) || (t.date && t.date.startsWith(mk))));
+  const mtx = S.tx.filter(t => t.type === 'Spend' && ((t.month_key === mk) || (t.date && t.date.startsWith(mk))));
   el.innerHTML = buds.map(b => {
     const catTx = mtx.filter(t => t.category === b.category);
-    const cashSpent = catTx.filter(t => t.type === 'Spend').reduce((s,t) => s + Number(t.amount), 0);
-    const borrowed = catTx.filter(t => t.type === 'Borrow').reduce((s,t) => s + Number(t.amount), 0);
+    const cashSpent = catTx.filter(t => t.pay_method !== 'credit').reduce((s,t) => s + Number(t.amount), 0);
+    const borrowed = catTx.filter(t => t.pay_method === 'credit').reduce((s,t) => s + Number(t.amount), 0);
     const totalSpent = cashSpent + borrowed;
     const pct = b.planned_amount > 0 ? Math.min((totalSpent / b.planned_amount) * 100, 100) : 0;
     const cashPct = b.planned_amount > 0 ? Math.min((cashSpent / b.planned_amount) * 100, 100) : 0;
@@ -1310,8 +1318,8 @@ function renderTxList(elId, txs){
   const el = document.getElementById(elId);
   if(!txs.length){ el.innerHTML = '<div class="empty"><strong>No transactions yet</strong>Tap the + button to log your first one.</div>'; return; }
   el.innerHTML = txs.map(t => {
-    const cls = t.type === 'Spend' ? 'spend' : t.type === 'Income' ? 'income' : t.type === 'Borrow' ? 'borrow' : 'save';
-    const sign = (t.type === 'Spend' || t.type === 'Borrow') ? '-' : '+';
+    const cls = t.type === 'Spend' ? (t.pay_method === 'credit' ? 'borrow' : 'spend') : t.type === 'Income' ? 'income' : 'save';
+    const sign = t.type === 'Spend' ? '-' : '+';
     const emoji = t.category ? t.category.split(' ')[0] : '💲';
     const wi = t.worth_it === 'Yes' ? ' 👍' : t.worth_it === 'Meh' ? ' 😐' : t.worth_it === 'No' ? ' 👎' : '';
     return `<div class="tx-row" onclick="openTxActions('${t.id}')"><div class="tx-left"><span class="tx-cat">${emoji}</span><div class="tx-info"><span class="tx-desc">${esc(t.description || t.category)}${wi ? '<span class="tx-worth">'+wi+'</span>' : ''}</span><span class="tx-meta">${t.date} · ${t.type}</span></div></div><span class="tx-amt ${cls}">${sign}${fmtMoney(t.amount)}</span></div>`;
@@ -1370,12 +1378,23 @@ function editTx(id){
   document.getElementById('txDesc').value = t.description || '';
   document.getElementById('txDate').value = t.date || today();
   // Set worth it rating
-  if((t.type === 'Spend' || t.type === 'Borrow') && t.worth_it){
+  if(t.type === 'Spend' && t.worth_it){
     setWorthIt(t.worth_it);
   } else {
     setWorthIt(null);
   }
   document.getElementById('txNotes').value = t.notes || '';
+  // Set payment method
+  if(t.type === 'Spend'){
+    setPayMethod(t.pay_method === 'credit' ? 'credit' : 'cash');
+    if(t.card_ref && t.pay_method === 'credit'){
+      const csel = document.getElementById('txCardRef');
+      for(let i = 0; i < csel.options.length; i++){
+        if(csel.options[i].value === t.card_ref){ csel.selectedIndex = i; break; }
+      }
+      updateRealCost();
+    }
+  }
   // Set category after type is set (which populates the dropdown)
   const catSel = document.getElementById('txCat');
   for(let i = 0; i < catSel.options.length; i++){
@@ -1386,13 +1405,6 @@ function editTx(id){
     for(let i = 0; i < gsel.options.length; i++){
       if(gsel.options[i].value === t.goal_ref){ gsel.selectedIndex = i; break; }
     }
-  }
-  if(t.type === 'Borrow' && t.card_ref){
-    const csel = document.getElementById('txCardRef');
-    for(let i = 0; i < csel.options.length; i++){
-      if(csel.options[i].value === t.card_ref){ csel.selectedIndex = i; break; }
-    }
-    updateRealCost();
   }
 }
 async function deleteTx(id){
@@ -1490,29 +1502,32 @@ function openTxModal(){
   document.getElementById('txAmt').value = '';
   document.getElementById('txDesc').value = '';
   setWorthIt(null);
+  setPayMethod('cash');
   document.getElementById('txNotes').value = '';
   document.getElementById('txAmt').focus();
 }
 function closeTxModal(){ document.getElementById('txModal').classList.remove('open'); }
 function setTxType(type){
   S.txType = type;
-  ['Spend','Income','Save','Borrow'].forEach(t => {
+  ['Spend','Income','Save'].forEach(t => {
     const btn = document.getElementById('type'+t);
     btn.className = 'type-btn' + (t === type ? ' active-' + t.toLowerCase() : '');
   });
   const sel = document.getElementById('txCat');
-  let cats = type === 'Spend' ? CATS_SPEND : type === 'Income' ? CATS_INCOME : type === 'Save' ? CATS_SAVE : CATS_BORROW;
-  // Add any custom budget categories to spend and borrow lists
-  if(type === 'Spend' || type === 'Borrow'){
+  let cats = type === 'Spend' ? CATS_SPEND : type === 'Income' ? CATS_INCOME : CATS_SAVE;
+  if(type === 'Spend'){
     const customCats = S.budgets.map(b => b.category).filter(c => !CATS_SPEND.includes(c));
     if(customCats.length) cats = [...cats, ...customCats];
   }
   sel.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
   document.getElementById('goalRefGroup').style.display = type === 'Save' ? 'block' : 'none';
-  document.getElementById('cardRefGroup').style.display = type === 'Borrow' ? 'block' : 'none';
-  document.getElementById('worthItGroup').style.display = (type === 'Spend' || type === 'Borrow') ? 'block' : 'none';
-  document.getElementById('txNotesGroup').style.display = (type === 'Spend' || type === 'Borrow') ? 'block' : 'none';
-  if(type !== 'Spend' && type !== 'Borrow') setWorthIt(null);
+  document.getElementById('payMethodGroup').style.display = type === 'Spend' ? 'block' : 'none';
+  document.getElementById('worthItGroup').style.display = type === 'Spend' ? 'block' : 'none';
+  document.getElementById('txNotesGroup').style.display = type === 'Spend' ? 'block' : 'none';
+  if(type !== 'Spend'){
+    setWorthIt(null);
+    setPayMethod('cash');
+  }
   if(type === 'Save'){
     const gsel = document.getElementById('txGoalRef');
     if(S.goals.length === 0){
@@ -1523,7 +1538,14 @@ function setTxType(type){
       gsel.innerHTML = S.goals.map(g => `<option value="${g.id}">${g.goal_name}</option>`).join('');
     }
   }
-  if(type === 'Borrow'){
+}
+
+function setPayMethod(method){
+  S.payMethod = method;
+  document.getElementById('pmCash').className = 'pay-method-btn' + (method === 'cash' ? ' active' : '');
+  document.getElementById('pmCredit').className = 'pay-method-btn' + (method === 'credit' ? ' credit-active' : '');
+  document.getElementById('cardRefGroup').style.display = method === 'credit' ? 'block' : 'none';
+  if(method === 'credit'){
     const csel = document.getElementById('txCardRef');
     if(S.cards.length === 0){
       csel.innerHTML = '<option value="__default__">Default Card (24.99% APR)</option>';
@@ -1533,6 +1555,8 @@ function setTxType(type){
       csel.innerHTML = S.cards.map(c => `<option value="${c.id}">${esc(c.card_name)} (${c.apr}%)</option>`).join('');
     }
     updateRealCost();
+  } else {
+    document.getElementById('txRealCost').style.display = 'none';
   }
 }
 function setWorthIt(val){
@@ -1566,7 +1590,7 @@ function calcRealCost(amount, apr){
 function updateRealCost(){
   const costEl = document.getElementById('txRealCost');
   const amt = parseFloat(document.getElementById('txAmt').value);
-  if(!amt || amt <= 0 || S.txType !== 'Borrow'){ costEl.style.display = 'none'; return; }
+  if(!amt || amt <= 0 || S.payMethod !== 'credit'){ costEl.style.display = 'none'; return; }
   const cardId = document.getElementById('txCardRef').value;
   let apr = 24.99;
   if(cardId && cardId !== '__default__'){
@@ -1589,24 +1613,26 @@ async function saveTx(){
   const date = document.getElementById('txDate').value || today();
   const goalRef = S.txType === 'Save' ? (document.getElementById('txGoalRef').value || null) : null;
   if(S.txType === 'Save' && !goalRef){ toast('Select a savings goal first', true); return; }
-  const cardRefVal = S.txType === 'Borrow' ? (document.getElementById('txCardRef').value || null) : null;
+  const isCredit = S.txType === 'Spend' && S.payMethod === 'credit';
+  const cardRefVal = isCredit ? (document.getElementById('txCardRef').value || null) : null;
   const cardRef = (cardRefVal && cardRefVal !== '__default__') ? cardRefVal : null;
   const editId = document.getElementById('txEditId').value;
 
-  const worthIt = (S.txType === 'Spend' || S.txType === 'Borrow') ? S.worthIt : null;
-  const notes = (S.txType === 'Spend' || S.txType === 'Borrow') ? (document.getElementById('txNotes').value || null) : null;
+  const worthIt = S.txType === 'Spend' ? S.worthIt : null;
+  const notes = S.txType === 'Spend' ? (document.getElementById('txNotes').value || null) : null;
+  const payMethod = S.txType === 'Spend' ? S.payMethod : null;
 
   if(editId){
     const {error} = await sb.from('transactions').update({
       type: S.txType, category: cat, amount: amt,
-      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef, card_ref: cardRef, worth_it: worthIt, notes: notes
+      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef, card_ref: cardRef, worth_it: worthIt, notes: notes, pay_method: payMethod
     }).eq('id', editId).eq('user_id', S.user.id);
     if(error){ toast('Error: '+error.message, true); return; }
     toast('Transaction updated!');
   } else {
     const {error} = await sb.from('transactions').insert({
       user_id: S.user.id, type: S.txType, category: cat, amount: amt,
-      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef, card_ref: cardRef, worth_it: worthIt, notes: notes
+      description: desc, date: date, month_key: monthKey(date), goal_ref: goalRef, card_ref: cardRef, worth_it: worthIt, notes: notes, pay_method: payMethod
     });
     if(error){ toast('Error: '+error.message, true); return; }
     toast(S.txType + ' of ' + fmtMoney(amt) + ' saved!');
