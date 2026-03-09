@@ -564,6 +564,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
       <div class="sec-hdr"><h3>Savings Goals</h3><button class="sec-hdr-btn" onclick="openGoalModal()">+ New Goal</button></div>
       <div class="goals-list" id="goalsFull"><div class="loading">Loading...</div></div>
     </div>
+    <div class="page" id="page-debt">
+      <div id="debtContent"><div class="loading">Loading...</div></div>
+    </div>
     <div class="page" id="page-history">
       <div class="sec-hdr"><h3>All Transactions</h3></div>
       <div class="tx-list" id="historyFull"><div class="loading">Loading...</div></div>
@@ -573,7 +576,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     <button class="nav-tab active" onclick="showPage('page-home')"><span class="nav-tab-icon">🏠</span>Home</button>
     <button class="nav-tab" onclick="showPage('page-budget')"><span class="nav-tab-icon">📊</span>Budget</button>
     <button class="nav-tab nav-fab" onclick="openTxModal()"><span class="nav-fab-btn">+</span></button>
-    <button class="nav-tab" onclick="showPage('page-goals')"><span class="nav-tab-icon">🎯</span>Goals</button>
+    <button class="nav-tab" onclick="showPage('page-debt')"><span class="nav-tab-icon">💳</span>Debt</button>
     <button class="nav-tab" onclick="showPage('page-history')"><span class="nav-tab-icon">📋</span>History</button>
   </div>
 </div>
@@ -1254,6 +1257,7 @@ function renderHome(mk){
   renderBudgetList('budgetFull', mk);
   renderGoalsList('goalsFull');
   renderTxList('historyFull', S.tx);
+  renderDebtPage(mk);
 }
 
 function renderSavingsHero(mk){
@@ -1348,6 +1352,127 @@ function renderTxList(elId, txs){
     const wi = t.worth_it === 'Yes' ? ' 👍' : t.worth_it === 'Meh' ? ' 😐' : t.worth_it === 'No' ? ' 👎' : '';
     return `<div class="tx-row" onclick="openTxActions('${t.id}')"><div class="tx-left"><span class="tx-cat">${emoji}</span><div class="tx-info"><span class="tx-desc">${esc(t.description || t.category)}${wi ? '<span class="tx-worth">'+wi+'</span>' : ''}</span><span class="tx-meta">${t.date} · ${t.type}</span></div></div><span class="tx-amt ${cls}">${sign}${fmtMoney(t.amount)}</span></div>`;
   }).join('');
+}
+
+function renderDebtPage(mk){
+  mk = mk || monthKey();
+  const el = document.getElementById('debtContent');
+  const mtx = S.tx.filter(t => (t.month_key === mk) || (t.date && t.date.startsWith(mk)));
+  const creditTx = mtx.filter(t => t.type === 'Spend' && t.pay_method === 'credit');
+  const totalCredit = creditTx.reduce((s,t) => s + Number(t.amount), 0);
+  const totalSaved = mtx.filter(t => t.type === 'Save').reduce((s,t) => s + Number(t.amount), 0);
+
+  // Student loan from settings
+  const studentLoans = S.settings ? Number(S.settings.student_loan_total || 0) : 0;
+  // Starting CC balance from settings
+  const startingCCBalance = S.settings ? Number(S.settings.credit_card_balance || 0) : 0;
+  const totalOwed = startingCCBalance + totalCredit;
+
+  const monthName = new Date(mk+'-15').toLocaleDateString('en-US',{month:'long',year:'numeric'});
+
+  if(totalCredit === 0 && studentLoans === 0 && startingCCBalance === 0){
+    el.innerHTML = `<div style="text-align:center;padding:40px 20px">
+      <div style="font-size:48px;margin-bottom:16px">🎉</div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px">No Debt Tracked</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6;max-width:300px;margin:0 auto">You haven't logged any credit card spending yet. When you do, this is where you'll see the full picture — what you owe, what it really costs, and how to get ahead of it.</div>
+    </div>`;
+    return;
+  }
+
+  let html = `<div style="margin-bottom:16px">
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px">Debt Overview</div>
+    <div style="font-size:13px;color:var(--muted)">${monthName}</div>
+  </div>`;
+
+  // Savings vs Debt ratio
+  if(totalCredit > 0 || totalOwed > 0){
+    const savingsRatio = totalSaved > 0 && totalOwed > 0 ? Math.round((totalSaved / totalOwed) * 100) : totalSaved > 0 ? 100 : 0;
+    const debtWinning = totalOwed > totalSaved;
+    html += `<div style="background:var(--card);border:1px solid var(--div);padding:14px;margin-bottom:12px">
+      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">⚔️ Savings vs. Debt</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <div><div style="font-size:10px;color:var(--teal)">Savings</div><div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--teal)">${fmtMoney(totalSaved)}</div></div>
+        <div style="text-align:center;padding-top:4px"><div style="font-size:18px">${debtWinning ? '😰' : '💪'}</div><div style="font-size:9px;color:var(--muted)">${debtWinning ? 'debt is winning' : 'you\'re ahead'}</div></div>
+        <div style="text-align:right"><div style="font-size:10px;color:#F5A623">Credit Debt</div><div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#F5A623">${fmtMoney(totalOwed)}</div></div>
+      </div>
+      <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--div)">
+        <div style="width:${Math.min(savingsRatio, 100)}%;background:var(--teal)"></div>
+        <div style="flex:1;background:#F5A623"></div>
+      </div>
+    </div>`;
+  }
+
+  // Credit Card section
+  if(totalCredit > 0 || startingCCBalance > 0){
+    const annualCredit = totalCredit * 12;
+    const annualInterest = Math.round(annualCredit * 0.2499 * 100) / 100;
+    const minPayResult = calcRealCost(totalOwed, 24.99);
+
+    html += `<div style="background:rgba(245,166,35,0.06);border:1px solid rgba(245,166,35,0.15);padding:14px;margin-bottom:12px">
+      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#F5A623;margin-bottom:12px">💳 Credit Cards</div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(0,208,156,0.08);border:1px solid rgba(0,208,156,0.15);border-radius:4px">
+          <div><div style="font-size:11px;color:var(--teal);font-weight:600">✅ Pay in full this month</div><div style="font-size:10px;color:var(--muted)">Use the grace period</div></div>
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--teal)">${fmtMoney(totalOwed)}</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.15);border-radius:4px">
+          <div><div style="font-size:11px;color:#F5A623;font-weight:600">⚠️ Minimum payments</div><div style="font-size:10px;color:var(--muted)">${minPayResult.months} months to pay off</div></div>
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#F5A623">${fmtMoney(minPayResult.totalPaid)}</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.15);border-radius:4px">
+          <div><div style="font-size:11px;color:var(--red);font-weight:600">🔥 Keep this pace for a year</div><div style="font-size:10px;color:var(--muted)">Carrying a balance at 24.99%</div></div>
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--red)">${fmtMoney(annualCredit + annualInterest)}</div>
+        </div>
+      </div>`;
+
+    // Per-category breakdown
+    const catGroups = {};
+    creditTx.forEach(t => {
+      if(!catGroups[t.category]) catGroups[t.category] = 0;
+      catGroups[t.category] += Number(t.amount);
+    });
+    const sortedCats = Object.entries(catGroups).sort((a,b) => b[1] - a[1]);
+    if(sortedCats.length > 0){
+      html += `<div style="font-size:11px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px">Where you're using credit</div>`;
+      sortedCats.forEach(([cat, amt]) => {
+        const pct = totalCredit > 0 ? Math.round((amt / totalCredit) * 100) : 0;
+        html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--div)">
+          <span style="font-size:13px">${esc(cat)}</span>
+          <span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#F5A623">${fmtMoney(amt)} <span style="font-size:10px;color:var(--muted)">(${pct}%)</span></span>
+        </div>`;
+      });
+    }
+
+    html += `</div>`;
+
+    // All credit transactions
+    html += `<div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin:16px 0 8px">All Credit Transactions</div>`;
+    html += `<div class="tx-list">`;
+    creditTx.forEach(t => {
+      const emoji = t.category ? t.category.split(' ')[0] : '💳';
+      const wi = t.worth_it === 'Yes' ? ' 👍' : t.worth_it === 'Meh' ? ' 😐' : t.worth_it === 'No' ? ' 👎' : '';
+      html += `<div class="tx-row" onclick="openTxActions('${t.id}')"><div class="tx-left"><span class="tx-cat">${emoji}</span><div class="tx-info"><span class="tx-desc">${esc(t.description || t.category)}${wi ? '<span class="tx-worth">'+wi+'</span>' : ''}</span><span class="tx-meta">${t.date} · 💳</span></div></div><span class="tx-amt borrow">-${fmtMoney(t.amount)}</span></div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Student Loans section
+  if(studentLoans > 0){
+    const monthlyInterest = Math.round(studentLoans * (0.065 / 12) * 100) / 100;
+    html += `<div style="background:rgba(100,149,237,0.06);border:1px solid rgba(100,149,237,0.15);padding:14px;margin-top:12px">
+      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:cornflowerblue;margin-bottom:10px">🎓 Student Loans</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-size:13px;color:var(--body)">Total Balance</div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:cornflowerblue">${fmtMoney(studentLoans)}</div>
+      </div>
+      <div style="font-family:'Fraunces',serif;font-size:13px;font-style:italic;color:var(--body);line-height:1.6">
+        At the average student loan rate of 6.5%, you're accruing about <strong style="color:cornflowerblue">${fmtMoney(monthlyInterest)}</strong>/month in interest. This is structural debt — the goal isn't panic, it's having a plan. <em style="color:var(--ac)">The Path</em> feature will help you build one.
+      </div>
+    </div>`;
+  }
+
+  el.innerHTML = html;
 }
 
 function renderQuote(){
@@ -1468,10 +1593,6 @@ function openCatDetail(budId){
     totalInterest += result.interestPaid;
   });
 
-  // Annualized projection: if they keep this credit spending pace for 12 months
-  const annualCredit = creditTotal * 12;
-  const annualResult = annualCredit > 0 ? calcRealCost(annualCredit, 24.99) : null;
-
   let html = `<div class="cat-detail-header">
     <div class="cat-detail-title">${esc(b.category)}</div>
     <div class="cat-detail-sub">${fmtMoney(totalSpent)} of ${fmtMoney(b.planned_amount)} · ${pctUsed}% used</div>
@@ -1496,24 +1617,35 @@ function openCatDetail(budId){
 
   // Credit card impact section
   if(creditTotal > 0){
+    // Scenario 1: Paid in full (grace period)
+    // Scenario 2: Minimum payments on just this month's spending
+    const minPayResult = calcRealCost(creditTotal, 24.99);
+    // Scenario 3: Annualized - carrying a balance all year
+    const annualCredit = creditTotal * 12;
+    const annualCarryInterest = Math.round(annualCredit * 0.2499 * 100) / 100; // Simple annual interest on avg balance
+
     html += `<div style="background:rgba(245,166,35,0.06);border:1px solid rgba(245,166,35,0.15);padding:14px;margin-bottom:16px">
-      <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#F5A623;margin-bottom:10px;letter-spacing:.05em;text-transform:uppercase">💳 Credit Card Impact</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-        <div style="text-align:center;padding:8px;background:rgba(0,0,0,0.2);border-radius:4px">
-          <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:2px">You charged</div>
-          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#F5A623">${fmtMoney(creditTotal)}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#F5A623;margin-bottom:12px;letter-spacing:.05em;text-transform:uppercase">💳 Credit Card Impact · ${fmtMoney(creditTotal)}</div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(0,208,156,0.08);border:1px solid rgba(0,208,156,0.15);border-radius:4px">
+          <div><div style="font-size:11px;color:var(--teal);font-weight:600">✅ Pay in full this month</div><div style="font-size:10px;color:var(--muted)">Within grace period (25-30 days)</div></div>
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--teal)">${fmtMoney(creditTotal)}</div>
         </div>
-        <div style="text-align:center;padding:8px;background:rgba(0,0,0,0.2);border-radius:4px">
-          <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:2px">You'll actually pay</div>
-          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--red)">${fmtMoney(totalRealCost)}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.15);border-radius:4px">
+          <div><div style="font-size:11px;color:#F5A623;font-weight:600">⚠️ Minimum payments only</div><div style="font-size:10px;color:var(--muted)">${minPayResult.months} months to pay off</div></div>
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#F5A623">${fmtMoney(minPayResult.totalPaid)}</div>
         </div>
-      </div>`;
-    if(annualResult && annualCredit > 0){
-      html += `<div style="font-family:'Fraunces',serif;font-size:13px;font-style:italic;color:var(--body);line-height:1.6">
-        At this pace, you'll put <strong style="color:#F5A623">${fmtMoney(annualCredit)}</strong> on credit for ${esc(b.category).split(' ').slice(1).join(' ')} this year — costing you <strong style="color:var(--red)">${fmtMoney(annualResult.interestPaid)}</strong> in interest. That's money going to the bank, not your future.
-      </div>`;
-    }
-    html += `</div>`;
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.15);border-radius:4px">
+          <div><div style="font-size:11px;color:var(--red);font-weight:600">🔥 Keep this pace for a year</div><div style="font-size:10px;color:var(--muted)">${fmtMoney(annualCredit)} charged, carrying a balance</div></div>
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--red)">${fmtMoney(annualCredit + annualCarryInterest)}</div>
+        </div>
+      </div>
+
+      <div style="font-family:'Fraunces',serif;font-size:13px;font-style:italic;color:var(--body);line-height:1.6">
+        ${annualCarryInterest > 5 ? `That's <strong style="color:var(--red)">${fmtMoney(annualCarryInterest)}</strong> in interest over a year — money the bank keeps. If that went to savings instead, your goal would be <strong style="color:var(--teal)">${fmtMoney(annualCarryInterest)}</strong> closer.` : `Pay this off within 30 days and you owe nothing extra. The grace period is your friend — use it.`}
+      </div>
+    </div>`;
   }
 
   html += `<div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:8px">Transactions</div>`;
