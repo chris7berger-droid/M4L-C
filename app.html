@@ -219,8 +219,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .tx-amt.spend{color:var(--red)}
 .tx-amt.income{color:var(--teal)}
 .tx-amt.save{color:var(--ac)}
-.nav-fab{position:relative}
-.nav-fab-btn{width:48px;height:48px;border-radius:50%;background:var(--ac);color:var(--bg);font-size:28px;font-weight:300;display:flex;align-items:center;justify-content:center;position:relative;top:-12px;box-shadow:0 6px 20px rgba(212,232,74,0.3);transition:all .2s}
+.nav-fab{position:relative;flex:0.7}
+.nav-fab-btn{width:42px;height:42px;border-radius:50%;background:var(--ac);color:var(--bg);font-size:24px;font-weight:300;display:flex;align-items:center;justify-content:center;position:relative;top:-10px;box-shadow:0 6px 20px rgba(212,232,74,0.3);transition:all .2s}
 .nav-fab:hover .nav-fab-btn{transform:scale(1.08);box-shadow:0 8px 28px rgba(212,232,74,0.4)}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;padding:16px}
 .modal-bg.open{display:flex}
@@ -286,9 +286,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .empty{text-align:center;padding:32px 16px;color:var(--muted);font-size:13px;line-height:1.6}
 .empty strong{color:var(--sand);display:block;margin-bottom:4px}
 .nav-tabs{position:fixed;bottom:0;left:0;right:0;height:56px;background:rgba(7,30,28,0.95);backdrop-filter:blur(16px);border-top:1px solid var(--div);display:flex;z-index:100}
-.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:var(--muted);font-size:10px;cursor:pointer;transition:color .2s}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--muted);font-size:9px;cursor:pointer;transition:color .2s;padding:0 2px}
 .nav-tab.active{color:var(--teal)}
-.nav-tab-icon{font-size:20px}
+.nav-tab-icon{font-size:18px}
 .page{display:none}
 .page.active{display:block}
 @media(min-width:768px){
@@ -575,6 +575,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showPage('page-home')"><span class="nav-tab-icon">🏠</span>Home</button>
     <button class="nav-tab" onclick="showPage('page-budget')"><span class="nav-tab-icon">📊</span>Budget</button>
+    <button class="nav-tab" onclick="showPage('page-goals')"><span class="nav-tab-icon">🎯</span>Goals</button>
     <button class="nav-tab nav-fab" onclick="openTxModal()"><span class="nav-fab-btn">+</span></button>
     <button class="nav-tab" onclick="showPage('page-debt')"><span class="nav-tab-icon">💳</span>Debt</button>
     <button class="nav-tab" onclick="showPage('page-history')"><span class="nav-tab-icon">📋</span>History</button>
