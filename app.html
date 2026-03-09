@@ -237,6 +237,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .action-sheet-item .as-icon{font-size:18px;width:24px;text-align:center}
 .bud-row,.goal-row,.tx-row{cursor:pointer;transition:background .15s}
 .bud-row:active,.goal-row:active,.tx-row:active{background:rgba(0,208,156,0.06)}
+.cat-detail-header{margin-bottom:16px}
+.cat-detail-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px}
+.cat-detail-sub{font-size:12px;color:var(--muted)}
+.cat-detail-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.cat-detail-card{background:var(--card);padding:12px;border:1px solid var(--div);text-align:center}
+.cat-detail-card .cd-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.cat-detail-card .cd-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:700}
+.cat-detail-card .cd-val.cash{color:var(--red)}
+.cat-detail-card .cd-val.credit{color:#F5A623}
+.cat-detail-card .cd-val.real{color:#FF6B6B}
+.cat-detail-interest{background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.2);padding:12px;margin-bottom:16px;font-size:13px;color:#F5A623;font-family:'Fraunces',serif;font-style:italic;line-height:1.6}
+.cat-detail-txlist{max-height:300px;overflow-y:auto}
+.cat-detail-actions{display:flex;gap:8px;margin-top:16px}
+.cat-detail-actions button{flex:1;padding:10px;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border:none;transition:all .2s}
 .modal h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:20px}
 .form-group{margin-bottom:16px}
 .form-group label{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
@@ -637,6 +651,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeGoalModal()">Cancel</button>
       <button class="btn-save" onclick="saveGoal()">Save</button>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" id="catDetailModal">
+  <div class="modal" style="max-width:480px">
+    <div id="catDetailContent"></div>
+    <div class="cat-detail-actions">
+      <button style="background:transparent;border:1px solid var(--div);color:var(--muted)" onclick="closeCatDetail()">Close</button>
+      <button style="background:transparent;border:1px solid var(--div);color:var(--teal)" onclick="closeCatDetail();editBudgetFromDetail()">✏️ Edit</button>
+      <button style="background:transparent;border:1px solid var(--div);color:var(--red)" onclick="closeCatDetail();deleteBudgetFromDetail()">🗑 Delete</button>
     </div>
   </div>
 </div>
@@ -1299,7 +1323,7 @@ function renderBudgetList(elId, mk, limit){
     const cashPct = b.planned_amount > 0 ? Math.min((cashSpent / b.planned_amount) * 100, 100) : 0;
     const cls = pct > 90 ? 'over' : pct > 70 ? 'warn' : 'ok';
     const borrowBar = borrowed > 0 ? `<div class="bud-fill" style="width:${pct}%;background:#F5A623;position:absolute;top:0;left:0;height:100%;border-radius:3px;opacity:0.7"></div>` : '';
-    return `<div class="bud-row" onclick="openBudgetActions('${b.id}')"><div class="bud-top"><span class="bud-cat">${esc(b.category)}</span><span class="bud-amt"><span>${fmtMoney(totalSpent)}</span> / ${fmtMoney(b.planned_amount)}${borrowed > 0 ? ' <span style="color:#F5A623;font-size:10px">(💳'+fmtMoney(borrowed)+')</span>' : ''}</span></div><div class="bud-bar" style="position:relative">${borrowBar}<div class="bud-fill ${cls}" style="width:${cashPct}%;position:relative;z-index:1"></div></div></div>`;
+    return `<div class="bud-row" onclick="openCatDetail('${b.id}')"><div class="bud-top"><span class="bud-cat">${esc(b.category)}</span><span class="bud-amt"><span>${fmtMoney(totalSpent)}</span> / ${fmtMoney(b.planned_amount)}${borrowed > 0 ? ' <span style="color:#F5A623;font-size:10px">(💳'+fmtMoney(borrowed)+')</span>' : ''}</span></div><div class="bud-bar" style="position:relative">${borrowBar}<div class="bud-fill ${cls}" style="width:${cashPct}%;position:relative;z-index:1"></div></div></div>`;
   }).join('');
 }
 
@@ -1413,6 +1437,78 @@ async function deleteTx(id){
   if(error){ toast('Error: '+error.message, true); return; }
   toast('Transaction deleted');
   await loadAll();
+}
+
+// ═══════════════ CATEGORY DETAIL VIEW ═══════════════
+let _catDetailBudgetId = null;
+
+function openCatDetail(budId){
+  const b = S.budgets.find(x => x.id === budId);
+  if(!b) return;
+  _catDetailBudgetId = budId;
+  const mk = monthKey();
+  const catTx = S.tx.filter(t => t.type === 'Spend' && t.category === b.category && ((t.month_key === mk) || (t.date && t.date.startsWith(mk))));
+  const cashTx = catTx.filter(t => t.pay_method !== 'credit');
+  const creditTx = catTx.filter(t => t.pay_method === 'credit');
+  const cashTotal = cashTx.reduce((s,t) => s + Number(t.amount), 0);
+  const creditTotal = creditTx.reduce((s,t) => s + Number(t.amount), 0);
+
+  // Calculate real cost of all credit purchases
+  let totalRealCost = 0;
+  let totalInterest = 0;
+  creditTx.forEach(t => {
+    const cardId = t.card_ref;
+    let apr = 24.99;
+    if(cardId){ const card = S.cards.find(c => c.id === cardId); if(card) apr = card.apr; }
+    const result = calcRealCost(Number(t.amount), apr);
+    totalRealCost += result.totalPaid;
+    totalInterest += result.interestPaid;
+  });
+
+  let html = `<div class="cat-detail-header">
+    <div class="cat-detail-title">${esc(b.category)}</div>
+    <div class="cat-detail-sub">${fmtMoney(cashTotal + creditTotal)} of ${fmtMoney(b.planned_amount)} budget used</div>
+  </div>`;
+
+  html += `<div class="cat-detail-cards">
+    <div class="cat-detail-card"><div class="cd-label">💵 Cash</div><div class="cd-val cash">${fmtMoney(cashTotal)}</div></div>
+    <div class="cat-detail-card"><div class="cd-label">💳 Credit</div><div class="cd-val credit">${fmtMoney(creditTotal)}</div></div>
+    <div class="cat-detail-card"><div class="cd-label">⚠️ Real Cost</div><div class="cd-val real">${creditTotal > 0 ? fmtMoney(totalRealCost) : '$0'}</div></div>
+  </div>`;
+
+  if(creditTotal > 0 && totalInterest > 0.50){
+    html += `<div class="cat-detail-interest">💳 Your ${fmtMoney(creditTotal)} in credit card spending on ${esc(b.category)} will actually cost <strong>${fmtMoney(totalRealCost)}</strong> at minimum payments — that's <strong>${fmtMoney(totalInterest)}</strong> in interest going to the bank instead of your savings.</div>`;
+  }
+
+  html += `<div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:8px">Transactions</div>`;
+  if(!catTx.length){
+    html += `<div class="empty" style="font-size:13px">No spending in this category yet.</div>`;
+  } else {
+    html += `<div class="cat-detail-txlist">`;
+    catTx.forEach(t => {
+      const isCredit = t.pay_method === 'credit';
+      const color = isCredit ? '#F5A623' : 'var(--red)';
+      const icon = isCredit ? '💳' : '💵';
+      html += `<div class="tx-row" onclick="closeCatDetail();openTxActions('${t.id}')" style="margin-bottom:4px">
+        <div class="tx-left"><span class="tx-cat">${icon}</span><div class="tx-info"><span class="tx-desc">${esc(t.description || t.category)}</span><span class="tx-meta">${t.date}${t.worth_it ? ' · '+({'Yes':'👍','Meh':'😐','No':'👎'}[t.worth_it]||'') : ''}</span></div></div>
+        <span class="tx-amt" style="color:${color}">-${fmtMoney(t.amount)}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  document.getElementById('catDetailContent').innerHTML = html;
+  document.getElementById('catDetailModal').classList.add('open');
+}
+
+function closeCatDetail(){
+  document.getElementById('catDetailModal').classList.remove('open');
+}
+function editBudgetFromDetail(){
+  if(_catDetailBudgetId) editBudget(_catDetailBudgetId);
+}
+function deleteBudgetFromDetail(){
+  if(_catDetailBudgetId) deleteBudget(_catDetailBudgetId);
 }
 
 // ═══════════════ BUDGET ACTIONS ═══════════════
