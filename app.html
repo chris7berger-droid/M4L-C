@@ -1452,6 +1452,9 @@ function openCatDetail(budId){
   const creditTx = catTx.filter(t => t.pay_method === 'credit');
   const cashTotal = cashTx.reduce((s,t) => s + Number(t.amount), 0);
   const creditTotal = creditTx.reduce((s,t) => s + Number(t.amount), 0);
+  const totalSpent = cashTotal + creditTotal;
+  const pctUsed = b.planned_amount > 0 ? Math.round((totalSpent / b.planned_amount) * 100) : 0;
+  const creditPct = totalSpent > 0 ? Math.round((creditTotal / totalSpent) * 100) : 0;
 
   // Calculate real cost of all credit purchases
   let totalRealCost = 0;
@@ -1465,19 +1468,52 @@ function openCatDetail(budId){
     totalInterest += result.interestPaid;
   });
 
+  // Annualized projection: if they keep this credit spending pace for 12 months
+  const annualCredit = creditTotal * 12;
+  const annualResult = annualCredit > 0 ? calcRealCost(annualCredit, 24.99) : null;
+
   let html = `<div class="cat-detail-header">
     <div class="cat-detail-title">${esc(b.category)}</div>
-    <div class="cat-detail-sub">${fmtMoney(cashTotal + creditTotal)} of ${fmtMoney(b.planned_amount)} budget used</div>
+    <div class="cat-detail-sub">${fmtMoney(totalSpent)} of ${fmtMoney(b.planned_amount)} · ${pctUsed}% used</div>
   </div>`;
 
-  html += `<div class="cat-detail-cards">
-    <div class="cat-detail-card"><div class="cd-label">💵 Cash</div><div class="cd-val cash">${fmtMoney(cashTotal)}</div></div>
-    <div class="cat-detail-card"><div class="cd-label">💳 Credit</div><div class="cd-val credit">${fmtMoney(creditTotal)}</div></div>
-    <div class="cat-detail-card"><div class="cd-label">⚠️ Real Cost</div><div class="cd-val real">${creditTotal > 0 ? fmtMoney(totalRealCost) : '$0'}</div></div>
-  </div>`;
+  // Visual split bar showing cash vs credit proportion
+  if(totalSpent > 0){
+    const cashW = totalSpent > 0 ? Math.round((cashTotal / totalSpent) * 100) : 100;
+    const credW = 100 - cashW;
+    html += `<div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
+        <span style="color:var(--teal)">💵 Cash ${fmtMoney(cashTotal)}</span>
+        ${creditTotal > 0 ? `<span style="color:#F5A623">💳 Credit ${fmtMoney(creditTotal)}</span>` : ''}
+      </div>
+      <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--div)">
+        <div style="width:${cashW}%;background:var(--teal);transition:width .3s"></div>
+        ${creditTotal > 0 ? `<div style="width:${credW}%;background:#F5A623;transition:width .3s"></div>` : ''}
+      </div>
+      ${creditTotal > 0 ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;text-align:center">${creditPct}% of your ${esc(b.category).split(' ').slice(1).join(' ')} spending is on credit</div>` : ''}
+    </div>`;
+  }
 
-  if(creditTotal > 0 && totalInterest > 0.50){
-    html += `<div class="cat-detail-interest">💳 Your ${fmtMoney(creditTotal)} in credit card spending on ${esc(b.category)} will actually cost <strong>${fmtMoney(totalRealCost)}</strong> at minimum payments — that's <strong>${fmtMoney(totalInterest)}</strong> in interest going to the bank instead of your savings.</div>`;
+  // Credit card impact section
+  if(creditTotal > 0){
+    html += `<div style="background:rgba(245,166,35,0.06);border:1px solid rgba(245,166,35,0.15);padding:14px;margin-bottom:16px">
+      <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#F5A623;margin-bottom:10px;letter-spacing:.05em;text-transform:uppercase">💳 Credit Card Impact</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div style="text-align:center;padding:8px;background:rgba(0,0,0,0.2);border-radius:4px">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:2px">You charged</div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#F5A623">${fmtMoney(creditTotal)}</div>
+        </div>
+        <div style="text-align:center;padding:8px;background:rgba(0,0,0,0.2);border-radius:4px">
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:2px">You'll actually pay</div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--red)">${fmtMoney(totalRealCost)}</div>
+        </div>
+      </div>`;
+    if(annualResult && annualCredit > 0){
+      html += `<div style="font-family:'Fraunces',serif;font-size:13px;font-style:italic;color:var(--body);line-height:1.6">
+        At this pace, you'll put <strong style="color:#F5A623">${fmtMoney(annualCredit)}</strong> on credit for ${esc(b.category).split(' ').slice(1).join(' ')} this year — costing you <strong style="color:var(--red)">${fmtMoney(annualResult.interestPaid)}</strong> in interest. That's money going to the bank, not your future.
+      </div>`;
+    }
+    html += `</div>`;
   }
 
   html += `<div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:8px">Transactions</div>`;
