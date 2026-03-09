@@ -127,8 +127,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .hdr-name{font-size:11px;color:var(--muted);opacity:0.7}
 .hdr-signout{background:none;border:1px solid var(--div);color:var(--muted);font-size:10px;padding:4px 10px;cursor:pointer;transition:all .2s;opacity:0.7}
 .hdr-signout:hover{border-color:var(--red);color:var(--red);opacity:1}
-.hdr-reset{background:none;border:1px solid var(--div);color:var(--muted);font-size:10px;padding:4px 10px;cursor:pointer;transition:all .2s;opacity:0.5}
-.hdr-reset:hover{border-color:#F5A623;color:#F5A623;opacity:1}
+
 .main{padding:72px 16px 80px;max-width:600px;margin:0 auto}
 @media(min-width:768px){.main{max-width:900px;padding:80px 32px 80px}}
 
@@ -250,10 +249,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 .type-btn.active-spend{background:rgba(255,107,107,0.12);border-color:var(--red);color:var(--red)}
 .type-btn.active-income{background:rgba(0,208,156,0.12);border-color:var(--teal);color:var(--teal)}
 .type-btn.active-save{background:rgba(212,232,74,0.12);border-color:var(--ac);color:var(--ac)}
+.type-btn.active-borrow{background:rgba(245,166,35,0.12);border-color:#F5A623;color:#F5A623}
 .type-btn.wi-yes{background:rgba(0,208,156,0.15);border-color:var(--teal);color:var(--teal)}
 .type-btn.wi-meh{background:rgba(212,232,74,0.15);border-color:var(--ac);color:var(--ac)}
 .type-btn.wi-no{background:rgba(231,76,60,0.15);border-color:var(--red);color:var(--red)}
 .tx-worth{font-size:11px;margin-left:4px}
+.tx-amt.borrow{color:#F5A623}
+.sc.cd .vl{color:#F5A623}
 .modal-actions{display:flex;gap:8px;margin-top:20px}
 .modal-actions button{flex:1;padding:12px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none}
 .btn-save{background:var(--ac);color:var(--bg)}
@@ -638,7 +640,10 @@ const SUPA_KEY = 'sb_publishable_zuvIFieamgRHfb0Ndi_k6Q_OwtsK6Ms';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
 // ═══════════════ STATE ═══════════════
-let S = { user:null, profile:null, settings:null, tx:[], budgets:[], goals:[], txType:'Spend', worthIt:null };
+let S = { user:null, profile:null, settings:null, tx:[], budgets:[], goals:[], cards:[], txType:'Spend', worthIt:null };
+
+// HTML escape utility to prevent XSS
+function esc(str){ if(!str) return ''; const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
 const CATS_SPEND = ['😋 Eating Out','❤️ Groceries','🚗 Gas','🛍 Shopping','🎉 Fun','📚 School','📱 Subscriptions','📂 Bills','📳 Phone'];
 const CATS_INCOME = ['💵 Paycheck','💰 Side Job','🎁 Gift','📦 Other Income'];
@@ -897,13 +902,17 @@ async function resetOnboarding(){
   if(!confirm('⚠️ Reset your onboarding?\n\nThis will clear YOUR budgets, transactions, goals, and settings so you can redo the onboarding.\n\nOther users are NOT affected.')) return;
   if(!confirm('Are you really sure? This cannot be undone.')) return;
   const uid = S.user.id;
-  await sb.from('user_settings').delete().eq('user_id', uid);
-  await sb.from('budgets').delete().eq('user_id', uid);
-  await sb.from('transactions').delete().eq('user_id', uid);
-  await sb.from('savings_goals').delete().eq('user_id', uid);
+  try {
+    await sb.from('user_settings').delete().eq('user_id', uid);
+    await sb.from('budgets').delete().eq('user_id', uid);
+    await sb.from('transactions').delete().eq('user_id', uid);
+    await sb.from('savings_goals').delete().eq('user_id', uid);
+    try { await sb.from('credit_cards').delete().eq('user_id', uid); } catch(e) {} // Table may not exist yet
+  } catch(e) { toast('Error resetting: ' + e.message, true); return; }
   localStorage.removeItem('m4lc_onboarded_'+uid);
   // Clear in-memory state so checkOnboarding sees a fresh user
   S.settings = null;
+  S.tx = []; S.budgets = []; S.goals = []; S.cards = [];
   // Hide the app and launch onboarding directly
   document.getElementById('app').style.display = 'none';
   startOnboarding();
@@ -930,12 +939,14 @@ sb.auth.onAuthStateChange((event, session) => {
 });
 
 async function loadProfile(){
-  const {data} = await sb.from('profiles').select('*').eq('id', S.user.id).single();
+  const {data, error} = await sb.from('profiles').select('*').eq('id', S.user.id).single();
+  if(error && error.code !== 'PGRST116') console.error('loadProfile:', error.message);
   S.profile = data;
 }
 
 async function loadSettings(){
-  const {data} = await sb.from('user_settings').select('*').eq('user_id', S.user.id).single();
+  const {data, error} = await sb.from('user_settings').select('*').eq('user_id', S.user.id).single();
+  if(error && error.code !== 'PGRST116') console.error('loadSettings:', error.message);
   S.settings = data;
 }
 
@@ -1146,21 +1157,33 @@ function showApp(){
 // ═══════════════ DATA LOADING ═══════════════
 async function loadAll(){
   const mk = monthKey();
-  await Promise.all([loadTx(), loadBudgets(mk), loadGoals()]);
+  try {
+    await Promise.all([loadTx(), loadBudgets(mk), loadGoals(), loadCards()]);
+  } catch(e) { console.error('loadAll error:', e); }
   renderHome(mk);
   renderQuote();
 }
 async function loadTx(){
-  const {data} = await sb.from('transactions').select('*').eq('user_id', S.user.id).order('date',{ascending:false});
+  const {data, error} = await sb.from('transactions').select('*').eq('user_id', S.user.id).order('date',{ascending:false});
+  if(error) console.error('loadTx:', error.message);
   S.tx = data || [];
 }
 async function loadBudgets(mk){
-  const {data} = await sb.from('budgets').select('*').eq('user_id', S.user.id).eq('month_key', mk);
+  const {data, error} = await sb.from('budgets').select('*').eq('user_id', S.user.id).eq('month_key', mk);
+  if(error) console.error('loadBudgets:', error.message);
   S.budgets = data || [];
 }
 async function loadGoals(){
-  const {data} = await sb.from('savings_goals').select('*').eq('user_id', S.user.id).order('is_primary',{ascending:false});
+  const {data, error} = await sb.from('savings_goals').select('*').eq('user_id', S.user.id).order('is_primary',{ascending:false});
+  if(error) console.error('loadGoals:', error.message);
   S.goals = data || [];
+}
+async function loadCards(){
+  try {
+    const {data, error} = await sb.from('credit_cards').select('*').eq('user_id', S.user.id);
+    if(error) console.error('loadCards:', error.message);
+    S.cards = data || [];
+  } catch(e) { S.cards = []; } // Table may not exist yet
 }
 
 // ═══════════════ RENDERING ═══════════════
@@ -1223,7 +1246,7 @@ function renderSavingsHero(mk){
     const arcLen = (g.pct / 100) * 251.2;
     cards += `<div class="scar-card">
       <div class="scar-goal-top"><div class="scar-gauge"><svg viewBox="0 0 200 110"><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#0C2624" stroke-width="12" stroke-linecap="round"/><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gg${i})" stroke-width="12" stroke-linecap="round" stroke-dasharray="${arcLen} 251.2"/><defs><linearGradient id="gg${i}" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="#00D09C"/><stop offset="100%" stop-color="#D4E84A"/></linearGradient></defs></svg></div>
-        <div class="scar-goal-info"><div class="scar-goal-pct">${g.pct}%</div><div class="scar-goal-name">${g.goal_name}${g.is_primary ? ' ⭐' : ''}</div><div class="scar-goal-amt">${fmtMoney(g.saved)} of ${fmtMoney(g.target_amount)}</div></div>
+        <div class="scar-goal-info"><div class="scar-goal-pct">${g.pct}%</div><div class="scar-goal-name">${esc(g.goal_name)}${g.is_primary ? ' ⭐' : ''}</div><div class="scar-goal-amt">${fmtMoney(g.saved)} of ${fmtMoney(g.target_amount)}</div></div>
       </div><div class="scar-goal-msg">${msg}</div></div>`;
   });
   track.innerHTML = cards;
@@ -1253,7 +1276,7 @@ function renderBudgetList(elId, mk, limit){
     const spent = mtx.filter(t => t.category === b.category).reduce((s,t) => s + Number(t.amount), 0);
     const pct = b.planned_amount > 0 ? Math.min((spent / b.planned_amount) * 100, 100) : 0;
     const cls = pct > 90 ? 'over' : pct > 70 ? 'warn' : 'ok';
-    return `<div class="bud-row" onclick="openBudgetActions('${b.id}')"><div class="bud-top"><span class="bud-cat">${b.category}</span><span class="bud-amt"><span>${fmtMoney(spent)}</span> / ${fmtMoney(b.planned_amount)}</span></div><div class="bud-bar"><div class="bud-fill ${cls}" style="width:${pct}%"></div></div></div>`;
+    return `<div class="bud-row" onclick="openBudgetActions('${b.id}')"><div class="bud-top"><span class="bud-cat">${esc(b.category)}</span><span class="bud-amt"><span>${fmtMoney(spent)}</span> / ${fmtMoney(b.planned_amount)}</span></div><div class="bud-bar"><div class="bud-fill ${cls}" style="width:${pct}%"></div></div></div>`;
   }).join('');
 }
 
@@ -1264,7 +1287,7 @@ function renderGoalsList(elId, limit){
   el.innerHTML = goals.map(g => {
     const saved = S.tx.filter(t => t.type === 'Save' && t.goal_ref === g.id).reduce((s,t) => s + Number(t.amount), 0);
     const pct = g.target_amount > 0 ? Math.min((saved / g.target_amount) * 100, 100) : 0;
-    return `<div class="goal-row" onclick="openGoalActions('${g.id}')"><div class="goal-top"><span class="goal-name">${g.goal_name}</span>${g.is_primary ? '<span class="goal-badge">Primary</span>' : ''}</div><div class="goal-progress"><span>${fmtMoney(saved)}</span> of ${fmtMoney(g.target_amount)} · ${Math.round(pct)}%</div><div class="goal-bar"><div class="goal-fill" style="width:${pct}%"></div></div></div>`;
+    return `<div class="goal-row" onclick="openGoalActions('${g.id}')"><div class="goal-top"><span class="goal-name">${esc(g.goal_name)}</span>${g.is_primary ? '<span class="goal-badge">Primary</span>' : ''}</div><div class="goal-progress"><span>${fmtMoney(saved)}</span> of ${fmtMoney(g.target_amount)} · ${Math.round(pct)}%</div><div class="goal-bar"><div class="goal-fill" style="width:${pct}%"></div></div></div>`;
   }).join('');
 }
 
@@ -1276,7 +1299,7 @@ function renderTxList(elId, txs){
     const sign = t.type === 'Spend' ? '-' : '+';
     const emoji = t.category ? t.category.split(' ')[0] : '💲';
     const wi = t.worth_it === 'Yes' ? ' 👍' : t.worth_it === 'Meh' ? ' 😐' : t.worth_it === 'No' ? ' 👎' : '';
-    return `<div class="tx-row" onclick="openTxActions('${t.id}')"><div class="tx-left"><span class="tx-cat">${emoji}</span><div class="tx-info"><span class="tx-desc">${t.description || t.category}${wi ? '<span class="tx-worth">'+wi+'</span>' : ''}</span><span class="tx-meta">${t.date} · ${t.type}</span></div></div><span class="tx-amt ${cls}">${sign}${fmtMoney(t.amount)}</span></div>`;
+    return `<div class="tx-row" onclick="openTxActions('${t.id}')"><div class="tx-left"><span class="tx-cat">${emoji}</span><div class="tx-info"><span class="tx-desc">${esc(t.description || t.category)}${wi ? '<span class="tx-worth">'+wi+'</span>' : ''}</span><span class="tx-meta">${t.date} · ${t.type}</span></div></div><span class="tx-amt ${cls}">${sign}${fmtMoney(t.amount)}</span></div>`;
   }).join('');
 }
 
@@ -1630,20 +1653,6 @@ async function saveGoal(){
   }
   closeGoalModal();
   await loadAll();
-}
-
-// ═══════════════ RESET (TESTING) ═══════════════
-async function resetAccount(){
-  if(!confirm('⚠️ This will DELETE all your data (transactions, budgets, goals, settings) and restart onboarding. Are you sure?')) return;
-  const uid = S.user.id;
-  await sb.from('transactions').delete().eq('user_id', uid);
-  await sb.from('budgets').delete().eq('user_id', uid);
-  await sb.from('savings_goals').delete().eq('user_id', uid);
-  await sb.from('user_settings').delete().eq('user_id', uid);
-  await sb.from('profiles').update({ first_name: null }).eq('id', uid);
-  localStorage.removeItem('m4lc_onboarded_'+uid);
-  toast('Account reset! Reloading...');
-  setTimeout(() => location.reload(), 1000);
 }
 
 // ═══════════════ TOAST ═══════════════
