@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>M4L-C · Dashboard</title>
 <meta name="theme-color" content="#071E1C">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="background-color" content="#071E1C">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='85' y='85' width='854' height='854' rx='213' stroke='%2300D09C' stroke-width='22' fill='none'/%3E%3Crect x='170' y='170' width='684' height='684' rx='149' fill='%230D2219' stroke='%2300D09C' stroke-width='16'/%3E%3Cpath d='M384 554L512 406L640 554' stroke='%2300D09C' stroke-width='38' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
@@ -681,6 +681,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     </div>
     <div id="filteredTxSummary" style="font-size:13px;color:var(--muted);margin-bottom:12px"></div>
     <div class="tx-list" id="filteredTxList" style="max-height:60vh;overflow-y:auto"></div>
+  </div>
+</div>
+<div class="modal-bg" id="statementModal">
+  <div class="modal" style="max-width:480px">
+    <div id="statementModalContent">
+      <h3 style="margin-bottom:4px">Statement X-Ray</h3>
+      <div style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--muted);margin-bottom:20px">See where your money really went.</div>
+      <div id="statementUploadArea">
+        <div class="form-group">
+          <label>Upload CSV Statement</label>
+          <input type="file" id="statementFileInput" accept=".csv" onchange="parseStatementCSV(this)" style="width:100%;padding:10px;background:var(--card);border:1px solid var(--div);color:var(--sand);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer">
+        </div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:8px">Log into your bank's website or app → find Statements or Transaction History → Download as CSV</div>
+      </div>
+      <div id="statementError" style="display:none;font-size:13px;color:var(--red);margin-top:12px;line-height:1.5"></div>
+      <div id="statementResults" style="display:none"></div>
+      <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:20px;line-height:1.5">🔒 Your statement is processed on your device only. Nothing is uploaded or stored.</div>
+      <div style="margin-top:16px;text-align:center">
+        <button onclick="closeStatementModal()" style="padding:10px 24px;background:transparent;border:1px solid var(--div);color:var(--muted);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">Close</button>
+      </div>
+    </div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -1380,6 +1401,12 @@ function renderInterestPage(mk){
       <div style="font-size:48px;margin-bottom:16px">🎉</div>
       <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px">No Debt Tracked</div>
       <div style="font-size:13px;color:var(--muted);line-height:1.6;max-width:300px;margin:0 auto">You haven't logged any credit card spending yet. When you do, this is where you'll see the full picture — what you owe, what it really costs, and how to get ahead of it.</div>
+      <div style="margin-top:20px">
+        <button onclick="openStatementUploadModal()" style="padding:14px 24px;background:transparent;border:1px solid #F5A623;color:var(--sand);cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif;transition:all .2s">
+          <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700">📄 Upload Credit Card Statement</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">See what your bank isn't showing you</div>
+        </button>
+      </div>
     </div>`;
     return;
   }
@@ -1411,6 +1438,14 @@ function renderInterestPage(mk){
       <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--teal)">${fmtMoney(investGrowth)}</div>
       <div style="font-size:11px;color:var(--muted);margin-top:6px">if you invested ${fmtMoney(monthlyInvest)}/mo instead</div>
     </div>
+  </div>`;
+
+  // Upload statement button
+  html += `<div style="margin-bottom:16px">
+    <button onclick="openStatementUploadModal()" style="width:100%;padding:16px;background:transparent;border:1px solid #F5A623;color:var(--sand);cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif;transition:all .2s">
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700">📄 Upload Credit Card Statement</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">See what your bank isn't showing you</div>
+    </button>
   </div>`;
 
   // One powerful sentence
@@ -2025,6 +2060,177 @@ function openFilteredTxModal(filter){
   document.getElementById('filteredTxModal').classList.add('open');
 }
 function closeFilteredTxModal(){ document.getElementById('filteredTxModal').classList.remove('open'); }
+
+// ═══════════════ STATEMENT UPLOAD ═══════════════
+function openStatementUploadModal(){
+  resetStatementModal();
+  document.getElementById('statementModal').classList.add('open');
+}
+function closeStatementModal(){ document.getElementById('statementModal').classList.remove('open'); }
+function resetStatementModal(){
+  document.getElementById('statementUploadArea').style.display = '';
+  document.getElementById('statementResults').style.display = 'none';
+  document.getElementById('statementResults').innerHTML = '';
+  document.getElementById('statementError').style.display = 'none';
+  document.getElementById('statementError').textContent = '';
+  document.getElementById('statementFileInput').value = '';
+}
+
+function parseStatementCSV(input){
+  const file = input.files[0];
+  if(!file) return;
+  const errEl = document.getElementById('statementError');
+  const resultsEl = document.getElementById('statementResults');
+  errEl.style.display = 'none';
+
+  const reader = new FileReader();
+  reader.onerror = function(){
+    errEl.textContent = "We couldn't read this file. Make sure it's a CSV file downloaded from your bank.";
+    errEl.style.display = '';
+  };
+  reader.onload = function(e){
+    try {
+      const text = e.target.result;
+      const lines = text.split(/\r?\n/).filter(l => l.trim());
+      if(lines.length < 2){
+        errEl.textContent = "We couldn't read this file. Make sure it's a CSV file downloaded from your bank.";
+        errEl.style.display = '';
+        return;
+      }
+
+      // Parse CSV respecting quoted fields
+      function parseCSVLine(line){
+        const fields = [];
+        let current = '';
+        let inQuotes = false;
+        for(let i = 0; i < line.length; i++){
+          const ch = line[i];
+          if(inQuotes){
+            if(ch === '"' && line[i+1] === '"'){ current += '"'; i++; }
+            else if(ch === '"'){ inQuotes = false; }
+            else { current += ch; }
+          } else {
+            if(ch === '"'){ inQuotes = true; }
+            else if(ch === ','){ fields.push(current.trim()); current = ''; }
+            else { current += ch; }
+          }
+        }
+        fields.push(current.trim());
+        return fields;
+      }
+
+      const headers = parseCSVLine(lines[0]).map(h => h.replace(/^["']|["']$/g,'').trim().toLowerCase());
+
+      // Auto-detect columns
+      const descKeys = ['description','merchant','transaction','memo','name','payee','transaction description'];
+      const amtKeys = ['amount','debit','credit','charge','transaction amount'];
+
+      let descIdx = -1, amtIdx = -1, debitIdx = -1, creditIdx = -1;
+      headers.forEach((h, i) => {
+        if(descIdx === -1 && descKeys.some(k => h.includes(k))) descIdx = i;
+        if(h === 'debit' || h === 'debits') debitIdx = i;
+        if(h === 'credit' || h === 'credits') creditIdx = i;
+        if(amtIdx === -1 && amtKeys.some(k => h.includes(k)) && h !== 'debit' && h !== 'debits' && h !== 'credit' && h !== 'credits') amtIdx = i;
+      });
+
+      if(descIdx === -1 && amtIdx === -1 && debitIdx === -1){
+        errEl.textContent = "This doesn't look like a bank statement. Look for a CSV export option in your bank's transaction history.";
+        errEl.style.display = '';
+        return;
+      }
+
+      const bankChargePatterns = /interest|finance charge|late fee|annual fee|penalty|minimum interest|cash advance fee|balance transfer fee/i;
+      let purchases = [], bankCharges = [];
+      let totalPurchases = 0, totalBankCharges = 0;
+
+      for(let i = 1; i < lines.length; i++){
+        const cols = parseCSVLine(lines[i]);
+        if(cols.length <= 1) continue;
+
+        const desc = descIdx >= 0 && cols[descIdx] ? cols[descIdx].replace(/^["']|["']$/g,'') : '';
+        let amt = 0;
+        if(amtIdx >= 0 && cols[amtIdx]){
+          amt = Math.abs(parseFloat(cols[amtIdx].replace(/[^0-9.\-]/g,'')) || 0);
+        } else if(debitIdx >= 0 && cols[debitIdx]){
+          amt = Math.abs(parseFloat(cols[debitIdx].replace(/[^0-9.\-]/g,'')) || 0);
+        } else if(creditIdx >= 0 && cols[creditIdx]){
+          amt = Math.abs(parseFloat(cols[creditIdx].replace(/[^0-9.\-]/g,'')) || 0);
+        }
+        if(amt === 0) continue;
+
+        if(bankChargePatterns.test(desc)){
+          bankCharges.push({ desc: desc, amount: amt });
+          totalBankCharges += amt;
+        } else {
+          purchases.push({ desc: desc, amount: amt });
+          totalPurchases += amt;
+        }
+      }
+
+      if(totalPurchases === 0 && totalBankCharges === 0){
+        errEl.textContent = "We couldn't read this file. Make sure it's a CSV file downloaded from your bank.";
+        errEl.style.display = '';
+        return;
+      }
+
+      // Render results
+      const total = totalPurchases + totalBankCharges;
+      const purchasePct = total > 0 ? Math.round((totalPurchases / total) * 100) : 100;
+      const bankPct = 100 - purchasePct;
+      const centsToBank = total > 0 ? Math.round((totalBankCharges / total) * 100) : 0;
+
+      document.getElementById('statementUploadArea').style.display = 'none';
+
+      let rhtml = `<div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;text-align:center">Your Statement Breakdown</div>`;
+      rhtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">`;
+      rhtml += `<div style="background:rgba(0,208,156,0.08);border:1px solid rgba(0,208,156,0.15);padding:14px;text-align:center">
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px">🛍 What You Actually Bought</div>
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--teal)">${fmtMoney(totalPurchases)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">${purchases.length} transaction${purchases.length !== 1 ? 's' : ''}</div>
+      </div>`;
+      rhtml += `<div style="background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.15);padding:14px;text-align:center">
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px">🏦 What The Bank Took</div>
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--red)">${fmtMoney(totalBankCharges)}</div>`;
+      if(bankCharges.length > 0){
+        rhtml += `<div style="text-align:left;margin-top:8px;font-size:11px;color:var(--muted)">`;
+        bankCharges.forEach(c => {
+          rhtml += `<div style="display:flex;justify-content:space-between;margin-top:3px"><span>${esc(c.desc)}</span><span style="color:var(--red)">${fmtMoney(c.amount)}</span></div>`;
+        });
+        rhtml += `</div>`;
+      }
+      rhtml += `</div></div>`;
+
+      // Percentage bar
+      rhtml += `<div style="margin-bottom:16px">
+        <div style="display:flex;height:8px;border-radius:4px;overflow:hidden">
+          <div style="width:${purchasePct}%;background:var(--teal)"></div>
+          <div style="width:${bankPct}%;background:var(--red)"></div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:center">${purchasePct}% went to your purchases · ${bankPct}% went to the bank</div>
+      </div>`;
+
+      // Insight line
+      rhtml += `<div style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--body);line-height:1.6;text-align:center;margin-bottom:16px">`;
+      if(totalBankCharges > 0){
+        rhtml += `Out of every dollar you paid, <strong style="color:var(--red)">${centsToBank} cents</strong> went straight to the bank — not to anything you chose to buy.`;
+      } else {
+        rhtml += `No interest or fees found — you're using credit responsibly. Keep paying in full.`;
+      }
+      rhtml += `</div>`;
+
+      // Try Another button
+      rhtml += `<div style="text-align:center"><button onclick="resetStatementModal()" style="padding:10px 20px;background:transparent;border:1px solid var(--teal);color:var(--teal);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">Try Another Statement</button></div>`;
+
+      resultsEl.innerHTML = rhtml;
+      resultsEl.style.display = '';
+
+    } catch(ex){
+      errEl.textContent = "We couldn't read this file. Make sure it's a CSV file downloaded from your bank.";
+      errEl.style.display = '';
+    }
+  };
+  reader.readAsText(file);
+}
 
 // ═══════════════ TOAST ═══════════════
 function toast(msg, err){
