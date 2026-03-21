@@ -564,8 +564,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
       <div class="sec-hdr"><h3>Savings Goals</h3><button class="sec-hdr-btn" onclick="openGoalModal()">+ New Goal</button></div>
       <div class="goals-list" id="goalsFull"><div class="loading">Loading...</div></div>
     </div>
-    <div class="page" id="page-debt">
-      <div id="debtContent"><div class="loading">Loading...</div></div>
+    <div class="page" id="page-interest">
+      <div id="interestContent"><div class="loading">Loading...</div></div>
     </div>
     <div class="page" id="page-history">
       <div class="sec-hdr"><h3>All Transactions</h3></div>
@@ -577,7 +577,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
     <button class="nav-tab active" onclick="showPage('page-home')"><span class="nav-tab-icon">🏦</span>Home</button>
     <button class="nav-tab" onclick="showPage('page-budget')"><span class="nav-tab-icon">📈</span>Budget</button>
     <button class="nav-tab" onclick="showPage('page-goals')"><span class="nav-tab-icon">🎯</span>Goals</button>
-    <button class="nav-tab" onclick="showPage('page-debt')"><span class="nav-tab-icon">💳</span>Debt</button>
+    <button class="nav-tab" onclick="showPage('page-interest')"><span class="nav-tab-icon" style="font-family:'Syne',sans-serif;font-weight:800">%</span>Interest</button>
     <button class="nav-tab" onclick="showPage('page-history')"><span class="nav-tab-icon">💡</span>History</button>
   </div>
 </div>
@@ -1268,7 +1268,7 @@ function renderHome(mk){
   renderBudgetList('budgetFull', mk);
   renderGoalsList('goalsFull');
   renderTxList('historyFull', S.tx);
-  renderDebtPage(mk);
+  renderInterestPage(mk);
 }
 
 function renderSavingsHero(mk){
@@ -1366,9 +1366,9 @@ function renderTxList(elId, txs){
   }).join('');
 }
 
-function renderDebtPage(mk){
+function renderInterestPage(mk){
   mk = mk || monthKey();
-  const el = document.getElementById('debtContent');
+  const el = document.getElementById('interestContent');
   const mtx = S.tx.filter(t => (t.month_key === mk) || (t.date && t.date.startsWith(mk)));
   const creditTx = mtx.filter(t => t.type === 'Spend' && t.pay_method === 'credit');
   const totalCredit = creditTx.reduce((s,t) => s + Number(t.amount), 0);
@@ -1392,9 +1392,10 @@ function renderDebtPage(mk){
   }
 
   let html = `<div style="margin-bottom:16px">
-    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px">Debt Overview</div>
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px">Interest</div>
     <div style="font-size:13px;color:var(--muted)">${monthName}</div>
-  </div>`;
+  </div>
+  <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--red);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">🔻 Working Against You</div>`;
 
   // Savings vs Debt ratio
   if(totalCredit > 0 || totalOwed > 0){
@@ -1484,6 +1485,13 @@ function renderDebtPage(mk){
     </div>`;
   }
 
+  // Working For You section
+  html += `<div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin:24px 0 12px">🔺 Working For You</div>
+  <div style="background:rgba(0,208,156,0.06);border:1px solid rgba(0,208,156,0.15);padding:20px;text-align:center">
+    <div style="font-size:32px;margin-bottom:12px">📈</div>
+    <div style="font-family:'Fraunces',serif;font-size:14px;font-style:italic;color:var(--body);line-height:1.7;max-width:320px;margin:0 auto">Coming soon — see how the same interest that costs you on credit cards could be <em style="color:var(--ac)">growing your wealth</em> through investing.</div>
+  </div>`;
+
   el.innerHTML = html;
 }
 
@@ -1496,9 +1504,8 @@ function renderQuote(){
 function showPage(id){
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const pageMap = {'page-home':0,'page-budget':1,'page-goals':3,'page-history':4};
+  const pageMap = {'page-home':0,'page-budget':1,'page-goals':2,'page-interest':3,'page-history':4};
   document.querySelectorAll('.nav-tab').forEach((t,i) => {
-    if(i === 2) return;
     t.classList.toggle('active', pageMap[id] === i);
   });
   window.scrollTo(0,0);
