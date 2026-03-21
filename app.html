@@ -468,7 +468,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
   <!-- SLIDE 5: Budget Categories -->
   <div class="ob-slide" id="ob5">
     <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
-    <div class="ob-icon">📊</div>
+    <div class="ob-icon">📈</div>
     <div class="ob-title">Where does your <span class="hl">money go?</span></div>
     <div class="ob-body">Select the categories that apply to you. We'll auto-split your <em id="obBudgetBasis">pay period budget</em> across these.</div>
     <div class="ob-cats" id="obCats"></div>
@@ -546,7 +546,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
         <div class="sc cv" onclick="openFilteredTxModal('Save')"><span class="ic">🏦</span><div class="lb">Saved</div><div class="vl" id="sumSaved">$0</div><div class="sb">this month</div></div>
         <div class="sc cs" onclick="openFilteredTxModal('Spend')"><span class="ic">💸</span><div class="lb">Spent</div><div class="vl" id="sumSpent">$0</div><div class="sb">this month</div></div>
         <div class="sc cd" style="display:none" onclick="openFilteredTxModal('Borrowed')"><span class="ic">💳</span><div class="lb">On Credit</div><div class="vl" id="sumBorrowed">$0</div><div class="sb">this month</div></div>
-        <div class="sc cb" onclick="openFilteredTxModal('All')"><span class="ic">📊</span><div class="lb">Left to Spend</div><div class="vl" id="sumLeft">$0</div><div class="sb" id="leftSub">remaining</div></div>
+        <div class="sc cb" onclick="openFilteredTxModal('All')"><span class="ic">📈</span><div class="lb">Left to Spend</div><div class="vl" id="sumLeft">$0</div><div class="sb" id="leftSub">remaining</div></div>
       </div>
       <div class="quote-card"><div class="quote-text" id="quoteText"></div></div>
       <div class="sec-hdr"><h3>Budget</h3><button class="sec-hdr-btn" onclick="showPage('page-budget')">View All</button></div>
@@ -575,7 +575,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
   <button class="nav-fab-float" onclick="openTxModal()">+</button>
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showPage('page-home')"><span class="nav-tab-icon">🏦</span>Home</button>
-    <button class="nav-tab" onclick="showPage('page-budget')"><span class="nav-tab-icon">📊</span>Budget</button>
+    <button class="nav-tab" onclick="showPage('page-budget')"><span class="nav-tab-icon">📈</span>Budget</button>
     <button class="nav-tab" onclick="showPage('page-goals')"><span class="nav-tab-icon">🎯</span>Goals</button>
     <button class="nav-tab" onclick="showPage('page-debt')"><span class="nav-tab-icon">💳</span>Debt</button>
     <button class="nav-tab" onclick="showPage('page-history')"><span class="nav-tab-icon">📋</span>History</button>
@@ -2052,7 +2052,7 @@ function openFilteredTxModal(filter){
     total = filtered.reduce((s,t) => s + Number(t.amount), 0);
   } else {
     filtered = mtx;
-    title = '📊 All Transactions This Month';
+    title = '📈 All Transactions This Month';
     total = null;
   }
   document.getElementById('filteredTxTitle').textContent = title;
