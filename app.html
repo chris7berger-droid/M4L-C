@@ -545,7 +545,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
         <div class="sc ci" onclick="openFilteredTxModal('Income')"><span class="ic">💵</span><div class="lb">Earned</div><div class="vl" id="sumIncome">$0</div><div class="sb">this month</div></div>
         <div class="sc cv" onclick="openFilteredTxModal('Save')"><span class="ic">🏦</span><div class="lb">Saved</div><div class="vl" id="sumSaved">$0</div><div class="sb">this month</div></div>
         <div class="sc cs" onclick="openFilteredTxModal('Spend')"><span class="ic">💸</span><div class="lb">Spent</div><div class="vl" id="sumSpent">$0</div><div class="sb">this month</div></div>
-        <div class="sc cd" style="display:none" onclick="openFilteredTxModal('Borrowed')"><span class="ic">💳</span><div class="lb">Borrowed</div><div class="vl" id="sumBorrowed">$0</div><div class="sb">this month</div></div>
+        <div class="sc cd" style="display:none" onclick="openFilteredTxModal('Borrowed')"><span class="ic">💳</span><div class="lb">On Credit</div><div class="vl" id="sumBorrowed">$0</div><div class="sb">this month</div></div>
         <div class="sc cb" onclick="openFilteredTxModal('All')"><span class="ic">📊</span><div class="lb">Left to Spend</div><div class="vl" id="sumLeft">$0</div><div class="sb" id="leftSub">remaining</div></div>
       </div>
       <div class="quote-card"><div class="quote-text" id="quoteText"></div></div>
@@ -1875,7 +1875,7 @@ function updateRealCost(){
   const result = calcRealCost(amt, apr);
   if(result.interestPaid > 0.50){
     costEl.style.display = 'block';
-    costEl.innerHTML = `⚠️ Real cost at minimum payments: <strong>${fmtMoney(result.totalPaid)}</strong> (+${fmtMoney(result.interestPaid)} interest over ${result.months} mo)`;
+    costEl.innerHTML = `⚠️ Future cost at minimum payments: <strong>${fmtMoney(result.totalPaid)}</strong> (+${fmtMoney(result.interestPaid)} interest over ${result.months} mo)`;
   } else {
     costEl.style.display = 'none';
   }
@@ -2048,7 +2048,7 @@ function openFilteredTxModal(filter){
     total = filtered.reduce((s,t) => s + Number(t.amount), 0);
   } else if(filter === 'Borrowed'){
     filtered = mtx.filter(t => t.type === 'Spend' && t.pay_method === 'credit');
-    title = '💳 Borrowed This Month';
+    title = '💳 On Credit This Month';
     total = filtered.reduce((s,t) => s + Number(t.amount), 0);
   } else {
     filtered = mtx;
