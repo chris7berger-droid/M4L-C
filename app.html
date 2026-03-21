@@ -1361,7 +1361,8 @@ function renderTxList(elId, txs){
     const sign = t.type === 'Spend' ? '-' : '+';
     const emoji = t.category ? t.category.split(' ')[0] : '💲';
     const wi = t.worth_it === 'Yes' ? ' 👍' : t.worth_it === 'Meh' ? ' 😐' : t.worth_it === 'No' ? ' 👎' : '';
-    return `<div class="tx-row" onclick="openTxActions('${t.id}')"><div class="tx-left"><span class="tx-cat">${emoji}</span><div class="tx-info"><span class="tx-desc">${esc(t.description || t.category)}${wi ? '<span class="tx-worth">'+wi+'</span>' : ''}</span><span class="tx-meta">${t.date} · ${t.type}</span></div></div><span class="tx-amt ${cls}">${sign}${fmtMoney(t.amount)}</span></div>`;
+    const ccIcon = t.pay_method === 'credit' ? ' 💳' : '';
+    return `<div class="tx-row" onclick="openTxActions('${t.id}')"><div class="tx-left"><span class="tx-cat">${emoji}</span><div class="tx-info"><span class="tx-desc">${esc(t.description || t.category)}${wi ? '<span class="tx-worth">'+wi+'</span>' : ''}</span><span class="tx-meta">${t.date} · ${t.type}</span></div></div><span class="tx-amt ${cls}">${sign}${fmtMoney(t.amount)}${ccIcon}</span></div>`;
   }).join('');
 }
 
