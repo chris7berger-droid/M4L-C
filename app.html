@@ -168,7 +168,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 
 /* SUMMARY GRID */
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
-.sc{background:var(--card);padding:14px 14px;border:1px solid var(--div);position:relative}
+.sc{background:var(--card);padding:14px 14px;border:1px solid var(--div);position:relative;cursor:pointer;transition:background .15s}
+.sc:active{background:rgba(0,208,156,0.06)}
 .sc .ic{font-size:18px;margin-bottom:4px;display:block}
 .sc .lb{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .sc .vl{font-family:'Syne',sans-serif;font-size:22px;font-weight:700}
@@ -541,11 +542,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
         <div style="font-size:12px;color:var(--body);line-height:1.7">Before you spend a dollar, decide what you're saving for.<br>Set a goal to start tracking.</div>
       </div>
       <div class="sgrid">
-        <div class="sc ci"><span class="ic">💵</span><div class="lb">Earned</div><div class="vl" id="sumIncome">$0</div><div class="sb">this month</div></div>
-        <div class="sc cv"><span class="ic">🏦</span><div class="lb">Saved</div><div class="vl" id="sumSaved">$0</div><div class="sb">this month</div></div>
-        <div class="sc cs"><span class="ic">💸</span><div class="lb">Spent</div><div class="vl" id="sumSpent">$0</div><div class="sb">this month</div></div>
-        <div class="sc cd" style="display:none"><span class="ic">💳</span><div class="lb">Borrowed</div><div class="vl" id="sumBorrowed">$0</div><div class="sb">this month</div></div>
-        <div class="sc cb"><span class="ic">📊</span><div class="lb">Left to Spend</div><div class="vl" id="sumLeft">$0</div><div class="sb" id="leftSub">remaining</div></div>
+        <div class="sc ci" onclick="openFilteredTxModal('Income')"><span class="ic">💵</span><div class="lb">Earned</div><div class="vl" id="sumIncome">$0</div><div class="sb">this month</div></div>
+        <div class="sc cv" onclick="openFilteredTxModal('Save')"><span class="ic">🏦</span><div class="lb">Saved</div><div class="vl" id="sumSaved">$0</div><div class="sb">this month</div></div>
+        <div class="sc cs" onclick="openFilteredTxModal('Spend')"><span class="ic">💸</span><div class="lb">Spent</div><div class="vl" id="sumSpent">$0</div><div class="sb">this month</div></div>
+        <div class="sc cd" style="display:none" onclick="openFilteredTxModal('Borrowed')"><span class="ic">💳</span><div class="lb">Borrowed</div><div class="vl" id="sumBorrowed">$0</div><div class="sb">this month</div></div>
+        <div class="sc cb" onclick="openFilteredTxModal('All')"><span class="ic">📊</span><div class="lb">Left to Spend</div><div class="vl" id="sumLeft">$0</div><div class="sb" id="leftSub">remaining</div></div>
       </div>
       <div class="quote-card"><div class="quote-text" id="quoteText"></div></div>
       <div class="sec-hdr"><h3>Budget</h3><button class="sec-hdr-btn" onclick="showPage('page-budget')">View All</button></div>
@@ -671,6 +672,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
 <div class="action-sheet" id="actionSheet">
   <h4 id="asTitle">Actions</h4>
   <div id="asItems"></div>
+</div>
+<div class="modal-bg" id="filteredTxModal">
+  <div class="modal" style="max-width:480px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 id="filteredTxTitle" style="margin:0">Transactions</h3>
+      <button style="background:none;border:1px solid var(--div);color:var(--muted);font-size:11px;padding:5px 12px;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="closeFilteredTxModal()">Close</button>
+    </div>
+    <div id="filteredTxSummary" style="font-size:13px;color:var(--muted);margin-bottom:12px"></div>
+    <div class="tx-list" id="filteredTxList" style="max-height:60vh;overflow-y:auto"></div>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -2017,6 +2028,43 @@ async function saveGoal(){
   closeGoalModal();
   await loadAll();
 }
+
+// ═══════════════ FILTERED TX MODAL ═══════════════
+function openFilteredTxModal(filter){
+  const mk = monthKey();
+  const mtx = S.tx.filter(t => (t.month_key === mk) || (t.date && t.date.startsWith(mk)));
+  let filtered, title, total;
+  if(filter === 'Income'){
+    filtered = mtx.filter(t => t.type === 'Income');
+    title = '💵 Earned This Month';
+    total = filtered.reduce((s,t) => s + Number(t.amount), 0);
+  } else if(filter === 'Save'){
+    filtered = mtx.filter(t => t.type === 'Save');
+    title = '🏦 Saved This Month';
+    total = filtered.reduce((s,t) => s + Number(t.amount), 0);
+  } else if(filter === 'Spend'){
+    filtered = mtx.filter(t => t.type === 'Spend');
+    title = '💸 Spent This Month';
+    total = filtered.reduce((s,t) => s + Number(t.amount), 0);
+  } else if(filter === 'Borrowed'){
+    filtered = mtx.filter(t => t.type === 'Spend' && t.pay_method === 'credit');
+    title = '💳 Borrowed This Month';
+    total = filtered.reduce((s,t) => s + Number(t.amount), 0);
+  } else {
+    filtered = mtx;
+    title = '📊 All Transactions This Month';
+    total = null;
+  }
+  document.getElementById('filteredTxTitle').textContent = title;
+  document.getElementById('filteredTxSummary').textContent = filtered.length + ' transaction' + (filtered.length !== 1 ? 's' : '') + (total !== null ? ' · ' + fmtMoney(total) + ' total' : '');
+  if(!filtered.length){
+    document.getElementById('filteredTxList').innerHTML = '<div class="empty">No transactions in this category yet.</div>';
+  } else {
+    renderTxList('filteredTxList', filtered);
+  }
+  document.getElementById('filteredTxModal').classList.add('open');
+}
+function closeFilteredTxModal(){ document.getElementById('filteredTxModal').classList.remove('open'); }
 
 // ═══════════════ TOAST ═══════════════
 function toast(msg, err){
