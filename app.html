@@ -1395,11 +1395,13 @@ function renderInterestPage(mk){
     <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:4px">Interest</div>
     <div style="font-size:13px;color:var(--muted)">${monthName}</div>
   </div>
-  <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--red);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">🔻 Working Against You</div>`;
+  <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#F5A623;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">🔻 Working Against You</div>`;
 
   // Savings vs Debt ratio
   if(totalCredit > 0 || totalOwed > 0){
-    const savingsRatio = totalSaved > 0 && totalOwed > 0 ? Math.round((totalSaved / totalOwed) * 100) : totalSaved > 0 ? 100 : 0;
+    const totalBoth = totalSaved + totalOwed;
+    const savingsPct = totalBoth > 0 ? Math.round((totalSaved / totalBoth) * 100) : 0;
+    const debtPct = 100 - savingsPct;
     const debtWinning = totalOwed > totalSaved;
     html += `<div style="background:var(--card);border:1px solid var(--div);padding:14px;margin-bottom:12px">
       <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">⚔️ Savings vs. Debt</div>
@@ -1409,8 +1411,8 @@ function renderInterestPage(mk){
         <div style="text-align:right"><div style="font-size:10px;color:#F5A623">Credit Debt</div><div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#F5A623">${fmtMoney(totalOwed)}</div></div>
       </div>
       <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--div)">
-        <div style="width:${Math.min(savingsRatio, 100)}%;background:var(--teal)"></div>
-        <div style="flex:1;background:#F5A623"></div>
+        <div style="width:${savingsPct}%;background:var(--teal);transition:width .3s"></div>
+        <div style="width:${debtPct}%;background:#F5A623;transition:width .3s"></div>
       </div>
     </div>`;
   }
@@ -1430,11 +1432,11 @@ function renderInterestPage(mk){
           <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--teal)">${fmtMoney(totalOwed)}</div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.15);border-radius:4px">
-          <div><div style="font-size:11px;color:#F5A623;font-weight:600">⚠️ Minimum payments</div><div style="font-size:10px;color:var(--muted)">${minPayResult.months} months to pay off</div></div>
+          <div><div style="font-size:11px;color:#F5A623;font-weight:600">⚠️ Future Cost — minimum payments</div><div style="font-size:10px;color:var(--muted)">${minPayResult.months} months to pay off</div></div>
           <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#F5A623">${fmtMoney(minPayResult.totalPaid)}</div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.15);border-radius:4px">
-          <div><div style="font-size:11px;color:var(--red);font-weight:600">🔥 Keep this pace for a year</div><div style="font-size:10px;color:var(--muted)">Carrying a balance at 24.99%</div></div>
+          <div><div style="font-size:11px;color:var(--red);font-weight:600">🔥 Future Cost — 12 months of this</div><div style="font-size:10px;color:var(--muted)">Carrying a balance at 24.99%</div></div>
           <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--red)">${fmtMoney(annualCredit + annualInterest)}</div>
         </div>
       </div>`;
@@ -1485,11 +1487,45 @@ function renderInterestPage(mk){
     </div>`;
   }
 
-  // Working For You section
-  html += `<div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin:24px 0 12px">🔺 Working For You</div>
-  <div style="background:rgba(0,208,156,0.06);border:1px solid rgba(0,208,156,0.15);padding:20px;text-align:center">
-    <div style="font-size:32px;margin-bottom:12px">📈</div>
-    <div style="font-family:'Fraunces',serif;font-size:14px;font-style:italic;color:var(--body);line-height:1.7;max-width:320px;margin:0 auto">Coming soon — see how the same interest that costs you on credit cards could be <em style="color:var(--ac)">growing your wealth</em> through investing.</div>
+  // Bridge statement
+  html += `<div style="padding:20px 16px;margin:20px 0;border-left:2px solid var(--ac)">
+    <div style="font-family:'Fraunces',serif;font-size:14px;font-style:italic;color:var(--body);line-height:1.7">The same force that costs you money on credit cards could be <em style="color:var(--ac)">building your wealth.</em> Every dollar of interest you pay to a bank is a dollar that could be compounding <em style="color:var(--teal)">for you.</em></div>
+  </div>`;
+
+  // Working For You section — compound interest calculator
+  const monthlyInvest = totalCredit > 0 ? Math.round(totalCredit) : 30;
+  const rate = 0.10;
+  const monthlyRate = rate / 12;
+  function compoundGrowth(monthly, years){
+    const months = years * 12;
+    const fv = monthly * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+    return Math.round(fv);
+  }
+  const contributed5 = monthlyInvest * 60;
+  const contributed10 = monthlyInvest * 120;
+  const contributed20 = monthlyInvest * 240;
+  const total5 = compoundGrowth(monthlyInvest, 5);
+  const total10 = compoundGrowth(monthlyInvest, 10);
+  const total20 = compoundGrowth(monthlyInvest, 20);
+
+  html += `<div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">🔺 Working For You</div>`;
+  html += `<div style="background:rgba(0,208,156,0.06);border:1px solid rgba(0,208,156,0.15);padding:14px">
+    <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:12px">📈 If you invested ${fmtMoney(monthlyInvest)}/month</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(0,208,156,0.08);border:1px solid rgba(0,208,156,0.15);border-radius:4px">
+        <div><div style="font-size:11px;color:var(--teal);font-weight:600">5 Years</div><div style="font-size:10px;color:var(--muted)">You put in ${fmtMoney(contributed5)}</div></div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--teal)">${fmtMoney(total5)}</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(0,208,156,0.1);border:1px solid rgba(0,208,156,0.2);border-radius:4px">
+        <div><div style="font-size:11px;color:var(--ac);font-weight:600">10 Years</div><div style="font-size:10px;color:var(--muted)">You put in ${fmtMoney(contributed10)}</div></div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--ac)">${fmtMoney(total10)}</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(212,232,74,0.08);border:1px solid rgba(212,232,74,0.15);border-radius:4px">
+        <div><div style="font-size:11px;color:var(--ac);font-weight:600">20 Years</div><div style="font-size:10px;color:var(--muted)">You put in ${fmtMoney(contributed20)}</div></div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--ac)">${fmtMoney(total20)}</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);font-style:italic;text-align:center">Based on historical S&P 500 average annual return of ~10%</div>
   </div>`;
 
   el.innerHTML = html;
