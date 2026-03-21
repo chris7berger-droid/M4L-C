@@ -1,4 +1,4 @@
-const CACHE = 'm4lc-v2';
+const CACHE = 'm4lc-v3';
 const ASSETS = ['/app.html', '/manifest.json'];
 
 self.addEventListener('install', e => {

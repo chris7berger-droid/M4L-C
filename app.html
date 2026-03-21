@@ -2124,10 +2124,12 @@ function parseStatementCSV(input){
       // Auto-detect columns
       const descKeys = ['description','merchant','transaction','memo','name','payee','transaction description'];
       const amtKeys = ['amount','debit','credit','charge','transaction amount'];
+      const dateKeys = ['date','transaction date','post date','posting date','trans date'];
 
-      let descIdx = -1, amtIdx = -1, debitIdx = -1, creditIdx = -1;
+      let descIdx = -1, amtIdx = -1, debitIdx = -1, creditIdx = -1, dateIdx = -1;
       headers.forEach((h, i) => {
         if(descIdx === -1 && descKeys.some(k => h.includes(k))) descIdx = i;
+        if(dateIdx === -1 && dateKeys.some(k => h.includes(k))) dateIdx = i;
         if(h === 'debit' || h === 'debits') debitIdx = i;
         if(h === 'credit' || h === 'credits') creditIdx = i;
         if(amtIdx === -1 && amtKeys.some(k => h.includes(k)) && h !== 'debit' && h !== 'debits' && h !== 'credit' && h !== 'credits') amtIdx = i;
@@ -2148,6 +2150,7 @@ function parseStatementCSV(input){
         if(cols.length <= 1) continue;
 
         const desc = descIdx >= 0 && cols[descIdx] ? cols[descIdx].replace(/^["']|["']$/g,'') : '';
+        const txDate = dateIdx >= 0 && cols[dateIdx] ? cols[dateIdx].replace(/^["']|["']$/g,'') : '';
         let amt = 0;
         if(amtIdx >= 0 && cols[amtIdx]){
           amt = Math.abs(parseFloat(cols[amtIdx].replace(/[^0-9.\-]/g,'')) || 0);
@@ -2159,10 +2162,10 @@ function parseStatementCSV(input){
         if(amt === 0) continue;
 
         if(bankChargePatterns.test(desc)){
-          bankCharges.push({ desc: desc, amount: amt });
+          bankCharges.push({ desc: desc, date: txDate, amount: amt });
           totalBankCharges += amt;
         } else {
-          purchases.push({ desc: desc, amount: amt });
+          purchases.push({ desc: desc, date: txDate, amount: amt });
           totalPurchases += amt;
         }
       }
@@ -2209,14 +2212,44 @@ function parseStatementCSV(input){
         <div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:center">${purchasePct}% went to your purchases · ${bankPct}% went to the bank</div>
       </div>`;
 
-      // Insight line
-      rhtml += `<div style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--body);line-height:1.6;text-align:center;margin-bottom:16px">`;
-      if(totalBankCharges > 0){
-        rhtml += `Out of every dollar you paid, <strong style="color:var(--red)">${centsToBank} cents</strong> went straight to the bank — not to anything you chose to buy.`;
-      } else {
-        rhtml += `No interest or fees found — you're using credit responsibly. Keep paying in full.`;
+      // Transaction list with real cost
+      if(purchases.length > 0 && totalBankCharges > 0){
+        const markupPct = totalPurchases > 0 ? ((totalBankCharges / totalPurchases) * 100).toFixed(2) : '0.00';
+
+        // Sort by interest share descending (biggest hidden cost first)
+        const sortedPurchases = purchases.map(p => {
+          const interestShare = totalPurchases > 0 ? (p.amount / totalPurchases) * totalBankCharges : 0;
+          const realPrice = p.amount + interestShare;
+          const pctMarkup = p.amount > 0 ? ((interestShare / p.amount) * 100).toFixed(2) : '0.00';
+          return { ...p, interestShare, realPrice, pctMarkup };
+        }).sort((a, b) => b.interestShare - a.interestShare);
+
+        rhtml += `<div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px">The Real Price of Every Purchase</div>`;
+        rhtml += `<div style="max-height:40vh;overflow-y:auto;margin-bottom:16px">`;
+        sortedPurchases.forEach(p => {
+          rhtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--div)">
+            <div style="flex:1;min-width:0;margin-right:12px">
+              ${p.date ? `<div style="font-size:10px;color:var(--muted)">${esc(p.date)}</div>` : ''}
+              <div style="font-size:13px;color:var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.desc)}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:12px;color:var(--muted);text-decoration:line-through">${fmtMoney(p.amount)}</div>
+              <div style="display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:2px">
+                <span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#F5A623">${fmtMoney(p.realPrice)}</span>
+                <span style="background:rgba(245,166,35,0.15);color:#F5A623;font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px">+${p.pctMarkup}%</span>
+              </div>
+            </div>
+          </div>`;
+        });
+        rhtml += `</div>`;
+
+        // Summary callout
+        rhtml += `<div style="border-left:3px solid #F5A623;padding:12px 16px;margin-bottom:16px;background:rgba(245,166,35,0.04)">
+          <div style="font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:var(--body);line-height:1.6">Every item you bought cost <strong style="color:#F5A623">${markupPct}%</strong> more than the price tag. A 10% off sale at ${markupPct}% interest isn't a deal — it's a loss.</div>
+        </div>`;
+      } else if(totalBankCharges === 0){
+        rhtml += `<div style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--body);line-height:1.6;text-align:center;margin-bottom:16px">No interest or fees found — you're using credit responsibly. Keep paying in full.</div>`;
       }
-      rhtml += `</div>`;
 
       // Try Another button
       rhtml += `<div style="text-align:center"><button onclick="resetStatementModal()" style="padding:10px 20px;background:transparent;border:1px solid var(--teal);color:var(--teal);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">Try Another Statement</button></div>`;
