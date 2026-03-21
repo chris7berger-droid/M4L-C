@@ -697,7 +697,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--sand);min
       </div>
       <div id="statementError" style="display:none;font-size:13px;color:var(--red);margin-top:12px;line-height:1.5"></div>
       <div id="statementResults" style="display:none"></div>
-      <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:20px;line-height:1.5">🔒 Your statement is processed on your device only. Nothing is uploaded or stored.</div>
+      <div id="stmtReviewOverlay" style="display:none"></div>
+      <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:20px;line-height:1.5">🔒 Your statement is processed on your device only. Nothing is uploaded or stored. Your ratings stay on your device and are not saved or shared.</div>
       <div style="margin-top:16px;text-align:center">
         <button onclick="closeStatementModal()" style="padding:10px 24px;background:transparent;border:1px solid var(--div);color:var(--muted);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">Close</button>
       </div>
@@ -2212,25 +2213,32 @@ function parseStatementCSV(input){
         <div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:center">${purchasePct}% went to your purchases · ${bankPct}% went to the bank</div>
       </div>`;
 
-      // Transaction list with real cost
-      if(purchases.length > 0 && totalBankCharges > 0){
-        const markupPct = totalPurchases > 0 ? ((totalBankCharges / totalPurchases) * 100).toFixed(2) : '0.00';
-
-        // Sort by interest share descending (biggest hidden cost first)
-        const sortedPurchases = purchases.map(p => {
+      // Build sortedPurchases and store globally for review mode
+      let sortedPurchases = [];
+      const markupPct = totalPurchases > 0 ? ((totalBankCharges / totalPurchases) * 100).toFixed(2) : '0.00';
+      if(purchases.length > 0){
+        sortedPurchases = purchases.map(p => {
           const interestShare = totalPurchases > 0 ? (p.amount / totalPurchases) * totalBankCharges : 0;
           const realPrice = p.amount + interestShare;
           const pctMarkup = p.amount > 0 ? ((interestShare / p.amount) * 100).toFixed(2) : '0.00';
-          return { ...p, interestShare, realPrice, pctMarkup };
+          return { ...p, interestShare, realPrice, pctMarkup, rating: null };
         }).sort((a, b) => b.interestShare - a.interestShare);
+        window._stmtPurchases = sortedPurchases;
+        window._stmtTotalBankCharges = totalBankCharges;
+      }
 
+      // Transaction list with real cost
+      if(purchases.length > 0 && totalBankCharges > 0){
         rhtml += `<div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px">The Real Price of Every Purchase</div>`;
-        rhtml += `<div style="max-height:40vh;overflow-y:auto;margin-bottom:16px">`;
-        sortedPurchases.forEach(p => {
-          rhtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--div)">
-            <div style="flex:1;min-width:0;margin-right:12px">
-              ${p.date ? `<div style="font-size:10px;color:var(--muted)">${esc(p.date)}</div>` : ''}
-              <div style="font-size:13px;color:var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.desc)}</div>
+        rhtml += `<div id="stmtTxList" style="max-height:40vh;overflow-y:auto;margin-bottom:16px">`;
+        sortedPurchases.forEach((p, i) => {
+          rhtml += `<div id="stmtTx${i}" style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--div)">
+            <div style="flex:1;min-width:0;margin-right:12px;display:flex;align-items:center;gap:6px">
+              <span id="stmtTxRating${i}" style="font-size:14px"></span>
+              <div style="min-width:0">
+                ${p.date ? `<div style="font-size:10px;color:var(--muted)">${esc(p.date)}</div>` : ''}
+                <div style="font-size:13px;color:var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.desc)}</div>
+              </div>
             </div>
             <div style="text-align:right;flex-shrink:0">
               <div style="font-size:12px;color:var(--muted);text-decoration:line-through">${fmtMoney(p.amount)}</div>
@@ -2251,6 +2259,15 @@ function parseStatementCSV(input){
         rhtml += `<div style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--body);line-height:1.6;text-align:center;margin-bottom:16px">No interest or fees found — you're using credit responsibly. Keep paying in full.</div>`;
       }
 
+      // Rate Your Decisions section
+      if(purchases.length > 0){
+        rhtml += `<div style="text-align:center;margin-bottom:16px;padding:16px 0;border-top:1px solid var(--div)">
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px">Rate Your Decisions</div>
+          <div style="font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:var(--muted);margin-bottom:14px">You made ${purchases.length} financial decision${purchases.length !== 1 ? 's' : ''} this month. Were they worth it?</div>
+          <button onclick="startWorthItReview()" style="padding:14px 32px;background:var(--teal);color:var(--bg);border:none;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:opacity .2s">Start Review</button>
+        </div>`;
+      }
+
       // Try Another button
       rhtml += `<div style="text-align:center"><button onclick="resetStatementModal()" style="padding:10px 20px;background:transparent;border:1px solid var(--teal);color:var(--teal);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">Try Another Statement</button></div>`;
 
@@ -2263,6 +2280,188 @@ function parseStatementCSV(input){
     }
   };
   reader.readAsText(file);
+}
+
+// ═══════════════ WORTH IT REVIEW ═══════════════
+let _reviewIdx = 0;
+
+function startWorthItReview(){
+  _reviewIdx = 0;
+  const overlay = document.getElementById('stmtReviewOverlay');
+  overlay.style.display = '';
+  document.getElementById('statementResults').style.display = 'none';
+  showReviewCard();
+}
+
+function showReviewCard(){
+  const p = window._stmtPurchases;
+  if(!p || _reviewIdx >= p.length){ showReviewSummary(); return; }
+  const tx = p[_reviewIdx];
+  const overlay = document.getElementById('stmtReviewOverlay');
+  overlay.innerHTML = `<div style="opacity:0;transition:opacity 0.3s" id="reviewCardWrap">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:11px;color:var(--muted)">${_reviewIdx + 1} of ${p.length}</div>
+      <div style="height:3px;background:var(--div);margin-top:6px;border-radius:2px;overflow:hidden"><div style="height:100%;background:var(--teal);width:${Math.round(((_reviewIdx) / p.length) * 100)}%;transition:width .3s"></div></div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--div);padding:28px 20px;text-align:center;margin-bottom:20px">
+      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--sand);margin-bottom:6px">${esc(tx.desc)}</div>
+      ${tx.date ? `<div style="font-size:12px;color:var(--muted);margin-bottom:16px">${esc(tx.date)}</div>` : '<div style="margin-bottom:16px"></div>'}
+      <div style="font-size:14px;color:var(--muted);text-decoration:line-through;margin-bottom:4px">${fmtMoney(tx.amount)}</div>
+      <div style="display:inline-flex;align-items:center;gap:6px">
+        <span style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#F5A623">${fmtMoney(tx.realPrice)}</span>
+        <span style="background:rgba(245,166,35,0.15);color:#F5A623;font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px">+${tx.pctMarkup}%</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button onclick="rateTransaction('Yes')" style="flex:1;padding:16px 0;min-height:60px;background:rgba(0,208,156,0.1);border:1px solid rgba(0,208,156,0.3);color:var(--teal);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif">👍<br>Worth It</button>
+      <button onclick="rateTransaction('Meh')" style="flex:1;padding:16px 0;min-height:60px;background:rgba(212,232,74,0.1);border:1px solid rgba(212,232,74,0.3);color:var(--ac);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif">😐<br>Meh</button>
+      <button onclick="rateTransaction('No')" style="flex:1;padding:16px 0;min-height:60px;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);color:var(--red);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif">👎<br>Not Worth It</button>
+    </div>
+    <div style="text-align:center"><span onclick="rateTransaction(null)" style="font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline">Skip</span></div>
+  </div>`;
+  requestAnimationFrame(() => { const w = document.getElementById('reviewCardWrap'); if(w) w.style.opacity = '1'; });
+}
+
+function rateTransaction(rating){
+  const p = window._stmtPurchases;
+  if(p && _reviewIdx < p.length){
+    p[_reviewIdx].rating = rating;
+    // Update the emoji in the transaction list
+    const rEl = document.getElementById('stmtTxRating' + _reviewIdx);
+    if(rEl){
+      const emoji = rating === 'Yes' ? '👍' : rating === 'Meh' ? '😐' : rating === 'No' ? '👎' : '';
+      rEl.textContent = emoji;
+    }
+  }
+  _reviewIdx++;
+  // Fade out then show next
+  const w = document.getElementById('reviewCardWrap');
+  if(w){
+    w.style.opacity = '0';
+    setTimeout(() => showReviewCard(), 300);
+  } else {
+    showReviewCard();
+  }
+}
+
+function showReviewSummary(){
+  const p = window._stmtPurchases;
+  if(!p) return;
+  const overlay = document.getElementById('stmtReviewOverlay');
+
+  let worthIt = { total: 0, count: 0, interest: 0 };
+  let meh = { total: 0, count: 0, interest: 0 };
+  let notWorth = { total: 0, count: 0, interest: 0 };
+
+  p.forEach(tx => {
+    if(tx.rating === 'Yes'){ worthIt.total += tx.amount; worthIt.count++; worthIt.interest += tx.interestShare; }
+    else if(tx.rating === 'Meh'){ meh.total += tx.amount; meh.count++; meh.interest += tx.interestShare; }
+    else if(tx.rating === 'No'){ notWorth.total += tx.amount; notWorth.count++; notWorth.interest += tx.interestShare; }
+  });
+
+  const ratedTotal = worthIt.total + meh.total + notWorth.total;
+  const worthPct = ratedTotal > 0 ? Math.round((worthIt.total / ratedTotal) * 100) : 0;
+  const mehPct = ratedTotal > 0 ? Math.round((meh.total / ratedTotal) * 100) : 0;
+  const notPct = ratedTotal > 0 ? 100 - worthPct - mehPct : 0;
+
+  // Compound interest projection: notWorth.total/mo at 10% for 10 years
+  const mo = notWorth.total;
+  const r10 = 0.10 / 12;
+  const futureVal = mo > 0 ? Math.round(mo * ((Math.pow(1 + r10, 120) - 1) / r10)) : 0;
+
+  let shtml = `<div style="opacity:0;transition:opacity 0.3s" id="reviewSummaryWrap">`;
+  shtml += `<div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;text-align:center;margin-bottom:20px">Your Spending Verdict</div>`;
+
+  // Three stat cards
+  shtml += `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:16px">
+    <div style="background:rgba(0,208,156,0.08);border:1px solid rgba(0,208,156,0.15);padding:12px 8px;text-align:center">
+      <div style="font-size:18px;margin-bottom:4px">👍</div>
+      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--teal)">${fmtMoney(worthIt.total)}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">${worthIt.count} transaction${worthIt.count !== 1 ? 's' : ''}</div>
+    </div>
+    <div style="background:rgba(212,232,74,0.08);border:1px solid rgba(212,232,74,0.15);padding:12px 8px;text-align:center">
+      <div style="font-size:18px;margin-bottom:4px">😐</div>
+      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--ac)">${fmtMoney(meh.total)}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">${meh.count} transaction${meh.count !== 1 ? 's' : ''}</div>
+    </div>
+    <div style="background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.15);padding:12px 8px;text-align:center">
+      <div style="font-size:18px;margin-bottom:4px">👎</div>
+      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--red)">${fmtMoney(notWorth.total)}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px">${notWorth.count} transaction${notWorth.count !== 1 ? 's' : ''}</div>
+    </div>
+  </div>`;
+
+  // Proportional bar
+  if(ratedTotal > 0){
+    shtml += `<div style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin-bottom:20px">
+      <div style="width:${worthPct}%;background:var(--teal)"></div>
+      <div style="width:${mehPct}%;background:var(--ac)"></div>
+      <div style="width:${notPct}%;background:var(--red)"></div>
+    </div>`;
+  }
+
+  // Insight callouts
+  let insights = '';
+  if(notWorth.total > 0){
+    insights += `<div style="border-left:3px solid var(--red);padding:10px 14px;margin-bottom:10px;background:rgba(255,107,107,0.04)">
+      <div style="font-size:13px;color:var(--body);line-height:1.5">You spent <strong style="color:var(--red)">${fmtMoney(notWorth.total)}</strong> on things you don't think were worth it. That's ${fmtMoney(notWorth.total)}/month that could go to savings or investing.</div>
+    </div>`;
+  }
+  if(notWorth.total + meh.total > worthIt.total && ratedTotal > 0){
+    insights += `<div style="border-left:3px solid var(--ac);padding:10px 14px;margin-bottom:10px;background:rgba(212,232,74,0.04)">
+      <div style="font-size:13px;color:var(--body);line-height:1.5">More than half your spending didn't feel worth it. That's a pattern worth changing.</div>
+    </div>`;
+  }
+  if(notWorth.interest > 0){
+    insights += `<div style="border-left:3px solid #F5A623;padding:10px 14px;margin-bottom:10px;background:rgba(245,166,35,0.04)">
+      <div style="font-size:13px;color:var(--body);line-height:1.5">Even worse — you paid <strong style="color:#F5A623">${fmtMoney(notWorth.interest)}</strong> in interest on purchases you regret.</div>
+    </div>`;
+  }
+  if(notWorth.total > 0){
+    insights += `<div style="border-left:3px solid var(--teal);padding:10px 14px;margin-bottom:10px;background:rgba(0,208,156,0.04)">
+      <div style="font-size:13px;color:var(--body);line-height:1.5">If you invested that <strong style="color:var(--teal)">${fmtMoney(notWorth.total)}</strong>/month instead, in 10 years you'd have <strong style="color:var(--teal)">${fmtMoney(futureVal)}</strong>.</div>
+    </div>`;
+  }
+  if(insights) shtml += `<div style="margin-bottom:16px">${insights}</div>`;
+
+  // Closing line
+  shtml += `<div style="font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--body);line-height:1.6;text-align:center;margin-bottom:24px">This is what your money is trying to tell you. Listen to it.</div>`;
+
+  // Action buttons
+  shtml += `<div style="display:flex;gap:8px;justify-content:center">
+    <button onclick="copyReviewSummary()" style="padding:10px 20px;background:transparent;border:1px solid var(--teal);color:var(--teal);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Save Insights</button>
+    <button onclick="exitReviewMode()" style="padding:10px 20px;background:transparent;border:1px solid var(--div);color:var(--muted);font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Done</button>
+  </div>`;
+  shtml += `</div>`;
+
+  overlay.innerHTML = shtml;
+  requestAnimationFrame(() => { const w = document.getElementById('reviewSummaryWrap'); if(w) w.style.opacity = '1'; });
+}
+
+function exitReviewMode(){
+  document.getElementById('stmtReviewOverlay').style.display = 'none';
+  document.getElementById('stmtReviewOverlay').innerHTML = '';
+  document.getElementById('statementResults').style.display = '';
+}
+
+function copyReviewSummary(){
+  const p = window._stmtPurchases;
+  if(!p) return;
+  let worthIt = { total: 0, count: 0 };
+  let meh = { total: 0, count: 0 };
+  let notWorth = { total: 0, count: 0, interest: 0 };
+  p.forEach(tx => {
+    if(tx.rating === 'Yes'){ worthIt.total += tx.amount; worthIt.count++; }
+    else if(tx.rating === 'Meh'){ meh.total += tx.amount; meh.count++; }
+    else if(tx.rating === 'No'){ notWorth.total += tx.amount; notWorth.count++; notWorth.interest += tx.interestShare; }
+  });
+  let text = `My Spending Verdict\n`;
+  text += `👍 Worth It: ${fmtMoney(worthIt.total)} (${worthIt.count} transactions)\n`;
+  text += `😐 Meh: ${fmtMoney(meh.total)} (${meh.count} transactions)\n`;
+  text += `👎 Not Worth It: ${fmtMoney(notWorth.total)} (${notWorth.count} transactions)\n`;
+  if(notWorth.interest > 0) text += `Interest paid on regretted purchases: ${fmtMoney(notWorth.interest)}\n`;
+  text += `\nThis is what my money is trying to tell me.`;
+  navigator.clipboard.writeText(text).then(() => toast('Summary copied to clipboard')).catch(() => toast('Could not copy to clipboard', true));
 }
 
 // ═══════════════ TOAST ═══════════════
